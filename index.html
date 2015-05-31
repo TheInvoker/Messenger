@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Title of the document</title>
+
+		<style>
+			#content {
+				width:798px;
+				border:1px solid black;
+			}
+			#thread, #controls {
+				width:800px;
+			}
+			#thread {
+				height:605px;
+				overflow-y: auto;
+				white-space: normal;
+			}
+			#thread > div {
+				display: inline-block;
+				float:right;
+			}
+			#message {
+				width:680px;
+			}
+			#send {
+				width:100px;
+				height:57px;
+			}
+			#physics {
+				width:414px;
+			}
+		</style>
+		
+		<script src="js/plugin/jquery-2.1.4.min.js"></script>
+		<script src="js/plugin/matter.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				$("#send").click(function() {
+					var str = $("#message").val();
+					$("#thread").append("<div>" + str + "</div><br/>");
+					$("#message").val("").focus();
+				});
+				
+				$("#trigger").click(function() {
+					var height = parseInt($("#thread").css('height').replace("px", ""), 10);
+					var blocks = [];
+				
+					$("#thread > div").each(function() {
+						var container = document.getElementById('thread');
+						var containerRect = container.getBoundingClientRect();
+						var child = this;
+						var childRect = child.getBoundingClientRect();
+						
+						var x = childRect.left - containerRect.left;
+						var y = childRect.top - containerRect.top;
+						var w = childRect.right - childRect.left;
+						var h = childRect.bottom - childRect.top;
+						
+						if (y >= 0 && y < height) {
+							blocks.push({
+								x : x,
+								Y : y,
+								w : w,
+								h : h
+							});
+						}
+					});
+		
+					$("#content, #physics").toggle();
+				});
+				
+
+				// Matter.js module aliases
+				var Engine = Matter.Engine,
+					World = Matter.World,
+					Bodies = Matter.Bodies,
+					Render = Matter.Render;
+
+				Render.options.height = 400;
+					
+				// create a Matter.js engine
+				var engine = Engine.create(document.getElementById("physics"));
+
+				
+				
+				// create two boxes and a ground
+				var boxA = Bodies.rectangle(400, 200, 80, 80);
+				var boxB = Bodies.rectangle(450, 50, 80, 80);
+				var ground = Bodies.rectangle(400, 610, 610, 60, { isStatic: true });
+
+				// add all of the bodies to the world
+				World.add(engine.world, [boxA, boxB, ground]);
+
+				// run the engine
+				Engine.run(engine);
+				
+			});
+		</script>
+	</head>
+
+	<body>
+		<div id="content">
+			<div id="thread">
+			</div>
+			<table id="controls">
+				<tr>
+					<td>
+						<textarea id="message" rows="2" placeholder="type message here..."></textarea>
+					</td>
+					<td>
+						<button id="send">Send</button>
+					</td>	
+				</tr>
+			</table>
+		</div>
+		<div id="physics" style="display:none;">
+		</div>
+		<button id="trigger">Tiggger Event</button>
+	</body>
+
+</html> 

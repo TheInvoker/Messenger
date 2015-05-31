@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Animate</title>
+		<style>
+			html, body {
+				margin: 0px;
+				padding: 0px;
+			}
+		</style>
+		<script src="../js/plugin/jquery-2.1.4.min.js"></script>
+		<script src="../js/plugin/sprintf.js"></script>
+	</head>
+	<body>
+
+		<center>
+			<object data="images/steve/steve.svg" type="image/svg+xml" id="steve"></object>
+		</center>
+		
+		<script>
+			/**
+			 * Returns a random number between min (inclusive) and max (exclusive)
+			 */
+			function getRandomArbitrary(min, max) {
+				return Math.random() * (max - min) + min;
+			}
+			
+			/**
+				base_scale should be >=0 and <=1
+			*/
+			var component = function(cm, base_scale) {
+				var w = parseFloat($(cm).parent().attr("width"));
+				var h = parseFloat($(cm).parent().attr("height"));
+				var jx = parseInt(cm.getAttribute("data-jointx"), 10);
+				var jy = parseInt(cm.getAttribute("data-jointy"), 10);
+				var interval = -1;
+				
+				var transform = function(cm, degree, scale_x, scale_y, move_x, move_y) {
+					var rad = degree * (Math.PI/180);
+					var sx = base_scale + scale_x;
+					var sy = base_scale + scale_y;
+					var cos = Math.cos(rad);
+					var sin = Math.sin(rad);
+					var cx = w/2;
+					var cy = h/2;
+					var tx = (w * (1 - sx))/2 + move_x;
+					var ty = (h * (1 - sy))/2 + move_y;
+					var matrix = sprintf('matrix(%f,%f,%f,%f,%f,%f)', sx*cos, sy*sin, -sx*sin, sy*cos, (-cx*cos + cy*sin + cx)*sx + tx, (-cx*sin - cy*cos + cy)*sy + ty);
+					cm.setAttribute('transform', matrix);
+				};
+				
+				this.getJX = function() {
+					return jx;
+				};
+				this.getJY = function() {
+					return jy;
+				};
+				
+
+				
+				this.wobble = function() {
+					clearInterval(interval);
+					
+					var step = 0;
+					var sinscale = 0.1;
+					interval = setInterval(function(){ 
+						transform(cm, 0, Math.sin(step)*sinscale, -Math.sin(step)*sinscale, 0, 0);
+						step += 0.05;
+					}, 1);
+				};
+				
+				this.jump = function() {
+					clearInterval(interval);
+					
+					var step = 0;
+					interval = setInterval(function(){ 
+						transform(cm, 0, 0, 0, 0, 10*(Math.sin(step)+1));
+						step += 0.1;
+					}, 1);
+				};
+				
+				this.twirl = function() {
+					clearInterval(interval);
+					
+					var step = 0;
+					interval = setInterval(function(){ 
+						transform(cm, step, 0, 0, 0, 0);
+						step += 1;
+					}, 1);
+				};
+				
+				this.explode = function() {
+					clearInterval(interval);
+					
+					var step = 0;
+					var rot = 0;
+					var components = $(cm).find('path,polygon,polyline');
+					
+					components.each(function() {
+						var projectileVector = [getRandomArbitrary(-10,10), getRandomArbitrary(10,20)];
+						$(this).attr("data-vx", projectileVector[0]);
+						$(this).attr("data-vy", projectileVector[1]);
+						$(this).attr("data-px", 0);
+						$(this).attr("data-py", 0);
+					});
+					
+					interval = setInterval(function(){ 
+						if (step < 0.5) {
+							components.each(function() {
+								var vx = parseFloat($(this).attr("data-vx"));
+								var vy = parseFloat($(this).attr("data-vy"));
+								var px = parseFloat($(this).attr("data-px"));
+								var py = parseFloat($(this).attr("data-py"));
+								
+								vy += -1 * step;
+								px += vx * step;
+								py -= vy * step;
+								
+								transform(this, rot, 0, 0, px, py);
+								
+								$(this).attr("data-vx", vx);
+								$(this).attr("data-vy", vy);
+								$(this).attr("data-px", px);
+								$(this).attr("data-py", py);
+							});
+							
+							rot += 0.2;
+							step += 0.002;
+						}
+					}, 10);
+					
+				};
+			};
+			
+			function length_dir(len, degree) {
+				var rad = degree * (Math.PI/180); 
+				var x = len * Math.cos(rad);
+				var y = len * Math.sin(rad);
+				return [x,y];
+			}
+	
+	
+	
+			var steve = document.getElementById("steve");
+			steve.addEventListener("load", function() {
+				var svgDoc = steve.contentDocument; 
+				var mainsvg = new component(svgDoc.getElementById("mainGroup"), 0.9);
+				
+				//mainsvg.twirl();
+				//mainsvg.jump();
+				//mainsvg.wobble();
+				//mainsvg.explode();
+			});
+	
+	
+			/*
+			var steve = document.getElementById("steve");
+			steve.addEventListener("load", function() {
+			
+				var svgDoc = steve.contentDocument; 
+				
+				var right_arm = new component(svgDoc.getElementById("right_arm"), 1.0);
+				var right_wrist = new component(svgDoc.getElementById("right_wrist"), 1.0); 
+				
+				var degree = 90, degree2 = 0;
+
+
+				var interval = setInterval(function(){ 
+
+					right_arm.rotate(degree);
+					
+					var data = length_dir(46, degree-45);
+					var x = right_arm.getJX() + data[0];
+					var y = right_arm.getJY() - data[1];
+					
+					//right_wrist.setAttribute('transform','translate(' + (x-264) + ' ' + (y-249) + ')' + ' ' + 'rotate(-' + degree2 + ' 264 249)');
+
+					
+					degree += 10;
+					degree2 += 30;
+				}, 50);
+				
+				//right_arm.addEventListener("mousedown",function(){
+				//	alert('hello world!');
+				//},false);   
+			},false);
+			*/
+
+		</script>
+	</body>
+
+</html> 
