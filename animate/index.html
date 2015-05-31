@@ -48,13 +48,55 @@
 				cm.setAttribute('transform', matrix);
 			};
 			
-			var sticker = function(cm, base_scale) {
+			var sticker = function(obj, base_scale) {
 				var interval = -1;
+				var svgDoc = obj.contentDocument; 
+				var cm = svgDoc.getElementById("mainGroup")
 				var w = parseFloat($(cm).parent().attr("width"));
 				var h = parseFloat($(cm).parent().attr("height"));
+				
 				var componants = $(cm).find('path,polygon,polyline').map(function(i, c) {
 					return new component(c, w, h, base_scale);
 				});
+				
+				var rightArm = [
+					new component(svgDoc.getElementById("right_arm"), w, h, base_scale),
+					new component(svgDoc.getElementById("right_wrist"), w, h, base_scale), 
+					new component(svgDoc.getElementById("right_slieve"), w, h, base_scale), 
+					new component(svgDoc.getElementById("right_hand"), w, h, base_scale)
+				];
+				var leftArm = [
+					new component(svgDoc.getElementById("left_arm"), w, h, base_scale),
+					new component(svgDoc.getElementById("left_wrist"), w, h, base_scale), 
+					new component(svgDoc.getElementById("left_slieve"), w, h, base_scale), 
+					new component(svgDoc.getElementById("left_hand"), w, h, base_scale)
+				];
+				var rightLeg = [
+					new component(svgDoc.getElementById("right_thigh"), w, h, base_scale),
+					new component(svgDoc.getElementById("right_limb"), w, h, base_scale), 
+					new component(svgDoc.getElementById("right_foot"), w, h, base_scale)
+				];
+				var leftLeg = [
+					new component(svgDoc.getElementById("left_thigh"), w, h, base_scale),
+					new component(svgDoc.getElementById("left_limb"), w, h, base_scale), 
+					new component(svgDoc.getElementById("left_foot"), w, h, base_scale)
+				];
+				var body = [
+					new component(svgDoc.getElementById("body"), w, h, base_scale)
+				];
+				var neck = [
+					new component(svgDoc.getElementById("neck"), w, h, base_scale)
+				];
+				var head = [
+					new component(svgDoc.getElementById("left_ear"), w, h, base_scale),
+					new component(svgDoc.getElementById("right_ear"), w, h, base_scale),
+					new component(svgDoc.getElementById("face"), w, h, base_scale),
+					new component(svgDoc.getElementById("left_eye"), w, h, base_scale),
+					new component(svgDoc.getElementById("right_eye"), w, h, base_scale),
+					new component(svgDoc.getElementById("mouth"), w, h, base_scale),
+					new component(svgDoc.getElementById("hair"), w, h, base_scale)
+				];
+
 				
 				this.wobble = function() {
 					clearInterval(interval);
@@ -81,7 +123,7 @@
 					clearInterval(interval);
 					
 					var step = 0;
-					interval = setInterval(function(){ 
+					interval = setInterval(function() { 
 						transform(cm, w, h, step, base_scale, 0, 0, 0, 0, 0, 0);
 						step += 1;
 					}, 1);
@@ -91,8 +133,53 @@
 					var i, l=componants.length;
 					for(i=0; i<l; i+=1) {
 						var c = componants[i];
-						c.explode();
+						c.fly();
 					}
+				};
+				
+				this.kick = function() {
+					clearInterval(interval);
+					
+					var step = 0;
+					interval = setInterval(function() {
+						transform(cm, w, h, 0, base_scale, 0, 0, 0, 0, 0, 0);
+					
+						var i, l=rightLeg.length;
+						for(i=0; i<l; i+=1) {
+							var c = rightLeg[i];
+							transform(c.getComponent(), w, h, (Math.sin(step)+1)/2 * -60, 1, 0, 0, 220 - w/2, 280 - h/2, 0, 0);
+						}
+						step += 0.1;
+						
+						if (step > Math.PI*1.5) {
+							clearInterval(interval);
+						}
+					}, 10);
+				};
+				
+				this.walk = function() {
+					clearInterval(interval);
+					
+					var step = 0;
+					interval = setInterval(function() {
+						transform(cm, w, h, 0, base_scale, 0, 0, 0, 0, 0, 0);
+					
+						var i, l=rightLeg.length;
+						for(i=0; i<l; i+=1) {
+							var c = rightLeg[i];
+							transform(c.getComponent(), w, h, (Math.cos(step))/2 * -40, 1, 0, 0, 220 - w/2, 280 - h/2, 0, 0);
+						}
+						var i, l=leftLeg.length;
+						for(i=0; i<l; i+=1) {
+							var c = leftLeg[i];
+							transform(c.getComponent(), w, h, (Math.sin(step))/2 * 40, 1, 0, 0, 179 - w/2, 280 - h/2, 0, 0);
+						}
+						step += 0.1;
+						
+						//if (step > Math.PI*1.5) {
+						//	clearInterval(interval);
+						//}
+					}, 10);
 				};
 			};
 			
@@ -105,12 +192,15 @@
 				var interval = -1;
 				
 				var init_explode = function() {
-					var projectileVector = [getRandomArbitrary(-10,10), getRandomArbitrary(10,20)];
 					var obj = $(cm);
-					obj.attr("data-vx", projectileVector[0]);
-					obj.attr("data-vy", projectileVector[1]);
+					obj.attr("speed_x", getRandomArbitrary(-2,2));
+					obj.attr("speed_y", getRandomArbitrary(2,4));
 					obj.attr("data-px", 0);
 					obj.attr("data-py", 0);
+				};
+				
+				this.getComponent = function() {
+					return cm;
 				};
 				
 				this.getJX = function() {
@@ -121,35 +211,35 @@
 					return jy;
 				};
 
-				this.explode = function() {
+				this.fly = function() {
 					clearInterval(interval);
 					
 					init_explode();
-					
 					var step = 0, rot = 0;
 					interval = setInterval(function() { 
-						if (step < 0.5) {
-							var obj = $(cm),
-								vx = parseFloat(obj.attr("data-vx")),
-								vy = parseFloat(obj.attr("data-vy")),
-								px = parseFloat(obj.attr("data-px")),
-								py = parseFloat(obj.attr("data-py"));
+						var obj = $(cm),
+							vx = parseFloat(obj.attr("speed_x")),
+							vy = parseFloat(obj.attr("speed_y")),
+							px = parseFloat(obj.attr("data-px")),
+							py = parseFloat(obj.attr("data-py"));
 							
-							vy += -1 * step;
-							px += vx * step;
-							py -= vy * step;
-							
-							transform(cm, w, h, rot, base_scale, 0, 0, 0, 0, px, py);
-							
-							obj.attr({
-								"data-vx" : vx,
-								"data-vy" : vy,
-								"data-px" : px,
-								"data-py" : py
-							});
-
-							rot += 0.2;
-							step += 0.002;
+						px += vx;
+						py -= vy;
+						vy -= 0.1;
+						
+						transform(cm, w, h, rot, base_scale, 0, 0, 0, 0, px, py);
+						
+						obj.attr({
+							"speed_y" : vy,
+							"data-px" : px,
+							"data-py" : py
+						});
+						
+						rot += 0.2;
+						step += 0.002;
+						
+						if (step > 0.3) {
+							clearInterval(interval);
 						}
 					}, 1);
 				};
@@ -161,13 +251,15 @@
 	
 			var steve = document.getElementById("steve");
 			steve.addEventListener("load", function() {
-				var svgDoc = steve.contentDocument; 
-				var mainsvg = new sticker(svgDoc.getElementById("mainGroup"), 0.9);
+				var mainsvg = new sticker(steve, 1);
 				
 				//mainsvg.twirl();
 				//mainsvg.jump();
 				//mainsvg.wobble();
-				mainsvg.explode();
+				//mainsvg.explode();
+				//mainsvg.kick();
+				mainsvg.walk();
+
 			});
 	
 	
