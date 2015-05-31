@@ -107,10 +107,11 @@
 					interval = setInterval(function(){ 
 						if (step < 0.5) {
 							components.each(function() {
-								var vx = parseFloat($(this).attr("data-vx"));
-								var vy = parseFloat($(this).attr("data-vy"));
-								var px = parseFloat($(this).attr("data-px"));
-								var py = parseFloat($(this).attr("data-py"));
+								var obj = $(this),
+									vx = parseFloat(obj.attr("data-vx")),
+									vy = parseFloat(obj.attr("data-vy")),
+									px = parseFloat(obj.attr("data-px")),
+									py = parseFloat(obj.attr("data-py"));
 								
 								vy += -1 * step;
 								px += vx * step;
@@ -118,17 +119,18 @@
 								
 								transform(this, rot, 0, 0, px, py);
 								
-								$(this).attr("data-vx", vx);
-								$(this).attr("data-vy", vy);
-								$(this).attr("data-px", px);
-								$(this).attr("data-py", py);
+								obj.attr({
+									"data-vx" : vx,
+									"data-vy" : vy,
+									"data-px" : px,
+									"data-py" : py
+								});
 							});
 							
 							rot += 0.2;
 							step += 0.002;
 						}
 					}, 10);
-					
 				};
 			};
 			
