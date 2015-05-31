@@ -10,6 +10,7 @@
 		</style>
 		<script src="../js/plugin/jquery-2.1.4.min.js"></script>
 		<script src="../js/plugin/sprintf.js"></script>
+		<script src="../js/animation.js"></script>
 	</head>
 	<body>
 
@@ -18,6 +19,7 @@
 		</center>
 		
 		<script>
+		
 			/**
 			 * Returns a random number between min (inclusive) and max (exclusive)
 			 */
@@ -25,38 +27,34 @@
 				return Math.random() * (max - min) + min;
 			}
 			
-			/**
-				base_scale should be >=0 and <=1
-			*/
-			var component = function(cm, base_scale) {
+			function length_dir(len, degree) {
+				var rad = degree * (Math.PI/180); 
+				var x = len * Math.cos(rad);
+				var y = len * Math.sin(rad);
+				return [x,y];
+			}
+			
+			var transform = function(cm, w, h, degree, base_scale, scale_x, scale_y, offset_x, offset_y, move_x, move_y) {
+				var rad = degree * (Math.PI/180);
+				var sx = base_scale + scale_x;
+				var sy = base_scale + scale_y;
+				var cos = Math.cos(rad);
+				var sin = Math.sin(rad);
+				var cx = w/2 + offset_x;
+				var cy = h/2 + offset_y;
+				var tx = (w * (1 - sx))/2 + move_x;
+				var ty = (h * (1 - sy))/2 + move_y;
+				var matrix = sprintf('matrix(%f,%f,%f,%f,%f,%f)', sx*cos, sy*sin, -sx*sin, sy*cos, (-cx*cos + cy*sin + cx)*sx + tx, (-cx*sin - cy*cos + cy)*sy + ty);
+				cm.setAttribute('transform', matrix);
+			};
+			
+			var sticker = function(cm, base_scale) {
+				var interval = -1;
 				var w = parseFloat($(cm).parent().attr("width"));
 				var h = parseFloat($(cm).parent().attr("height"));
-				var jx = parseInt(cm.getAttribute("data-jointx"), 10);
-				var jy = parseInt(cm.getAttribute("data-jointy"), 10);
-				var interval = -1;
-				
-				var transform = function(cm, degree, scale_x, scale_y, move_x, move_y) {
-					var rad = degree * (Math.PI/180);
-					var sx = base_scale + scale_x;
-					var sy = base_scale + scale_y;
-					var cos = Math.cos(rad);
-					var sin = Math.sin(rad);
-					var cx = w/2;
-					var cy = h/2;
-					var tx = (w * (1 - sx))/2 + move_x;
-					var ty = (h * (1 - sy))/2 + move_y;
-					var matrix = sprintf('matrix(%f,%f,%f,%f,%f,%f)', sx*cos, sy*sin, -sx*sin, sy*cos, (-cx*cos + cy*sin + cx)*sx + tx, (-cx*sin - cy*cos + cy)*sy + ty);
-					cm.setAttribute('transform', matrix);
-				};
-				
-				this.getJX = function() {
-					return jx;
-				};
-				this.getJY = function() {
-					return jy;
-				};
-				
-
+				var componants = $(cm).find('path,polygon,polyline').map(function(i, c) {
+					return new component(c, w, h, base_scale);
+				});
 				
 				this.wobble = function() {
 					clearInterval(interval);
@@ -64,7 +62,7 @@
 					var step = 0;
 					var sinscale = 0.1;
 					interval = setInterval(function(){ 
-						transform(cm, 0, Math.sin(step)*sinscale, -Math.sin(step)*sinscale, 0, 0);
+						transform(cm, w, h, 0, base_scale, Math.sin(step)*sinscale, -Math.sin(step)*sinscale, 0, 0, 0, 0);
 						step += 0.05;
 					}, 1);
 				};
@@ -74,7 +72,7 @@
 					
 					var step = 0;
 					interval = setInterval(function(){ 
-						transform(cm, 0, 0, 0, 0, 10*(Math.sin(step)+1));
+						transform(cm, w, h, 0, base_scale, 0, 0, 0, 0, 0, 10*(Math.sin(step)+1));
 						step += 0.1;
 					}, 1);
 				};
@@ -84,74 +82,92 @@
 					
 					var step = 0;
 					interval = setInterval(function(){ 
-						transform(cm, step, 0, 0, 0, 0);
+						transform(cm, w, h, step, base_scale, 0, 0, 0, 0, 0, 0);
 						step += 1;
 					}, 1);
 				};
 				
 				this.explode = function() {
-					clearInterval(interval);
-					
-					var step = 0;
-					var rot = 0;
-					var components = $(cm).find('path,polygon,polyline');
-					
-					components.each(function() {
-						var projectileVector = [getRandomArbitrary(-10,10), getRandomArbitrary(10,20)];
-						$(this).attr("data-vx", projectileVector[0]);
-						$(this).attr("data-vy", projectileVector[1]);
-						$(this).attr("data-px", 0);
-						$(this).attr("data-py", 0);
-					});
-					
-					interval = setInterval(function(){ 
-						if (step < 0.5) {
-							components.each(function() {
-								var obj = $(this),
-									vx = parseFloat(obj.attr("data-vx")),
-									vy = parseFloat(obj.attr("data-vy")),
-									px = parseFloat(obj.attr("data-px")),
-									py = parseFloat(obj.attr("data-py"));
-								
-								vy += -1 * step;
-								px += vx * step;
-								py -= vy * step;
-								
-								transform(this, rot, 0, 0, px, py);
-								
-								obj.attr({
-									"data-vx" : vx,
-									"data-vy" : vy,
-									"data-px" : px,
-									"data-py" : py
-								});
-							});
-							
-							rot += 0.2;
-							step += 0.002;
-						}
-					}, 10);
+					var i, l=componants.length;
+					for(i=0; i<l; i+=1) {
+						var c = componants[i];
+						c.explode();
+					}
 				};
 			};
 			
-			function length_dir(len, degree) {
-				var rad = degree * (Math.PI/180); 
-				var x = len * Math.cos(rad);
-				var y = len * Math.sin(rad);
-				return [x,y];
-			}
+			/**
+				base_scale should be >=0 and <=1
+			*/
+			var component = function(cm, w, h, base_scale) {
+				var jx = parseInt(cm.getAttribute("data-jointx"), 10);
+				var jy = parseInt(cm.getAttribute("data-jointy"), 10);
+				var interval = -1;
+				
+				var init_explode = function() {
+					var projectileVector = [getRandomArbitrary(-10,10), getRandomArbitrary(10,20)];
+					var obj = $(cm);
+					obj.attr("data-vx", projectileVector[0]);
+					obj.attr("data-vy", projectileVector[1]);
+					obj.attr("data-px", 0);
+					obj.attr("data-py", 0);
+				};
+				
+				this.getJX = function() {
+					return jx;
+				};
+				
+				this.getJY = function() {
+					return jy;
+				};
+
+				this.explode = function() {
+					clearInterval(interval);
+					
+					init_explode();
+					
+					var step = 0, rot = 0;
+					interval = setInterval(function() { 
+						if (step < 0.5) {
+							var obj = $(cm),
+								vx = parseFloat(obj.attr("data-vx")),
+								vy = parseFloat(obj.attr("data-vy")),
+								px = parseFloat(obj.attr("data-px")),
+								py = parseFloat(obj.attr("data-py"));
+							
+							vy += -1 * step;
+							px += vx * step;
+							py -= vy * step;
+							
+							transform(cm, w, h, rot, base_scale, 0, 0, 0, 0, px, py);
+							
+							obj.attr({
+								"data-vx" : vx,
+								"data-vy" : vy,
+								"data-px" : px,
+								"data-py" : py
+							});
+
+							rot += 0.2;
+							step += 0.002;
+						}
+					}, 1);
+				};
+			};
+			
+
 	
 	
 	
 			var steve = document.getElementById("steve");
 			steve.addEventListener("load", function() {
 				var svgDoc = steve.contentDocument; 
-				var mainsvg = new component(svgDoc.getElementById("mainGroup"), 0.9);
+				var mainsvg = new sticker(svgDoc.getElementById("mainGroup"), 0.9);
 				
 				//mainsvg.twirl();
 				//mainsvg.jump();
 				//mainsvg.wobble();
-				//mainsvg.explode();
+				mainsvg.explode();
 			});
 	
 	
