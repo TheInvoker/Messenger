@@ -7,6 +7,33 @@
 				margin: 0px;
 				padding: 0px;
 			}
+			#container {
+				height: 99vh;
+				width:50%;
+				border:1px solid black;
+			}
+			.sticker {
+				width:100%;
+			}
+			.sticker > object {
+				width:25%;
+				border:1px solid black;
+			}
+			.from-you {
+				text-align:right;
+			}
+			.from-them {
+				text-align:left;
+			}
+			.particle {
+				width:2px;
+				height:2px;
+				border-radius:1px;
+				border:1px solid black;
+			}
+			.yellow {
+				background-color:yellow;
+			}
 		</style>
 		<script src="js/plugin/jquery-2.1.4.min.js"></script>
 		<script src="js/plugin/sprintf.js"></script>
@@ -17,20 +44,28 @@
 	<body>
 
 		<center>
-			<object data="images/steve/steve.svg" type="image/svg+xml" id="steve"></object>
+			<div id="container">
+				<div class="sticker from-them">
+					<object data="images/steve/steve.svg" type="image/svg+xml" id="steve"></object>
+				</div>
+				<div class="sticker from-you">
+					<object data="images/steve/steve.svg" type="image/svg+xml" id="monkey"></object>
+				</div>
+			</div>
 		</center>
 		
 		<script>
-			var steve = document.getElementById("steve");
+			var steve = document.getElementById("monkey");
 			steve.addEventListener("load", function() {
 				var mainsvg = new sticker(steve, 1);
 				
 				//mainsvg.twirl();
 				//mainsvg.jump();
-				mainsvg.wobble();
+				//mainsvg.wobble();
 				//mainsvg.explode();
 				//mainsvg.kick();
 				//mainsvg.dance();
+				mainsvg.piss();
 
 			});
 	
