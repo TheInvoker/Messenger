@@ -39,7 +39,8 @@
 		<script src="js/plugin/sprintf.js"></script>
 		<script src="js/util.js"></script>
 		<script src="js/componant.js"></script>
-		<script src="js/sticker.js"></script>
+		<script src="js/base.js"></script>
+		<script src="js/mammal.js"></script>
 	</head>
 	<body>
 
@@ -57,15 +58,15 @@
 		<script>
 			var steve = document.getElementById("monkey");
 			steve.addEventListener("load", function() {
-				var mainsvg = new sticker(steve, 1);
+				var sticker = new mammal(steve, 1);
 				
-				//mainsvg.twirl();
-				//mainsvg.jump();
-				//mainsvg.wobble();
-				//mainsvg.explode();
-				//mainsvg.kick();
-				//mainsvg.dance();
-				mainsvg.piss();
+				sticker.animate("twirl");
+				//sticker.jump();
+				//sticker.wobble();
+				//sticker.explode();
+				//sticker.kick();
+				//sticker.dance();
+				//sticker.piss();
 
 			});
 	
