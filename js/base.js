@@ -1,3 +1,6 @@
+/**
+	base_scale should be >=0 and <=1
+*/
 var base = function(stickerObj, base_scale) {
 	
 	var interval = -1;
@@ -57,7 +60,7 @@ var base = function(stickerObj, base_scale) {
 		var i, l=componantsObjs.length;
 		for(i=0; i<l; i+=1) {
 			var c = componantsObjs[i];
-			c.fly();
+			c.animate('fly');
 		}
 		
 		setTimeout(function() {
