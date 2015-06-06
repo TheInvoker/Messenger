@@ -4,12 +4,12 @@ var mammal = function(stickerObj, base_scale) {
 	var svg = stickerObj.contentDocument; 
 	var parent = new base(stickerObj, base_scale);
 
-	var body = new component(svg.getElementById("body"), parent.getWidth(), parent.getHeight(), base_scale);
-	var head = new component(svg.getElementById("head"), parent.getWidth(), parent.getHeight(), base_scale);
-	var rightArm = new component(svg.getElementById("right_arm"), parent.getWidth(), parent.getHeight(), base_scale);
-	var leftArm = new component(svg.getElementById("left_arm"), parent.getWidth(), parent.getHeight(), base_scale);
-	var rightLeg = new component(svg.getElementById("right_leg"), parent.getWidth(), parent.getHeight(), base_scale);
-	var leftLeg = new component(svg.getElementById("left_leg"), parent.getWidth(), parent.getHeight(), base_scale);
+	var body = new component(svg.getElementById("torso_group"), parent.getWidth(), parent.getHeight(), base_scale);
+	var head = new component(svg.getElementById("head_group"), parent.getWidth(), parent.getHeight(), base_scale);
+	var rightArm = new component(svg.getElementById("right_arm_group"), parent.getWidth(), parent.getHeight(), base_scale);
+	var leftArm = new component(svg.getElementById("left_arm_group"), parent.getWidth(), parent.getHeight(), base_scale);
+	var rightLeg = new component(svg.getElementById("right_leg_group"), parent.getWidth(), parent.getHeight(), base_scale);
+	var leftLeg = new component(svg.getElementById("left_leg_group"), parent.getWidth(), parent.getHeight(), base_scale);
 	
 	var reset = function() {
 		clearInterval(interval);

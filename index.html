@@ -12,12 +12,9 @@
 				width:50%;
 				border:1px solid black;
 			}
-			.sticker {
+
+			.message {
 				width:100%;
-			}
-			.sticker > object {
-				width:25%;
-				border:1px solid black;
 			}
 			.from-you {
 				text-align:right;
@@ -25,6 +22,11 @@
 			.from-them {
 				text-align:left;
 			}
+			.sticker {
+				width:25%;
+				border:1px solid black;
+			}
+			
 			.particle {
 				width:2px;
 				height:2px;
@@ -46,11 +48,11 @@
 
 		<center>
 			<div id="container">
-				<div class="sticker from-them">
-					<object data="images/steve/steve.svg" type="image/svg+xml" id="steve"></object>
+				<div class="message from-them">
+					<object data="images/steve/steve.svg" type="image/svg+xml" id="steve" class="sticker"></object>
 				</div>
-				<div class="sticker from-you">
-					<object data="images/steve/steve.svg" type="image/svg+xml" id="monkey"></object>
+				<div class="message from-you">
+					<object data="images/steve/steve.svg" type="image/svg+xml" id="monkey" class="sticker"></object>
 				</div>
 			</div>
 		</center>
@@ -63,47 +65,12 @@
 				//sticker.animate('twirl');
 				//sticker.animate('jump');
 				//sticker.animate('wobble');
-				sticker.animate('explode');
+				//sticker.animate('explode');
 				//sticker.animate('kick');
-				//sticker.animate('dance');
+				sticker.animate('dance');
 				//sticker.animate('piss');
 
 			});
-	
-	
-			/*
-			var steve = document.getElementById("steve");
-			steve.addEventListener("load", function() {
-			
-				var svgDoc = steve.contentDocument; 
-				
-				var right_arm = new component(svgDoc.getElementById("right_arm"), 1.0);
-				var right_wrist = new component(svgDoc.getElementById("right_wrist"), 1.0); 
-				
-				var degree = 90, degree2 = 0;
-
-
-				var interval = setInterval(function(){ 
-
-					right_arm.rotate(degree);
-					
-					var data = length_dir(46, degree-45);
-					var x = right_arm.getJX() + data[0];
-					var y = right_arm.getJY() - data[1];
-					
-					//right_wrist.setAttribute('transform','translate(' + (x-264) + ' ' + (y-249) + ')' + ' ' + 'rotate(-' + degree2 + ' 264 249)');
-
-					
-					degree += 10;
-					degree2 += 30;
-				}, 50);
-				
-				//right_arm.addEventListener("mousedown",function(){
-				//	alert('hello world!');
-				//},false);   
-			},false);
-			*/
-
 		</script>
 	</body>
 
