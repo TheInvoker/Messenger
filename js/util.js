@@ -12,7 +12,7 @@ function length_dir(len, degree) {
 	return [x,y];
 }
 
-var transform = function(cm, w, h, degree, base_scale, scale_x, scale_y, offset_x, offset_y, move_x, move_y) {
+function transform(cm, w, h, degree, base_scale, scale_x, scale_y, offset_x, offset_y, move_x, move_y) {
 	var rad = degree * (Math.PI/180);
 	var sx = base_scale + scale_x;
 	var sy = base_scale + scale_y;
@@ -24,4 +24,19 @@ var transform = function(cm, w, h, degree, base_scale, scale_x, scale_y, offset_
 	var ty = (h * (1 - sy))/2 + move_y;
 	var matrix = sprintf('matrix(%f,%f,%f,%f,%f,%f)', sx*cos, sy*sin, -sx*sin, sy*cos, (-cx*cos + cy*sin + cx)*sx + tx, (-cx*sin - cy*cos + cy)*sy + ty);
 	cm.setAttribute('transform', matrix);
-};
+}
+
+function getComponents(cm) {
+	return $(cm).find("g,path,polygon,polyline");
+}
+
+function reset_transform(cm, w, h, base_scale) {
+	transform(cm.getComponent(), w, h, 0, base_scale, 0, 0, 0, 0, 0, 0);
+}
+
+function full_reset_transform(cm, w, h, base_scale) {
+	reset_transform(cm, w, h, base_scale);
+	getComponents(cm).each(function(i, x) {
+		reset_transform(x, w, h, base_scale);
+	});
+}
