@@ -94,16 +94,13 @@ var component = function(stickerObj, cm, w, h, base_scale) {
 		
 		
 		if (prevObj.length == 1) {
-			var position = $(stickerObj).offset();
+			var position = $(stickerObj).position();
 			var positionX = position.left + ($(stickerObj).width() * 0.53);
 			var positionY = position.top + ($(stickerObj).height() * 0.8);
-			var targetPosition = $(prevObj).offset();
+			var targetPosition = $(prevObj).position();
 
 
-			
-
-			
-			
+		
 			var len = 100;
 			var particleList = [];
 			var EE = setInterval(function() {
@@ -154,8 +151,6 @@ var component = function(stickerObj, cm, w, h, base_scale) {
 					}
 				}
 			}, 5);
-		} else {
-			alert("Error: No past sticker from other person.");
 		}
 	};
 
