@@ -31,12 +31,14 @@ function getComponents(cm) {
 }
 
 function reset_transform(cm, w, h, base_scale) {
-	transform(cm.getComponent(), w, h, 0, base_scale, 0, 0, 0, 0, 0, 0);
+	transform(cm, w, h, 0, base_scale, 0, 0, 0, 0, 0, 0);
 }
 
 function full_reset_transform(cm, w, h, base_scale) {
-	reset_transform(cm, w, h, base_scale);
-	getComponents(cm).each(function(i, x) {
+	var main_component = cm.getComponent();
+	var components = getComponents(main_component);
+	reset_transform(main_component, w, h, base_scale);
+	components.each(function(i, x) {
 		reset_transform(x, w, h, base_scale);
 	});
 }
