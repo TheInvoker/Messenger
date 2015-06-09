@@ -82,21 +82,18 @@ var base = function(svgElement) {
 	var piss = function() {
 		var prevObj = $(svgElement).parent().prev(".message:has(object)").eq(0).find('object');
 		
-		
-		if (prevObj.length == 1) {
+		if (prevObj.length == 1) {	
 			var position = $(svgElement).position();
-			var positionX = position.left + ($(svgElement).width() * 0.53);
-			var positionY = position.top + ($(svgElement).height() * 0.8);
+			var positionX = position.left + ($(svgElement).width() * 0.5);
+			var positionY = position.top + ($(svgElement).height() * 0.7);
 			var targetPosition = $(prevObj).position();
 
-
-		
 			var len = 100;
 			var particleList = [];
 			var EE = setInterval(function() {
-				var variance = 0;
-				var targetX = targetPosition.left + ($(prevObj).width() * (0.53 + variance*Math.random() - variance/2));
-				var targetY = targetPosition.top + ($(prevObj).height() * (0.8 + variance*Math.random() - variance/2));
+				var variance = 0.9;
+				var targetX = targetPosition.left + ($(prevObj).width() * (0.5 + variance*Math.random() - variance/2));
+				var targetY = targetPosition.top + ($(prevObj).height() * (0.5 + variance*Math.random() - variance/2));
 				
 				var particle = $("<div class='particle yellow' data-step='0' data-targetx='" + targetX + "' data-targety='" + targetY + "'/>").css({
 					position: 'absolute',
@@ -111,7 +108,6 @@ var base = function(svgElement) {
 					clearInterval(EE);
 				}
 			}, 10);
-			
 			
 			interval = setInterval(function() {
 				var len = particleList.length;

@@ -58,19 +58,21 @@
 		</center>
 		
 		<script>
-			var monkey = document.getElementById("monkey");
-			monkey.addEventListener("load", function() {
-				var sticker = new mammal(monkey);
-				
-				//sticker.animate('twirl');
-				//sticker.animate('jump');
-				//sticker.animate('wobble');
-				//sticker.animate('explode');
-				//sticker.animate('kick');
-				//sticker.animate('dance');
-				//sticker.animate('piss');
-				//sticker.animate('walk');
+			$(window).load(function() {
+				var monkey = document.getElementById("monkey");
+				//monkey.addEventListener("load", function() {
+					var sticker = new mammal(monkey);
+					
+					//sticker.animate('twirl');
+					//sticker.animate('jump');
+					//sticker.animate('wobble');
+					//sticker.animate('explode');
+					//sticker.animate('kick');
+					//sticker.animate('dance');
+					sticker.animate('piss');
+					//sticker.animate('walk');
 
+				//});
 			});
 		</script>
 	</body>
