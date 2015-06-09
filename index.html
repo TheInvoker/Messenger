@@ -24,7 +24,7 @@
 			}
 			.sticker {
 				width:25%;
-				border:1px solid black;
+				/*border:1px solid black;*/
 			}
 			
 			.particle {
@@ -59,20 +59,16 @@
 		
 		<script>
 			$(window).load(function() {
-				var monkey = document.getElementById("monkey");
-				//monkey.addEventListener("load", function() {
-					var sticker = new mammal(monkey);
-					
-					//sticker.animate('twirl');
-					//sticker.animate('jump');
-					//sticker.animate('wobble');
-					//sticker.animate('explode');
-					//sticker.animate('kick');
-					//sticker.animate('dance');
-					sticker.animate('piss');
-					//sticker.animate('walk');
-
-				//});
+				var sticker = new mammal(document.getElementById("monkey"));
+				
+				//sticker.animate('twirl');
+				//sticker.animate('jump');
+				//sticker.animate('wobble');
+				//sticker.animate('explode');
+				//sticker.animate('kick');
+				//sticker.animate('dance');
+				//sticker.animate('piss');
+				sticker.animate('walk');
 			});
 		</script>
 	</body>

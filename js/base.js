@@ -4,10 +4,7 @@ var base = function(svgElement) {
 	var main_group = svgElement.contentDocument.getElementById("main")
 	var w = parseFloat($(main_group).parent().attr("width"));
 	var h = parseFloat($(main_group).parent().attr("height"));
-
-	// get the main group
 	var main_component = new component(main_group, w, h);
-	// get all inner components
 	var componentList = getComponents(main_group).map(function(i, x) {
 		return new component(x, w, h);
 	});
