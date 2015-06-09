@@ -32,7 +32,23 @@ var mammal = function(svgElement) {
 	};
 	
 	var walk = function() {
+		parent.moveToOther(function() {
+
+		});
 		
+		parent.animate('wobble');
+		/*
+		var step = 0, rotation_angle = 40;
+		interval = setInterval(function() {
+			rightLeg.transform(-(Math.cos(step)) * 20, 1, 1, 0, 0, 0, 0);
+			leftLeg.transform((Math.sin(step)) * 20, 1, 1, 0, 0, 0, 0);
+			step += 0.1;
+		}, 10);
+		
+		setTimeout(function() {
+			reset();
+		}, 10000);
+		*/
 	};
 	
 	var dance = function() {
