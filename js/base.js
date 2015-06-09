@@ -88,7 +88,6 @@ var base = function(svgElement) {
 			var positionY = position.top + ($(svgElement).height() * 0.7);
 			var targetPosition = $(prevObj).position();
 
-			var len = 100;
 			var particleList = [];
 			var EE = setInterval(function() {
 				var variance = 0.9;
@@ -104,10 +103,12 @@ var base = function(svgElement) {
 				$("body").append(particle);
 				
 				len -= 1;
-				if (len == 0) {
-					clearInterval(EE);
-				}
 			}, 10);
+			setTimeout(function() {
+				clearInterval(EE);
+			}, 1000);
+			
+			
 			
 			interval = setInterval(function() {
 				var len = particleList.length;
