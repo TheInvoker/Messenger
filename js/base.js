@@ -1,27 +1,54 @@
-/**
-	base_scale should be >=0 and <=1
-*/
-var base = function(svgElement, base_scale) {
+var base = function(svgElement) {
 	
 	var interval = -1;
 	var main_group = svgElement.contentDocument.getElementById("main")
 	var w = parseFloat($(main_group).parent().attr("width"));
 	var h = parseFloat($(main_group).parent().attr("height"));
-	
-	// get the main group
-	var main_component = new component(svgElement, main_group, w, h, base_scale);
 
+	// get the main group
+	var main_component = new component(main_group, w, h);
+	// get all inner components
+	var componentList = getComponents(main_group).map(function(i, x) {
+		return new component(x, w, h);
+	});
+	
 	var reset = function() {
 		clearInterval(interval);
-		full_reset_transform(main_component, w, h, base_scale);
+		main_component.reset();
+		var i, l=componentList.length;
+		for(i=0; i<l; i+=1) {
+			componentList[i].reset();
+		}
 	};
 	
-	var explode = function() {
-		var i, componantsObjs = getComponents(main_group), l=componantsObjs.length;
+	var explode = function() {	
+		var i, l = componentList.length, step = 0, rot = 0;
 		for(i=0; i<l; i+=1) {
-			var c =  new component(svgElement, componantsObjs[i], w, h, base_scale);
-			c.animate('fly');
+			componentList[i].initMove();
 		}
+		
+		interval = setInterval(function() { 
+			for(i=0; i<l; i+=1) {	
+				var cm = componentList[i];
+			
+				var vx = cm.getAttr("speed-x"),
+					vy = cm.getAttr("speed-y"),
+					px = cm.getAttr("data-px"),
+					py = cm.getAttr("data-py");
+					
+				px += vx;
+				py -= vy;
+				vy -= 0.1;
+				
+				cm.transform(rot, 1, 1, w/2, h/2, px, py);
+				
+				cm.setAttr("speed-y", vy);
+				cm.setAttr("data-px", px);
+				cm.setAttr("data-py", py);
+			}
+			rot += 0.2;
+			step += 0.002;
+		}, 1);
 		
 		setTimeout(function() {
 			reset();
@@ -30,8 +57,8 @@ var base = function(svgElement, base_scale) {
 	
 	var wobble = function() {
 		var step = 0, sinscale = 0.1;
-		interval = setInterval(function(){ 
-			transform(main_component.getComponent(), w, h, 0, base_scale, Math.sin(step)*sinscale, -Math.sin(step)*sinscale, 0, 0, 0, 0);
+		interval = setInterval(function() { 
+			main_component.transform(0, 1+Math.sin(step)*sinscale, 1-Math.sin(step)*sinscale, 0, 0, 0, 0);
 			step += 0.05;
 		}, 1);
 		
@@ -43,7 +70,7 @@ var base = function(svgElement, base_scale) {
 	var twirl = function() {
 		var step = 0;
 		interval = setInterval(function() { 
-			transform(main_group, w, h, step, base_scale, 0, 0, 0, 0, 0, 0);
+			main_component.transform(step, 1, 1, w/2, h/2, 0, 0);
 			step += 1;
 		}, 1);
 		

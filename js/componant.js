@@ -1,66 +1,48 @@
-var component = function(svgElement, cm, w, h, base_scale) {
+var component = function(cm, w, h) {
 	
-	var interval = -1;
-	var jx = parseInt(cm.getAttribute("data-jointx"), 10);
-	var jy = parseInt(cm.getAttribute("data-jointy"), 10);
+	var jx = cm.hasAttribute("data-jointx") ? parseInt(cm.getAttribute("data-jointx"), 10) : 0;
+	var jy = cm.hasAttribute("data-jointy") ? parseInt(cm.getAttribute("data-jointy"), 10) : 0;
+	var metaData = {};
 	
 	var reset = function() {
-		clearInterval(interval);
+		transform(0, 1, 1, 0, 0, 0, 0);
 	};
 	
-	var fly = function() {
-		var obj = $(cm);
-		obj.attr("speed_x", getRandomArbitrary(-2,2));
-		obj.attr("speed_y", getRandomArbitrary(2,4));
-		obj.attr("data-px", 0);
-		obj.attr("data-py", 0);
-		
-		var step = 0, rot = 0;
-		interval = setInterval(function() { 
-			var vx = parseFloat(obj.attr("speed_x")),
-				vy = parseFloat(obj.attr("speed_y")),
-				px = parseFloat(obj.attr("data-px")),
-				py = parseFloat(obj.attr("data-py"));
-				
-			px += vx;
-			py -= vy;
-			vy -= 0.1;
-			
-			transform(cm, w, h, rot, base_scale, 0, 0, 0, 0, px, py);
-			
-			obj.attr({
-				"speed_y" : vy,
-				"data-px" : px,
-				"data-py" : py
-			});
-			
-			rot += 0.2;
-			step += 0.002;
-		}, 1);
-		
-		setTimeout(function() {
-			reset();
-		}, 1500);
+	var transform = function(degree, scale_x, scale_y, offset_x, offset_y, move_x, move_y) {
+		var rad = degree * (Math.PI/180);
+		var sx = scale_x;
+		var sy = scale_y;
+		var cos = Math.cos(rad);
+		var sin = Math.sin(rad);
+		var cx = jx + offset_x;
+		var cy = jy + offset_y;
+		var tx = (w * (1 - sx))/2 + move_x;
+		var ty = (h * (1 - sy))/2 + move_y;
+		var matrix = sprintf('matrix(%f,%f,%f,%f,%f,%f)', sx*cos, sy*sin, -sx*sin, sy*cos, (-cx*cos + cy*sin + cx)*sx + tx, (-cx*sin - cy*cos + cy)*sy + ty);
+		cm.setAttribute('transform', matrix);
 	};
 	
-
-
-
-	
-	
-	
-	
-	
-	this.getComponent = function() {
-		return cm;
+	this.getAttr = function(attr) {
+		return metaData[attr];
 	};
 	
-	this.getJX = function() {
-		return jx;
+	this.setAttr = function(attr, val) {
+		metaData[attr] = val;
 	};
 	
-	this.getJY = function() {
-		return jy;
+	this.initMove = function() {
+		metaData["speed-x"] = getRandomArbitrary(-2,2);
+		metaData["speed-y"] = getRandomArbitrary(2,4);
+		metaData["data-px"] = 0;
+		metaData["data-py"] = 0;
+	};
+	
+	this.transform = function(degree, scale_x, scale_y, offset_x, offset_y, move_x, move_y) {
+		transform(degree, scale_x, scale_y, offset_x, offset_y, move_x, move_y);
+	};
+	
+	this.reset = function() {
+		reset();
 	};
 	
 	this.animate = function(type) {
