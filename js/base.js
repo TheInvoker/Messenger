@@ -18,6 +18,10 @@ var base = function(svgElement) {
 		}
 	};
 	
+	var getPreviousSVG = function() {
+		return $(svgElement).parent().prev(".message:has(object)").eq(0).find('object');
+	};
+	
 	var explode = function() {	
 		var i, l = componentList.length, step = 0, rot = 0;
 		for(i=0; i<l; i+=1) {
@@ -77,7 +81,7 @@ var base = function(svgElement) {
 	};
 	
 	var piss = function() {
-		var prevObj = $(svgElement).parent().prev(".message:has(object)").eq(0).find('object');
+		var prevObj = getPreviousSVG();
 		
 		if (prevObj.length == 1) {	
 			var position = $(svgElement).position();
@@ -140,6 +144,33 @@ var base = function(svgElement) {
 
 	
 	
+	this.moveToOther = function(func) {
+		var prevObj = getPreviousSVG();
+		
+		if (prevObj.length == 1) {	
+			var position = $(svgElement).position();
+			var positionX = position.left;
+			var positionY = position.top;
+			var myW = $(svgElement).width();
+			var myH = $(svgElement).height();
+			var targetPosition = $(prevObj).position();
+			var targetX = targetPosition.left;
+			var targetY = targetPosition.top;
+			
+			$(svgElement).animate({
+				left: myW
+			}, 500, function() {
+				$(svgElement).animate({
+					top: -myH
+				}, 500, function() {
+					$(svgElement).animate({
+						top: targetY-positionY,
+						left: targetX-positionX
+					}, 1000, func);
+				});
+			});
+		}
+	};
 	
 	this.getWidth = function() {
 		return w;
