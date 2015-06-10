@@ -1,7 +1,7 @@
 var base = function(svgElement) {
 	
 	var interval = -1;
-	var main_group = svgElement.contentDocument.getElementById("main")
+	var main_group = svgElement.contentDocument.getElementById("main");
 	var w = parseFloat($(main_group).parent().attr("width"));
 	var h = parseFloat($(main_group).parent().attr("height"));
 	var main_component = new component(main_group, w, h);
@@ -21,6 +21,68 @@ var base = function(svgElement) {
 	var getPreviousSVG = function() {
 		return $(svgElement).parent().prev(".message:has(object)").eq(0).find('object');
 	};
+	
+	var genParticle = function(width, height, positionX, positionY, targetX, targetY, variance, color, duration) {
+		var particleList = [];
+		
+		var EE = setInterval(function() {
+			targetX += (variance * ((Math.random()*2)-1));
+			targetY += (variance * ((Math.random()*2)-1));
+			var dist = Math.sqrt(Math.pow(targetX-positionX, 2) + Math.pow(targetY-positionY, 2));
+			var degree = Math.atan2(targetY - positionY, targetX - positionX) * 180 / Math.PI;
+			
+			var tag = sprintf("<div class='particle' style='background-color:%s;' data-step='0' data-dist='%f' data-angle='%f'/>",color,dist,degree);
+			var particle = $(tag).css({
+				position: 'absolute',
+				left: positionX + 'px',
+				top: positionY + 'px',
+			});
+			particleList.push(particle);
+			$("body").append(particle);
+		}, 10);
+		setTimeout(function() {
+			clearInterval(EE);
+		}, duration);
+	
+		interval = setInterval(function() {
+			var len = particleList.length;
+			for(var i=len-1; i>=0; i-=1) {
+				var particle = particleList[i];
+				var step = parseInt($(particle).attr("data-step"), 10);
+				var dist = parseFloat($(particle).attr("data-dist"));
+				var angle = parseFloat($(particle).attr("data-angle"));
+				
+				
+				var data = length_dir(step, angle);
+				var x_rel = data[0];
+				var y_rel = data[1];
+				if (x_rel != 0) {
+					var travelleddist = Math.sqrt(Math.pow(x_rel, 2) + Math.pow(y_rel, 2));
+					y_rel -= Math.sin((travelleddist/dist) * Math.PI)*100;
+				}
+				
+				particle.css({
+					left: positionX + x_rel,
+					top: positionY + y_rel
+				});
+				
+				step += 1;
+				$(particle).attr("data-step", step);
+				
+				var travelledDist = Math.sqrt(Math.pow(positionX-(positionX - x_rel), 2) + Math.pow(positionY-(positionY - y_rel), 2));
+				if (travelledDist >= dist) {
+					particle.remove();
+					particleList.splice(i, 1);
+					if (particleList.length == 0) {
+						clearInterval(interval);
+					}
+				}
+			}
+		}, 5);
+	};
+	
+	
+	
 	
 	var explode = function() {	
 		var i, l = componentList.length, step = 0, rot = 0;
@@ -84,65 +146,35 @@ var base = function(svgElement) {
 		var prevObj = getPreviousSVG();
 		
 		if (prevObj.length == 1) {	
+			var w = $(svgElement).width();
+			var h = $(svgElement).height();
 			var position = $(svgElement).position();
-			var positionX = position.left + ($(svgElement).width() * 0.5);
-			var positionY = position.top + ($(svgElement).height() * 0.7);
+			var positionX = position.left + (w * 0.5);
+			var positionY = position.top + (h * 0.7);
 			var targetPosition = $(prevObj).position();
-
-			var particleList = [];
-			var EE = setInterval(function() {
-				var variance = 0.9;
-				var targetX = targetPosition.left + ($(prevObj).width() * (0.5 + variance*Math.random() - variance/2));
-				var targetY = targetPosition.top + ($(prevObj).height() * (0.5 + variance*Math.random() - variance/2));
-				
-				var particle = $("<div class='particle yellow' data-step='0' data-targetx='" + targetX + "' data-targety='" + targetY + "'/>").css({
-					position: 'absolute',
-					left: positionX + 'px',
-					top: positionY + 'px',
-				});
-				particleList.push(particle);
-				$("body").append(particle);
-				
-				len -= 1;
-			}, 10);
-			setTimeout(function() {
-				clearInterval(EE);
-			}, 1000);
+			var targetX = targetPosition.left + ($(prevObj).width() * 0.5);
+			var targetY = targetPosition.top + ($(prevObj).height() * 0.5);
 			
-			
-			
-			interval = setInterval(function() {
-				var len = particleList.length;
-				for(var i=len-1; i>=0; i-=1) {
-					var particle = particleList[i];
-					var step = parseInt($(particle).attr("data-step"), 10);
-					var targetX = parseFloat($(particle).attr("data-targetx"));
-					var targetY = parseFloat($(particle).attr("data-targety"));
-					var xDist = positionX-targetX;
-					var yDist = positionY-targetY;
-					
-					var y = (yDist/xDist)*step;
-					particle.css({
-						left: positionX - step,
-						top: positionY - y - Math.sin((step/xDist) * Math.PI)*100
-					});
-					
-					step += 1;
-					$(particle).attr("data-step", step);
-					
-					if (step > xDist) {
-						particle.remove();
-						particleList.splice(i, 1);
-						if (particleList.length == 0) {
-							clearInterval(interval);
-						}
-					}
-				}
-			}, 5);
+			genParticle(w, h, positionX, positionY, targetX, targetY, 10, "yellow", 1000);
 		}
 	};
-
 	
+	var headBloodBurst = function() {
+		var w = $(svgElement).width();
+		var h = $(svgElement).height();
+		var position = $(svgElement).position();
+		var positionX = position.left + (w * 0.5);
+		var positionY = position.top + (h * 0.5);
+		genParticle(w, h, positionX, positionY, positionX, positionY - h/2, 25, "red", 2000);
+	};
+	
+	
+	
+	
+	
+	this.genParticle = function(width, height, positionX, positionY, targetX, targetY, variance, color, duration) {
+		genParticle(width, height, positionX, positionY, targetX, targetY, variance, color, duration);
+	};
 	
 	this.moveToOther = function(func) {
 		var prevObj = getPreviousSVG();
@@ -165,12 +197,25 @@ var base = function(svgElement) {
 				}, 500, function() {
 					$(svgElement).animate({
 						top: targetY-positionY,
-						left: targetX-positionX
+						left: targetX-positionX+myW*0.3
 					}, 1000, func);
 				});
 			});
 		}
 	};
+	
+	this.moveBack = function(func) {
+		$(svgElement).animate({
+			opacity:0
+		},500,function() {
+			$(svgElement).css({
+				top:0,
+				left:0
+			}).animate({
+				opacity:1
+			},500);
+		});
+	}
 	
 	this.getWidth = function() {
 		return w;
@@ -197,6 +242,9 @@ var base = function(svgElement) {
 				break;	
 			case 'piss':
 				piss();
+				break;
+			case 'headBurst':
+				headBloodBurst();
 				break;
 			default:
 				return main_component.animate(type);

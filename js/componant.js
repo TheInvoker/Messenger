@@ -41,6 +41,18 @@ var component = function(cm, w, h) {
 		transform(degree, scale_x, scale_y, offset_x, offset_y, move_x, move_y);
 	};
 	
+	this.getPosition = function() {
+		return cm.getBoundingClientRect();
+	};
+	
+	this.getWidth = function() {
+		return cm.getBBox().width;
+	};
+	
+	this.getHeight = function() {
+		return cm.getBBox().height;
+	};
+	
 	this.reset = function() {
 		reset();
 	};

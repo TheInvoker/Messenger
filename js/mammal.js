@@ -4,6 +4,7 @@ var mammal = function(svgElement) {
 	var innerSvg = svgElement.contentDocument; 
 	var parent = new base(svgElement);
 	var w = parent.getWidth(), h = parent.getHeight();
+	var node = this;
 
 	// get all the main groups
 	var head = new component(innerSvg.getElementById("head_group"), w, h);
@@ -33,11 +34,9 @@ var mammal = function(svgElement) {
 	
 	var walk = function() {
 		parent.moveToOther(function() {
-
+			node.animate('slap');
 		});
-		
-		parent.animate('wobble');
-		/*
+
 		var step = 0, rotation_angle = 40;
 		interval = setInterval(function() {
 			rightLeg.transform(-(Math.cos(step)) * 20, 1, 1, 0, 0, 0, 0);
@@ -48,7 +47,19 @@ var mammal = function(svgElement) {
 		setTimeout(function() {
 			reset();
 		}, 10000);
-		*/
+	};
+	
+	var slap = function() {
+		var step = 0, rotation_angle = 40;
+		interval = setInterval(function() {
+			leftArm.transform((Math.sin(step)) * 150, 1, 1, 0, 0, 0, 0);
+			step += 0.1;
+		}, 10);
+		
+		setTimeout(function() {
+			reset();
+			parent.moveBack();
+		}, 400);
 	};
 	
 	var dance = function() {
@@ -86,6 +97,7 @@ var mammal = function(svgElement) {
 		}, 200);
 	};
 	
+
 	
 	this.reset = function() {
 		reset();
@@ -106,6 +118,9 @@ var mammal = function(svgElement) {
 				break;
 			case 'jump':
 				jump();
+				break;
+			case 'slap':
+				slap();
 				break;
 			default:
 				if (!parent.animate(type)) {
