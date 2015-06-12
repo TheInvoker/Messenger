@@ -27,6 +27,18 @@
 				height: 25%;
 				width: 100%;
 				background-color:orange;
+				border-top:2px solid #946000;
+			}
+			.reaction_option {
+				height: 100%;
+				cursor: pointer; 
+				cursor: hand;
+				-webkit-touch-callout: none;
+				-webkit-user-select: none;
+				-khtml-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
 			}
 			#entry {
 				position: absolute;
@@ -47,14 +59,24 @@
 				text-align:left;
 			}
 			.sticker {
-				width:25%;
+				width:100%;
 				position:relative;
+				z-index: -1;
 				/*border:1px solid black;*/
 			}
-			.reaction {
-				height:100%;
+			.sticker_wrapper {
+				width:25%;
+				display:inline-block;
+				cursor: pointer; 
+				cursor: hand;
+				-webkit-touch-callout: none;
+				-webkit-user-select: none;
+				-khtml-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
 			}
-			
+
 			.particle {
 				width:2px;
 				height:2px;
@@ -75,15 +97,19 @@
 	<body>
 		<div id="container">
 			<div class="message from-them">
-				<object data="images/steve/steve.svg" type="image/svg+xml" class="sticker"></object>
+				<div class="sticker_wrapper">
+					<object data="images/steve/steve.svg" type="image/svg+xml" class="sticker"></object>
+				</div>
 			</div>
 			<div class="message from-you">
-				<object data="images/steve/steve.svg" type="image/svg+xml" id="steve" class="sticker"></object>
+				<div class="sticker_wrapper">
+					<object data="images/yeti/yeti-01.svg" type="image/svg+xml" id="yeti" class="sticker"></object>
+				</div>
 			</div>
 		</div>
 		
 		<div id="picker" style="display:none;">
-			<object data="images/steve/steve.svg" type="image/svg+xml" class="reaction"></object>
+			<img src="images/yeti/yeti-01.svg" class="reaction_option"/>
 		</div>
 		
 		<footer id="entry">
@@ -104,12 +130,12 @@
 		
 		<script>
 			$(window).load(function() {
-				var sticker = new mammal(document.getElementById("steve"));
+				var sticker = new mammal(document.getElementById("yeti"));
 				
 				//sticker.animate('twirl');
 				//sticker.animate('jump');
 				//sticker.animate('wobble');
-				//sticker.animate('explode');
+				sticker.animate('explode');
 				//sticker.animate('kick');
 				//sticker.animate('dance');
 				//sticker.animate('piss');
