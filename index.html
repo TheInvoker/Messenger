@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title></title>
+		<title>Imoji</title>
 		
 		<style>
 			html,body {
@@ -31,14 +31,6 @@
 			}
 			.reaction_option {
 				height: 100%;
-				cursor: pointer; 
-				cursor: hand;
-				-webkit-touch-callout: none;
-				-webkit-user-select: none;
-				-khtml-user-select: none;
-				-moz-user-select: none;
-				-ms-user-select: none;
-				user-select: none;
 			}
 			#entry {
 				position: absolute;
@@ -48,7 +40,6 @@
 				width: 100%;
 				background-color:white;
 			}
-			
 			.message {
 				width:100%;
 			}
@@ -62,11 +53,12 @@
 				width:100%;
 				position:relative;
 				z-index: -1;
-				/*border:1px solid black;*/
 			}
 			.sticker_wrapper {
 				width:25%;
 				display:inline-block;
+			}
+			.svg {
 				cursor: pointer; 
 				cursor: hand;
 				-webkit-touch-callout: none;
@@ -76,7 +68,9 @@
 				-ms-user-select: none;
 				user-select: none;
 			}
-
+			.from-you .svg {
+				cursor: initial;
+			}
 			.particle {
 				width:2px;
 				height:2px;
@@ -97,19 +91,19 @@
 	<body>
 		<div id="container">
 			<div class="message from-them">
-				<div class="sticker_wrapper">
+				<div class="sticker_wrapper svg">
 					<object data="images/steve/steve.svg" type="image/svg+xml" class="sticker"></object>
 				</div>
 			</div>
 			<div class="message from-you">
-				<div class="sticker_wrapper">
+				<div class="sticker_wrapper svg">
 					<object data="images/yeti/yeti-01.svg" type="image/svg+xml" id="yeti" class="sticker"></object>
 				</div>
 			</div>
 		</div>
 		
 		<div id="picker" style="display:none;">
-			<img src="images/yeti/yeti-01.svg" class="reaction_option"/>
+			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
 		</div>
 		
 		<footer id="entry">

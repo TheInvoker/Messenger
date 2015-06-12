@@ -10,7 +10,7 @@ $(window).load(function() {
 	
 	$("#picker").on('click', '.reaction_option', function() {
 		var outdiv = $("<div class='message from-you'/>");
-		var indiv = $("<div class='sticker_wrapper'/>");
+		var indiv = $("<div class='sticker_wrapper svg'/>");
 		var object = $("<object data='images/yeti/yeti-01.svg' type='image/svg+xml' class='sticker'></object>");
 		outdiv.append(indiv);
 		indiv.append(object);
@@ -27,7 +27,7 @@ $(window).load(function() {
 		});
 	});
 	
-	$("#container").on('dblclick','.from-you .sticker_wrapper', function() {
+	$("#container").on('dblclick','.from-them .sticker_wrapper', function() {
 		$("#picker").slideToggle();
 	});
 });
