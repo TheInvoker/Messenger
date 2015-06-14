@@ -1,4 +1,4 @@
-var particleGenerator = function(scope, positionX, positionY, targetX, targetY, dist_variance, angle_variance, color, curve, duration) {
+var particleGenerator = function(scope, positionX, positionY, targetX, targetY, dist_variance, angle_variance, color, curve, duration, miniReactionCallback) {
 	
 	var particleList = [];
 	
@@ -54,6 +54,7 @@ var particleGenerator = function(scope, positionX, positionY, targetX, targetY, 
 				particleList.splice(i, 1);
 				if (particleList.length == 0) {
 					clearInterval(interval);
+					miniReactionCallback();
 				}
 			}
 		}

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 	<head>
 		<title>Imoji</title>
@@ -20,7 +20,7 @@
 				overflow-y: auto;
 				border:1px solid black;
 			}
-			#picker {
+			#picker, #reaction-picker {
 				position: absolute;
 				left: 0;
 				bottom: 27px;
@@ -31,7 +31,10 @@
 				overflow-x: hidden;
 				overflow-y: auto;
 			}
-			.reaction_option {
+			#reaction-picker {
+				background-color:red;
+			}
+			.sticker_select,.reaction_select {
 				height: 55%;
 			}
 			#entry {
@@ -93,52 +96,13 @@
 	</head>
 	<body>
 		<div id="container">
-			<div class="message from-them">
-				<div class="sticker_wrapper svg">
-					<object data="images/steve/steve.svg" type="image/svg+xml" class="sticker"></object>
-				</div>
-			</div>
-			<div class="message from-you">
-				<div class="sticker_wrapper svg">
-					<object data="images/yeti/yeti-01.svg" type="image/svg+xml" id="yeti" class="sticker"></object>
-				</div>
-			</div>
 		</div>
 		
 		<div id="picker" style="display:none;">
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
-			<img src="images/yeti/yeti-01.svg" class="reaction_option svg"/>
+			<img src="images/yeti/yeti-01.svg" class="sticker_select svg" data-sklcls="mammal"/>
+		</div>
+		<div id="reaction-picker" style="display:none;">
+			<img src="images/yeti/yeti-01.svg" class="reaction_select svg" data-sklcls="mammal" data-animation="kick" data-selection-animation="headBurst"/>
 		</div>
 		
 		<footer id="entry">
@@ -148,10 +112,10 @@
 						<input id="input-field" style="width:100%;"></input>
 					</td>
 					<td width="10%">
-						<button id="sticker-button" style="width:100%;">Stickers</button>
+						<button id="sticker-button" style="width:100%;">☺</button>
 					</td>
 					<td width="10%">
-						<button id="send-button" style="width:100%;">Send</button>
+						<button id="send-button" style="width:100%;">➤</button>
 					</td>
 				</tr>
 			</table>
@@ -159,7 +123,7 @@
 		
 		<script>
 			$(window).load(function() {
-				var sticker = new mammal(document.getElementById("yeti"), "body");
+				//var sticker = new mammal(document.getElementById("yeti"), "body");
 				
 				//sticker.animate('twirl');
 				//sticker.animate('jump');
@@ -169,7 +133,8 @@
 				//sticker.animate('dance');
 				//sticker.animate('piss');
 				//sticker.animate('walk');
-				sticker.animate('headBurst');
+				//sticker.animate('slap');
+				//sticker.animate('headBurst');
 				
 			});
 		</script>
