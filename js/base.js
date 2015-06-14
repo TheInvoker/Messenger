@@ -1,4 +1,4 @@
-var base = function(svgElement) {
+var base = function(svgElement, scope) {
 	
 	var node = this;
 	var interval = -1;
@@ -63,9 +63,9 @@ var base = function(svgElement) {
 		var position = $(svgElement).position();
 		var positionX = position.left + (w * 0.5);
 		var positionY = position.top + (h * 0.5);
-		particleGenerator(positionX, positionY, positionX, positionY - h/2, 0, 180, "orange", 0, 200);
-		particleGenerator(positionX, positionY, positionX, positionY - h/2, 0, 180, "yellow", 0, 200);
-		particleGenerator(positionX, positionY, positionX, positionY - h/2, 0, 180, "red", 0, 200);
+		particleGenerator(scope, positionX, positionY, positionX, positionY - h/2, 0, 180, "orange", 0, 200);
+		particleGenerator(scope, positionX, positionY, positionX, positionY - h/2, 0, 180, "yellow", 0, 200);
+		particleGenerator(scope, positionX, positionY, positionX, positionY - h/2, 0, 180, "red", 0, 200);
 	};
 	
 	var wobble = function() {
@@ -108,7 +108,7 @@ var base = function(svgElement) {
 			var targetX = targetPosition.left + (w_other * 0.5);
 			var targetY = targetPosition.top + (h_other * 0.5);
 			
-			new particleGenerator(positionX, positionY, targetX, targetY, 10, 5, "yellow", 100, 1000);
+			new particleGenerator(scope, positionX, positionY, targetX, targetY, 10, 5, "yellow", 100, 1000);
 		}
 	};
 	
@@ -118,7 +118,7 @@ var base = function(svgElement) {
 		var position = $(svgElement).position();
 		var positionX = position.left + (w * 0.5);
 		var positionY = position.top + (h * 0.5);
-		particleGenerator(positionX, positionY, positionX, positionY - h/2, 90, 45, "red", 100, 2000);
+		particleGenerator(scope, positionX, positionY, positionX, positionY - h/2, 90, 45, "red", 100, 2000);
 	};
 	
 	

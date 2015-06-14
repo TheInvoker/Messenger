@@ -1,9 +1,9 @@
-var mammal = function(svgElement) {
+var mammal = function(svgElement, scope) {
 	
 	var node = this;
 	var interval = -1;
 	var innerSvg = svgElement.contentDocument; 
-	var parent = new base(svgElement);
+	var parent = new base(svgElement, scope);
 	var w = parent.getWidth(), h = parent.getHeight();
 
 	// get all the main groups

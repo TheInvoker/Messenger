@@ -1,4 +1,4 @@
-var particleGenerator = function(positionX, positionY, targetX, targetY, dist_variance, angle_variance, color, curve, duration) {
+var particleGenerator = function(scope, positionX, positionY, targetX, targetY, dist_variance, angle_variance, color, curve, duration) {
 	
 	var particleList = [];
 	
@@ -20,7 +20,7 @@ var particleGenerator = function(positionX, positionY, targetX, targetY, dist_va
 			dist : dist,
 			angle : degree
 		});
-		$("body").append(particle);
+		$(scope).append(particle);
 	}, 10);
 	setTimeout(function() {
 		clearInterval(EE);
