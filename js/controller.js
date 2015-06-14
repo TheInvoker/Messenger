@@ -73,7 +73,8 @@ function addReactionSticker(fromYou, source) {
 	var src = $(source);
 	var srcLink = src.attr("src");
 	var sklClass = src.attr("data-sklcls");
-	var animationType = src.attr("data-animation");
+	var moveType = src.attr("data-move-animation");
+	var animationType = src.attr("data-action-animation");
 	var otherAnimationType = src.attr("data-selection-animation");
 	
 	var outdiv = $(sprintf("<div class='message %s'/>", fromYou ? "from-you" : "from-them"));
@@ -90,7 +91,9 @@ function addReactionSticker(fromYou, source) {
 			// get animation object of selected sticker
 			var selectedStickerObj = stickerList[selectedStickerObjectTag.attr("data-id")];
 			
+			// start an animation
 			newStickerObj.animateAction(animationType, selectedStickerObjectTag, function() {
+				// start the mini-reaction animation
 				selectedStickerObj.animateReaction(otherAnimationType);
 			});
 		}, 1);
