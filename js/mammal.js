@@ -1,10 +1,10 @@
 var mammal = function(svgElement) {
 	
+	var node = this;
 	var interval = -1;
 	var innerSvg = svgElement.contentDocument; 
 	var parent = new base(svgElement);
 	var w = parent.getWidth(), h = parent.getHeight();
-	var node = this;
 
 	// get all the main groups
 	var head = new component(innerSvg.getElementById("head_group"), w, h);

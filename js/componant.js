@@ -1,9 +1,10 @@
 var component = function(cm, w, h) {
 	
+	var node = this;
+	var metaData = {};
 	var jx = cm.hasAttribute("data-jointx") ? parseInt(cm.getAttribute("data-jointx"), 10) : 0;
 	var jy = cm.hasAttribute("data-jointy") ? parseInt(cm.getAttribute("data-jointy"), 10) : 0;
-	var metaData = {};
-	
+
 	var reset = function() {
 		transform(0, 1, 1, 0, 0, 0, 0);
 	};
@@ -39,6 +40,14 @@ var component = function(cm, w, h) {
 	
 	this.transform = function(degree, scale_x, scale_y, offset_x, offset_y, move_x, move_y) {
 		transform(degree, scale_x, scale_y, offset_x, offset_y, move_x, move_y);
+	};
+	
+	this.getLeftOffset = function() {
+		return $(cm).position().left;
+	};
+	
+	this.getTopOffset = function() {
+		return $(cm).position().top;
 	};
 	
 	this.getPosition = function() {
