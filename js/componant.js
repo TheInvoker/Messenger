@@ -5,11 +5,7 @@ var component = function(cm, w, h) {
 	var jx = cm.hasAttribute("data-jointx") ? parseInt(cm.getAttribute("data-jointx"), 10) : 0;
 	var jy = cm.hasAttribute("data-jointy") ? parseInt(cm.getAttribute("data-jointy"), 10) : 0;
 
-	var reset = function() {
-		transform(0, 1, 1, 0, 0, 0, 0);
-	};
-	
-	var transform = function(degree, scale_x, scale_y, offset_x, offset_y, move_x, move_y) {
+	this.transform = function(degree, scale_x, scale_y, offset_x, offset_y, move_x, move_y) {
 		var rad = degree * (Math.PI/180);
 		var sx = scale_x;
 		var sy = scale_y;
@@ -21,6 +17,10 @@ var component = function(cm, w, h) {
 		var ty = (h * (1 - sy))/2 + move_y;
 		var matrix = sprintf('matrix(%f,%f,%f,%f,%f,%f)', sx*cos, sy*sin, -sx*sin, sy*cos, (-cx*cos + cy*sin + cx)*sx + tx, (-cx*sin - cy*cos + cy)*sy + ty);
 		cm.setAttribute('transform', matrix);
+	};
+	
+	this.reset = function() {
+		node.transform(0, 1, 1, 0, 0, 0, 0);
 	};
 	
 	this.getAttr = function(attr) {
@@ -36,10 +36,6 @@ var component = function(cm, w, h) {
 		metaData["speed-y"] = getRandomArbitrary(2,4);
 		metaData["data-px"] = 0;
 		metaData["data-py"] = 0;
-	};
-	
-	this.transform = function(degree, scale_x, scale_y, offset_x, offset_y, move_x, move_y) {
-		transform(degree, scale_x, scale_y, offset_x, offset_y, move_x, move_y);
 	};
 	
 	this.getLeftOffset = function() {
@@ -60,23 +56,5 @@ var component = function(cm, w, h) {
 	
 	this.getHeight = function() {
 		return cm.getBBox().height;
-	};
-	
-	this.reset = function() {
-		reset();
-	};
-	
-	this.animate = function(type) {
-		reset();
-		
-		switch(type) {
-			case 'fly':
-				fly();
-				break;
-			default:
-				return false;
-		} 
-		
-		return true;
 	};
 };

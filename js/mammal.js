@@ -23,10 +23,10 @@ var mammal = function(svgElement, scope) {
 	// MOVING ANIMATIONS  
 	
 	var walk = function() {
-		var step = 0, rotation_angle = 40;
+		var step = 0, rotation_angle = 20;
 		interval = setInterval(function() {
-			rightLeg.transform(-(Math.cos(step)) * 20, 1, 1, 0, 0, 0, 0);
-			leftLeg.transform((Math.sin(step)) * 20, 1, 1, 0, 0, 0, 0);
+			rightLeg.transform(-(Math.cos(step)) * rotation_angle, 1, 1, 0, 0, 0, 0);
+			leftLeg.transform((Math.sin(step)) * rotation_angle, 1, 1, 0, 0, 0, 0);
 			step += 0.1;
 		}, 10);
 		
@@ -37,7 +37,7 @@ var mammal = function(svgElement, scope) {
 	
 	// ACTION ANIMATIONS  
 	
-	var kick = function(miniReactionCallback, reversionCallback) {
+	var kick = function(callback) {
 		var step = 0, rotation_angle = -60;
 		interval = setInterval(function() {
 			leftLeg.transform((Math.sin(step)+1)/2 * -rotation_angle, 1, 1, 0, 0, 0, 0);
@@ -47,12 +47,11 @@ var mammal = function(svgElement, scope) {
 		
 		setTimeout(function() {
 			reset();
-			miniReactionCallback();
-			reversionCallback();
+			callback();
 		}, 500);
 	};
 	
-	var slap = function(miniReactionCallback, reversionCallback) {
+	var slap = function(callback) {
 		var step = 0, rotation_angle = 40;
 		interval = setInterval(function() {
 			leftArm.transform((Math.sin(step)) * 150, 1, 1, 0, 0, 0, 0);
@@ -61,12 +60,11 @@ var mammal = function(svgElement, scope) {
 		
 		setTimeout(function() {
 			reset();
-			miniReactionCallback();
-			reversionCallback();
+			callback();
 		}, 400);
 	};
 	
-	var dance = function(miniReactionCallback, reversionCallback) {
+	var dance = function(callback) {
 		var step = 0, rotation_angle = 40;
 		interval = setInterval(function() {
 			head.transform((Math.cos(step))/2 * -rotation_angle, 1, 1, 0, 0, 0, 0);
@@ -80,8 +78,7 @@ var mammal = function(svgElement, scope) {
 		
 		setTimeout(function() {
 			reset();
-			miniReactionCallback();
-			reversionCallback();
+			callback();
 		}, 2000);
 	};
 	
@@ -120,56 +117,70 @@ var mammal = function(svgElement, scope) {
 	
 	
 	
-	this.animateMove = function(type) {
-		switch(type) {
+	
+	
+	
+	this.animateMove = function(animationType) {
+		switch(animationType) {
 			case 'walk':
 				walk();
 				break;
 			default:
-				if (!parent.animateMove(type)) {
-					alert(sprintf("Error: Move animation '%s' does not exist.", type));
+				if (!parent.animateMove(animationType)) {
+					alert(sprintf("Error: Move animation '%s' does not exist.", animationType));
 				}
-		} 
+		}
 	};
 	
-	this.animateAction = function(type, selectedStickerObjectTag, miniReactionCallback) {
+	this.animateAction = function(animationType, moveType, selectedStickerObjectTag, miniReactionCallback) {
 		reset();
+		node.animateMove(moveType);
 		
-		switch(type) {
+		switch(animationType) {
 			case 'kick':
 				parent.moveToOther(selectedStickerObjectTag, function() {
-					kick(miniReactionCallback, parent.moveBack);
+					reset();
+					kick(function() {
+						miniReactionCallback();
+						parent.moveBack();
+					});
 				});
 				break;
 			case 'dance':
 				parent.moveToOther(selectedStickerObjectTag, function() {
-					dance(miniReactionCallback, parent.moveBack);
+					reset();
+					dance(function() {
+						miniReactionCallback();
+						parent.moveBack();
+					});
 				});
 				break;
 			case 'slap':
 				parent.moveToOther(selectedStickerObjectTag, function() {
-					slap(miniReactionCallback, parent.moveBack);
+					reset();
+					slap(function() {
+						miniReactionCallback();
+						parent.moveBack();
+					});
 				});
 				break;
 			default:
-				if (!parent.animateAction(type)) {
-					alert(sprintf("Error: Action animation '%s' does not exist.", type));
+				if (!parent.animateAction(animationType, moveType, selectedStickerObjectTag, miniReactionCallback)) {
+					alert(sprintf("Error: Action animation '%s' does not exist.", animationType));
 				}
 		} 
 	};
 	
-	this.animateReaction = function(type) {
+	this.animateReaction = function(animationType) {
 		reset();
 		
-		switch(type) {
+		switch(animationType) {
 			case 'jump':
-				parent.moveToOther(selectedStickerObjectTag, function() {
-					jump();
-				});
+				jump();
 				break;
 			default:
-				if (!parent.animateReaction(type)) {
-					alert(sprintf("Error: Reaction animation '%s' does not exist.", type));
+				if (!parent.animateReaction(animationType)) {
+					alert(sprintf("Error: Reaction animation '%s' does not exist.", animationType));
 				}
 		} 
 	};
