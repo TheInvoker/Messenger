@@ -116,8 +116,10 @@ $(document).ready(function() {
 	var stickerlist = [], reactionlist = [];
 	for(var i=0; i<masterStickerList.length; i+=1) {
 		var stickerMapping = masterStickerList[i];
-		stickerlist.push(sprintf("<img src='%s' class='sticker_select svg' data-id='%d'/>", stickerMapping.actionSvg, i));
-		reactionlist.push(sprintf("<img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='walk' data-action-animation='kick' data-selection-animation='twirl'/>", stickerMapping.actionSvg, i));
+		if (stickerMapping.active) {
+			stickerlist.push(sprintf("<img src='%s' class='sticker_select svg' data-id='%d'/>", stickerMapping.actionSvg, i));
+			reactionlist.push(sprintf("<img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='walk' data-action-animation='kick' data-selection-animation='twirl'/>", stickerMapping.actionSvg, i));
+		}
 	}
 	$("#picker").html(stickerlist.join(""));
 	$("#reaction-picker").html(reactionlist.join(""));
