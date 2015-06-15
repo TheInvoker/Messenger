@@ -40,7 +40,7 @@ $(document).ready(function() {
 	for(var i=0; i<masterStickerList.length; i+=1) {
 		var stickerMapping = masterStickerList[i];
 		stickerlist.push(sprintf("<img src='%s' class='sticker_select svg' data-id='%d'/>", stickerMapping.actionSvg, i));
-		reactionlist.push(sprintf("<img src='%s' class='reaction_select svg' data-id='%d'/>", stickerMapping.actionSvg, i));
+		reactionlist.push(sprintf("<img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='walk' data-action-animation='kick' data-selection-animation='wobble'/>", stickerMapping.actionSvg, i));
 	}
 	$("#picker").html(stickerlist.join(""));
 	$("#reaction-picker").html(reactionlist.join(""));
@@ -54,28 +54,42 @@ $(document).ready(function() {
 
 
 
-
-function getStickerObj(object, sklClass) {
+function getStickerObj(objectTag, sklClass) {
 	if (sklClass == "mammal") {
-		return new mammal(object, "body");
+		return new mammal(objectTag, "body");
 	}
 }
-function registerSticker(object, sklClass) {
+
+function registerSticker(objectTag, sklClass) {
 	var index = stickerList.length;
-	object.setAttribute("data-id", index);
-	stickerList.push(getStickerObj(object, sklClass));
+	objectTag.setAttribute("data-id", index);
+	stickerList.push(getStickerObj(objectTag, sklClass));
 }
 
-function addSticker(fromYou, source) {
-	var src = $(source);
-	var srcLink = src.attr("src");
-	var sklClass = src.attr("data-sklcls");
-	
+
+
+
+
+
+function generateStickerHTML(fromYou, srcLink) {
 	var outdiv = $(sprintf("<div class='message %s'/>", fromYou ? "from-you" : "from-them"));
 	var indiv = $("<div class='sticker_wrapper svg'/>");
 	var object = $(sprintf("<object data='%s' type='image/svg+xml' class='sticker'></object>", srcLink));
 	outdiv.append(indiv);
 	indiv.append(object);
+	return [object, outdiv];
+}
+
+function addSticker(fromYou, imgTag) {
+	var src = $(imgTag);
+	var mappingID = parseInt(src.attr("data-id"), 10);
+	var mappingObj = masterStickerList[mappingID];
+	var srcLink = mappingObj.stillSvg;
+	var sklClass = mappingObj.sklcls;
+	
+	var data = generateStickerHTML(fromYou, srcLink),
+	    object = data[0],
+		outdiv = data[1];
 	$("#container").append(outdiv);
 	
 	object[0].addEventListener('load', function() {
@@ -86,19 +100,19 @@ function addSticker(fromYou, source) {
 	});
 }
 
-function addReactionSticker(fromYou, source) {
-	var src = $(source);
-	var srcLink = src.attr("src");
-	var sklClass = src.attr("data-sklcls");
+function addReactionSticker(fromYou, imgTag) {
+	var src = $(imgTag);
+	var mappingID = parseInt(src.attr("data-id"), 10);
+	var mappingObj = masterStickerList[mappingID];
+	var srcLink = mappingObj.stillSvg;
+	var sklClass = mappingObj.sklcls;
 	var moveType = src.attr("data-move-animation");
 	var animationType = src.attr("data-action-animation");
 	var otherAnimationType = src.attr("data-selection-animation");
 	
-	var outdiv = $(sprintf("<div class='message %s'/>", fromYou ? "from-you" : "from-them"));
-	var indiv = $("<div class='sticker_wrapper svg'/>");
-	var object = $(sprintf("<object data='%s' type='image/svg+xml' class='sticker'></object>", srcLink));
-	outdiv.append(indiv);
-	indiv.append(object);
+	var data = generateStickerHTML(fromYou, srcLink),
+	    object = data[0],
+		outdiv = data[1];
 	$("#container").append(outdiv);
 	
 	object[0].addEventListener('load', function() {
