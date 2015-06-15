@@ -1,35 +1,52 @@
 var selectedStickerObjectTag;
 
-$(window).load(function() {
+$(document).ready(function() {
+	
+	// when you click on send
 	$("#send-button").click(function() {
 		var val = $("#input-field").val();
 		$("#input-field").val("");
 	});
 	
+	// when you click the sticker button
 	$("#sticker-button").click(function() {
 		$("#picker").toggle();
 		$("#reaction-picker").hide();
 	});
 	
+	// when click on a regular sticker from the drawer
 	$("#picker").on('click', '.sticker_select', function() {
 		addSticker(true, this);
 		$("#picker").hide();
 	});
 	
+	// when click on a reaction sticker from the drawer
 	$("#reaction-picker").on('click', '.reaction_select', function() {
 		addReactionSticker(true, this);
 		$("#reaction-picker").hide();
 	});
 	
+	// handle the double click event when the user double clicks on the sticker from the other person
 	$("#container").on('dblclick','.from-them .sticker_wrapper', function() {
 		$("#picker").hide();
 		$("#reaction-picker").toggle();
+		
+		// save a reference to the sticker that was clicked on
 		selectedStickerObjectTag = $(this).find("object");
 	});
 	
+	// dynamically load all the stickers from the mapping list to the pickers
+	var stickerlist = [], reactionlist = [];
+	for(var i=0; i<masterStickerList.length; i+=1) {
+		var stickerMapping = masterStickerList[i];
+		stickerlist.push(sprintf("<img src='%s' class='sticker_select svg' data-id='%d'/>", stickerMapping.actionSvg, i));
+		reactionlist.push(sprintf("<img src='%s' class='reaction_select svg' data-id='%d'/>", stickerMapping.actionSvg, i));
+	}
+	$("#picker").html(stickerlist.join(""));
+	$("#reaction-picker").html(reactionlist.join(""));
 	
-	
-	// force a sticker from them
+	// DEBUG
+	// forcefully put a sticker from them     
 	addSticker(false, $(".sticker_select").eq(0));
 });
 

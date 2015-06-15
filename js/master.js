@@ -1,10 +1,11 @@
-// this defines all the svg files we need
 var masterStickerList = [
 	{
 		name : 'steve',
 		sklcls : 'mammal',
+		active : true,
 		stillSvg : 'images/steve/steve.svg',
 		TSvg : 'images/steve/steve.svg',
+		actionSvg : 'images/steve/steve.svg',
 		right_arm_group : [227, 208],
 		left_arm_group : [170, 208],
 		torso_group : [200, 237],
@@ -15,8 +16,10 @@ var masterStickerList = [
 	{
 		name : 'yeti',
 		sklcls : 'mammal',
+		active : true,
 		stillSvg : 'images/yeti/yeti-01.svg',
 		TSvg : 'images/yeti/yeti-01.svg',
+		actionSvg : 'images/yeti/yeti-01.svg',
 		right_arm_group : [227, 208],
 		left_arm_group : [170, 208],
 		torso_group : [200, 237],
