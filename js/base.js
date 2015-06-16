@@ -7,7 +7,7 @@ var base = function(svgElement, scope) {
 	var h = $(main_group).parent().attr("height").replace("px","");
 	var main_component = new component(main_group, w, h, 0, 0);
 	var componentList = getComponents(main_group).map(function(i, x) {
-		return new component(x, w, h);
+		return new component(x, w, h, w/2, h/2);
 	});
 	
 	var reset = function() {

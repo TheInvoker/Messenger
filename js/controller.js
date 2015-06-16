@@ -77,7 +77,7 @@ var stickerManager = new function() {
 			var stickerMapping = masterStickerList[i];
 			if (stickerMapping.active) {
 				stickerlst.push(sprintf("<div class='img-container'><img src='%s' class='sticker_select svg' data-id='%d'/></div>", stickerMapping.actionSvg, i));
-				reactionlst.push(sprintf("<div class='img-container'><img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='walk' data-action-animation='kick' data-selection-animation='twirl'/></div>", stickerMapping.actionSvg, i));
+				reactionlst.push(sprintf("<div class='img-container'><img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='' data-action-animation='piss' data-selection-animation='explode'/></div>", stickerMapping.actionSvg, i));
 			}
 		}
 		$("#picker").html(stickerlst.join(""));
