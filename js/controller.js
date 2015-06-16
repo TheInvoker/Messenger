@@ -104,12 +104,28 @@ $(document).ready(function() {
 	});
 	
 	// handle the double click event when the user double clicks on the sticker from the other person
-	$("#container").on('dblclick','.from-them .sticker_wrapper', function() {
+	var stickerHolderFunction = function(imgTag) {
 		$("#picker").hide();
 		$("#reaction-picker").toggle();
 		
 		// save a reference to the sticker that was clicked on
-		selectedStickerObjectTag = $(this).find("object");
+		selectedStickerObjectTag = $(imgTag).find("object");
+	};
+	// for MOBILE
+	var pressTimer;
+	$('#container').on('touchstart', '.from-them .sticker_wrapper', function() { 
+		var imgTag = this;
+		pressTimer = window.setTimeout(function() { 
+			stickerHolderFunction(imgTag);
+		},600);
+		return false; 
+	}).on('touchend', '.from-them .sticker_wrapper', function() { 
+		clearTimeout(pressTimer);
+		return false;
+	});
+	// for DESKTOP
+	$("#container").on('dblclick','.from-them .sticker_wrapper', function() {
+		stickerHolderFunction(this);
 	});
 	
 	// dynamically load all the stickers from the mapping list to the pickers
