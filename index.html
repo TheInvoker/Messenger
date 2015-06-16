@@ -19,29 +19,33 @@
 				height: 90%;
 				overflow-x: hidden;
 				overflow-y: auto;
-				border:1px solid black;
 			}
-			#picker, #reaction-picker {
+			.popup-menu {
 				position: absolute;
 				left: 0;
 				bottom: 10%;
 				height: 25%;
 				width: 100%;
-				background-color:orange;
-				border-top:2px solid #946000;
+				border-top: 1px solid black;
 				overflow-x: hidden;
 				overflow-y: auto;
 			}
+			#picker {
+				background: -webkit-linear-gradient(yellow, orange); /* For Safari 5.1 to 6.0 */
+				background: -o-linear-gradient(yellow, orange); /* For Opera 11.1 to 12.0 */
+				background: -moz-linear-gradient(yellow, orange); /* For Firefox 3.6 to 15 */
+				background: linear-gradient(yellow, orange); /* Standard syntax */
+			}
 			#reaction-picker {
-				background-color:red;
+				background: -webkit-linear-gradient(#EA368C, #CC2A77); /* For Safari 5.1 to 6.0 */
+				background: -o-linear-gradient(#EA368C, #CC2A77); /* For Opera 11.1 to 12.0 */
+				background: -moz-linear-gradient(#EA368C, #CC2A77); /* For Firefox 3.6 to 15 */
+				background: linear-gradient(#EA368C, #CC2A77); /* Standard syntax */
 			}
 			#entry {
+				width: 100%;
 				height:10%;
 				min-height:1.7em;
-				position: absolute;
-				left: 0;
-				bottom: 0;
-				width: 100%;
 				background-color:white;
 				display:flex;
 			}
@@ -107,10 +111,10 @@
 		<div id="container">
 		</div>
 		
-		<div id="picker" style="display:none;">
+		<div id="picker" class="popup-menu" style="display:none;">
 		</div>
 		
-		<div id="reaction-picker" style="display:none;">
+		<div id="reaction-picker" class="popup-menu" style="display:none;">
 		</div>
 		
 		<div id="entry">
