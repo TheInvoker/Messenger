@@ -34,11 +34,9 @@
 			#reaction-picker {
 				background-color:red;
 			}
-			.sticker_select,.reaction_select {
-				height: 55%;
-			}
 			#entry {
 				height:10%;
+				min-height:1.7em;
 				position: absolute;
 				left: 0;
 				bottom: 0;
@@ -46,6 +44,8 @@
 				background-color:white;
 				display:flex;
 			}
+			
+
 			.message {
 				width:100%;
 			}
@@ -54,6 +54,11 @@
 			}
 			.from-them {
 				text-align:left;
+			}
+			
+			
+			.sticker_select,.reaction_select {
+				height: 55%;
 			}
 			.sticker {
 				width:100%;
@@ -77,6 +82,8 @@
 			.from-you .svg {
 				cursor: initial;
 			}
+			
+			
 			.particle {
 				width:2px;
 				height:2px;
@@ -106,9 +113,9 @@
 		</div>
 		
 		<div id="entry">
-			<input id="input-field" style="width:100%;"></input>
-			<button id="sticker-button">☺</button>
-			<button id="send-button">➤</button>
+			<textarea id="input-field" style="width:100%;"></textarea>
+			<button id="sticker-button" style="width:10%; min-width:2em;">☺</button>
+			<button id="send-button" style="width:10%; min-width:2em;">➤</button>
 		</div>
 	</body>
 </html>
