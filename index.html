@@ -62,8 +62,12 @@
 			}
 			
 			
-			.sticker_select,.reaction_select {
+			div.img-container {
+				display:inline-block;
 				height: 55%;
+			}
+			div.img-container img {
+				height: 100%;
 			}
 			.sticker {
 				width:100%;
@@ -95,10 +99,32 @@
 				border-radius:1px;
 				border:1px solid black;
 			}
+			
+			.overlay {
+				width:100%;
+				height:100%;
+				position:absolute;
+				left:0;
+				top:0;
+				opacity: 0.6;
+				background-color:black;
+			}
+			.animation-preview {
+				width: 50%;
+				height: 50%;
+				border:1px solid black;
+				background-color:white;
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				border-radius:10px;
+				transform: translate(-50%, -50%);
+			}
 		</style>
 		
 		<script src="js/plugin/jquery-2.1.4.min.js"></script>
 		<script src="js/plugin/sprintf.js"></script>
+		<script src="js/plugin/jquery.touchSwipe.min.js"></script>
 		<script src="js/util.js"></script>
 		<script src="js/particles.js"></script>
 		<script src="js/componant.js"></script>
@@ -121,6 +147,11 @@
 			<textarea id="input-field" style="width:100%;"></textarea>
 			<button id="sticker-button" style="width:10%; min-width:2em;">☺</button>
 			<button id="send-button" style="width:10%; min-width:2em;">➤</button>
+		</div>
+		
+		<div class="overlay" style="display:none;">
+		</div>
+		<div class="animation-preview" style="display:none;">
 		</div>
 	</body>
 </html>

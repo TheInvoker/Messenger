@@ -103,13 +103,38 @@ $(document).ready(function() {
 		$("#reaction-picker").hide();
 	});
 	
-	// handle the hold event on the sticker from the other person
+	// animation box event
 	var pressTimer;
+	$("#reaction-picker").on('mousedown touchstart', 'img', function() { 
+		var imgTag = this;
+		pressTimer = window.setTimeout(function() { 
+			$("div.overlay, div.animation-preview").fadeIn();
+		},600);
+		return false; 
+	}).on('mouseup touchend', 'img', function() { 
+		clearTimeout(pressTimer);
+		return false;
+	});
+	$("div.overlay").click(function() {
+		$("div.overlay, div.animation-preview").fadeOut();
+	});
+	
+	// handle closing of popup via swipe
+	$(".popup-menu").swipe({
+		swipe:function(event, direction, distance, duration, fingerCount, fingerData) {
+			if (direction=="right" || direction=="left") {
+				$(this).toggle();
+			}
+		},
+		threshold:75
+	});
+	
+	// handle the hold event on the sticker from the other person
 	$('#container').on('mousedown touchstart', '.from-them .sticker_wrapper', function() { 
 		var imgTag = this;
 		pressTimer = window.setTimeout(function() { 
 			$("#picker").hide();
-			$("#reaction-picker").toggle();
+			$("#reaction-picker").show();
 			
 			// save a reference to the sticker that was clicked on
 			selectedStickerObjectTag = $(imgTag).find("object");
@@ -125,8 +150,8 @@ $(document).ready(function() {
 	for(var i=0; i<masterStickerList.length; i+=1) {
 		var stickerMapping = masterStickerList[i];
 		if (stickerMapping.active) {
-			stickerlist.push(sprintf("<img src='%s' class='sticker_select svg' data-id='%d'/>", stickerMapping.actionSvg, i));
-			reactionlist.push(sprintf("<img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='walk' data-action-animation='kick' data-selection-animation='twirl'/>", stickerMapping.actionSvg, i));
+			stickerlist.push(sprintf("<div class='img-container'><img src='%s' class='sticker_select svg' data-id='%d'/></div>", stickerMapping.actionSvg, i));
+			reactionlist.push(sprintf("<div class='img-container'><img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='walk' data-action-animation='kick' data-selection-animation='twirl'/></div>", stickerMapping.actionSvg, i));
 		}
 	}
 	$("#picker").html(stickerlist.join(""));
