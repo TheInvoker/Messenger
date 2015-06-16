@@ -1,18 +1,18 @@
-var mammal = function(svgElement, scope) {
+var mammal = function(svgElement, mappingObj, scope) {
 	
 	var node = this;
 	var interval = -1;
 	var innerSvg = svgElement.contentDocument; 
-	var parent = new base(svgElement, node, scope);
+	var parent = new base(svgElement, scope);
 	var w = parent.getWidth(), h = parent.getHeight();
 
 	// get all the main groups
-	var head = new component(innerSvg.getElementById("head_group"), w, h);
-	var torso = new component(innerSvg.getElementById("torso_group"), w, h);
-	var rightArm = new component(innerSvg.getElementById("right_arm_group"), w, h);
-	var leftArm = new component(innerSvg.getElementById("left_arm_group"), w, h);
-	var rightLeg = new component(innerSvg.getElementById("right_leg_group"), w, h);
-	var leftLeg = new component(innerSvg.getElementById("left_leg_group"), w, h);
+	var head = new component(innerSvg.getElementById("head_group"), w, h, mappingObj.head_group[0], mappingObj.head_group[1]);
+	var torso = new component(innerSvg.getElementById("torso_group"), w, h, mappingObj.torso_group[0], mappingObj.torso_group[1]);
+	var rightArm = new component(innerSvg.getElementById("right_arm_group"), w, h, mappingObj.right_arm_group[0], mappingObj.right_arm_group[1]);
+	var leftArm = new component(innerSvg.getElementById("left_arm_group"), w, h, mappingObj.left_arm_group[0], mappingObj.left_arm_group[1]);
+	var rightLeg = new component(innerSvg.getElementById("right_leg_group"), w, h, mappingObj.right_leg_group[0], mappingObj.right_leg_group[1]);
+	var leftLeg = new component(innerSvg.getElementById("left_leg_group"), w, h, mappingObj.left_leg_group[0], mappingObj.left_leg_group[1]);
 	
 	var reset = function() {
 		parent.reset();

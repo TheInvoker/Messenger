@@ -1,9 +1,7 @@
-var component = function(cm, w, h) {
+var component = function(cm, w, h, jx, jy) {
 	
 	var node = this;
 	var metaData = {};
-	var jx = cm.hasAttribute("data-jointx") ? parseInt(cm.getAttribute("data-jointx"), 10) : 0;
-	var jy = cm.hasAttribute("data-jointy") ? parseInt(cm.getAttribute("data-jointy"), 10) : 0;
 
 	this.transform = function(degree, scale_x, scale_y, offset_x, offset_y, move_x, move_y) {
 		var rad = degree * (Math.PI/180);

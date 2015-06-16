@@ -1,13 +1,11 @@
-var stickerList = [];
-
-var base = function(svgElement, child, scope) {
+var base = function(svgElement, scope) {
 	
 	var node = this;
 	var interval = -1;
 	var main_group = svgElement.contentDocument.getElementById("main");
 	var w = $(main_group).parent().attr("width").replace("px","");
 	var h = $(main_group).parent().attr("height").replace("px","");
-	var main_component = new component(main_group, w, h);
+	var main_component = new component(main_group, w, h, 0, 0);
 	var componentList = getComponents(main_group).map(function(i, x) {
 		return new component(x, w, h);
 	});
