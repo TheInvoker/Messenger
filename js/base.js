@@ -115,6 +115,9 @@ var base = function(svgElement, scope) {
 	
 	
 	
+	this.getMainComponent = function() {
+		return main_component;
+	};
 	
 	this.getWidth = function() {
 		return w;
@@ -142,32 +145,21 @@ var base = function(svgElement, scope) {
 		var targetX = targetPosition.left;
 		var targetY = targetPosition.top;
 		
-		$(svgElement).animate({
+		$(svgElement).css({
+			top: targetY-positionY,
 			left: myW
-		}, 500, function() {
-			$(svgElement).animate({
-				top: -myH
-			}, 500, function() {
-				$(svgElement).animate({
-					top: targetY-positionY,
-					left: targetX-positionX+myW*0.3
-				}, 1000, moveCallback);
-			});
-		});
+		}).animate({
+			left: targetX-positionX+myW*0.3
+		}, 1000, moveCallback);
 	};
 	
 	this.moveBack = function() {
 		$(svgElement).animate({
 			opacity:0
 		},500,function() {
-			$(svgElement).css({
-				top:0,
-				left:0
-			}).animate({
-				opacity:1
-			},500);
+			$(svgElement).remove();
 		});
-	}
+	};
 	
 
 	

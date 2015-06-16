@@ -30,6 +30,8 @@ var stickerManager = new function() {
 		});
 		
 		// animation box event
+		// COMMENTED THIS OUT BECAUSE IT STOPS THE CLICK EVENT FROM WORKING ON MOBILE
+		/*
 		var pressTimer;
 		$("#reaction-picker").on('mousedown touchstart', 'img', function() { 
 			var imgTag = this;
@@ -44,6 +46,7 @@ var stickerManager = new function() {
 		$("div.overlay").click(function() {
 			$("div.overlay, div.animation-preview").fadeOut();
 		});
+		*/
 		
 		// handle closing of popup via swipe
 		$(".popup-menu").swipe({
@@ -77,7 +80,7 @@ var stickerManager = new function() {
 			var stickerMapping = masterStickerList[i];
 			if (stickerMapping.active) {
 				stickerlst.push(sprintf("<div class='img-container'><img src='%s' class='sticker_select svg' data-id='%d'/></div>", stickerMapping.actionSvg, i));
-				reactionlst.push(sprintf("<div class='img-container'><img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='' data-action-animation='piss' data-selection-animation='explode'/></div>", stickerMapping.actionSvg, i));
+				reactionlst.push(sprintf("<div class='img-container'><img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='walk' data-action-animation='kick' data-selection-animation='wobble'/></div>", stickerMapping.actionSvg, i));
 			}
 		}
 		$("#picker").html(stickerlst.join(""));

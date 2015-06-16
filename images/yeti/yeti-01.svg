@@ -4,8 +4,18 @@
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="200px"
 	 height="200px" viewBox="0 0 200 200" enable-background="new 0 0 200 200" xml:space="preserve">
 <g id="main">
+<g id="left_leg_group">
+	<rect id="left_1" x="81" y="129" fill="#653508" width="17" height="40"/>
+	<rect x="81" y="141" fill="#3B2111" width="17" height="5"/>
+	<path id="foot" fill="#A07044" d="M98,180H75c0,0-4.875-0.021-4.875-5.625S75,169,75,169h23V180z"/>
+</g>
 <g id="torso_group">
 	<path fill="#653508" d="M138,141H63V65.021c0,0-1.751-29.521,37.167-29.521S138,65.021,138,65.021V141z"/>
+</g>
+<g id="right_leg_group">
+		<rect id="Left_3_" x="109" y="129" fill="#653508" width="17" height="40"/>
+		<rect x="109" y="141" fill="#3B2111" width="17" height="5"/>
+		<path id="foot_1_" fill="#AE7A49" d="M126,180h-23c0,0-4.875-0.021-4.875-5.625S103,169,103,169h23V180z"/>
 </g>
 <g id="right_arm_group">
 		<path fill="#653508" d="M138,73.21c0,0-13,0.123-13,4.957s13,5.824,13,5.824c1,0.01,0.725,0.01,1.005,0.01
@@ -20,16 +30,6 @@
 			C51.821,72.05,41.206,63.15,41.206,52.34z"/>
 		<path fill="#AE7A49" d="M67.422,25.75c0,5.25-4.711,5.72-4.711,5.72C62.041,31.54,61,31.65,61,31.79V20.36
 			c0-0.01,0.481-0.02,0.871-0.02c0.28,0,0.416,0,0.695,0.01C62.566,20.35,67.422,20.5,67.422,25.75z"/>
-</g>
-<g id="left_leg_group">
-	<rect id="left_1" x="81" y="129" fill="#653508" width="17" height="40"/>
-	<rect x="81" y="141" fill="#3B2111" width="17" height="5"/>
-	<path id="foot" fill="#A07044" d="M98,180H75c0,0-4.875-0.021-4.875-5.625S75,169,75,169h23V180z"/>
-</g>
-<g id="right_leg_group">
-		<rect id="Left_3_" x="109" y="129" fill="#653508" width="17" height="40"/>
-		<rect x="109" y="141" fill="#3B2111" width="17" height="5"/>
-		<path id="foot_1_" fill="#AE7A49" d="M126,180h-23c0,0-4.875-0.021-4.875-5.625S103,169,103,169h23V180z"/>
 </g>
 <g id="head_group">
 	<circle id="face" fill="#AE7A49" cx="95.207" cy="70.543" r="28.042"/>

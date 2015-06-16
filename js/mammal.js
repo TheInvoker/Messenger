@@ -6,6 +6,8 @@ var mammal = function(svgElement, mappingObj, scope) {
 	var parent = new base(svgElement, scope);
 	var w = parent.getWidth(), h = parent.getHeight();
 
+	// get the main group
+	var main = parent.getMainComponent();
 	// get all the main groups
 	var head = new component(innerSvg.getElementById("head_group"), w, h, mappingObj.head_group[0], mappingObj.head_group[1]);
 	var torso = new component(innerSvg.getElementById("torso_group"), w, h, mappingObj.torso_group[0], mappingObj.torso_group[1]);
@@ -23,32 +25,36 @@ var mammal = function(svgElement, mappingObj, scope) {
 	// MOVING ANIMATIONS  
 	
 	var walk = function() {
-		var step = 0, rotation_angle = 20;
+		var step = 0, rotation_angle = 50, head_angle = 10, torso_angle = 5, arm_angle = 15;
 		interval = setInterval(function() {
+			main.transform(-(Math.sin(step * 0.8)) * head_angle, 1, 1, w/2, h/2, 0, 0);
+			head.transform(-(Math.cos(step * 0.8)) * torso_angle, 1, 1, 0, 0, 0, 0);
+			torso.transform(-(Math.cos(step * 0.8)) * torso_angle, 1, 1, 0, 0, 0, 0);
+			leftArm.transform((Math.sin(step * 0.8)) * arm_angle, 1, 1, 0, 0, 0, 0);
+			rightArm.transform(-(Math.cos(step * 0.8)) * arm_angle, 1, 1, 0, 0, 0, 0);
 			rightLeg.transform(-(Math.cos(step)) * rotation_angle, 1, 1, 0, 0, 0, 0);
 			leftLeg.transform((Math.sin(step)) * rotation_angle, 1, 1, 0, 0, 0, 0);
 			step += 0.1;
-		}, 10);
-		
+		}, 0.5);                             
 		setTimeout(function() {
 			reset();
-		}, 10000);
+		}, 5000);
 	};
 	
 	// ACTION ANIMATIONS  
 	
 	var kick = function(callback) {
-		var step = 0, rotation_angle = -60;
+		var step = 0, rotation_angle = -80;
 		interval = setInterval(function() {
 			leftLeg.transform((Math.sin(step)+1)/2 * -rotation_angle, 1, 1, 0, 0, 0, 0);
+			main.transform(-(Math.sin(step * 0.8)) * rotation_angle*0.5, 1, 1, w/2, h/2, 0, 0);
 			
 			step += 0.1;
-		}, 10);
-		
-		setTimeout(function() {
-			reset();
-			callback();
-		}, 500);
+			if (step > 4.2) {
+				reset();
+				callback();
+			}
+		}, 1);
 	};
 	
 	var slap = function(callback) {
