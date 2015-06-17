@@ -16,10 +16,14 @@ var mammal = function(svgElement, mappingObj, scope) {
 	var rightLeg = new component(innerSvg.getElementById("right_leg_group"), w, h, mappingObj.right_leg_group[0], mappingObj.right_leg_group[1]);
 	var leftLeg = new component(innerSvg.getElementById("left_leg_group"), w, h, mappingObj.left_leg_group[0], mappingObj.left_leg_group[1]);
 	
-	var reset = function() {
+	this.reset = function() {
 		parent.reset();
 		clearInterval(interval);
 	};
+	
+	
+	
+	
 	
 	
 	// MOVING ANIMATIONS  
@@ -37,7 +41,7 @@ var mammal = function(svgElement, mappingObj, scope) {
 			step += 0.1;
 		}, 0.5);                             
 		setTimeout(function() {
-			reset();
+			node.reset();
 		}, 5000);
 	};
 	
@@ -51,7 +55,7 @@ var mammal = function(svgElement, mappingObj, scope) {
 			
 			step += 0.1;
 			if (step > 4.2) {
-				reset();
+				node.reset();
 				callback();
 			}
 		}, 1);
@@ -65,7 +69,7 @@ var mammal = function(svgElement, mappingObj, scope) {
 		}, 10);
 		
 		setTimeout(function() {
-			reset();
+			node.reset();
 			callback();
 		}, 400);
 	};
@@ -83,7 +87,7 @@ var mammal = function(svgElement, mappingObj, scope) {
 		}, 10);
 		
 		setTimeout(function() {
-			reset();
+			node.reset();
 			callback();
 		}, 2000);
 	};
@@ -104,28 +108,13 @@ var mammal = function(svgElement, mappingObj, scope) {
 		}, 1);
 		
 		setTimeout(function() {
-			reset();
+			node.reset();
 		}, 200);
 	};
 	
 
-	
-	
-	
-	
-	this.fromYou = function() {
-		return parent.fromYou();
-	};
-	
-	this.reset = function() {
-		reset();
-	};
-	
-	
-	
-	
-	
-	
+	//ANIMATION HANDLERS
+
 	this.animateMove = function(animationType) {
 		switch(animationType) {
 			case 'walk':
@@ -139,13 +128,13 @@ var mammal = function(svgElement, mappingObj, scope) {
 	};
 	
 	this.animateAction = function(animationType, moveType, selectedStickerObjectTag, miniReactionCallback) {
-		reset();
+		node.reset();
 		node.animateMove(moveType);
 		
 		switch(animationType) {
 			case 'kick':
 				parent.moveToOther(selectedStickerObjectTag, function() {
-					reset();
+					node.reset();
 					kick(function() {
 						miniReactionCallback();
 						parent.moveBack();
@@ -154,7 +143,7 @@ var mammal = function(svgElement, mappingObj, scope) {
 				break;
 			case 'dance':
 				parent.moveToOther(selectedStickerObjectTag, function() {
-					reset();
+					node.reset();
 					dance(function() {
 						miniReactionCallback();
 						parent.moveBack();
@@ -163,7 +152,7 @@ var mammal = function(svgElement, mappingObj, scope) {
 				break;
 			case 'slap':
 				parent.moveToOther(selectedStickerObjectTag, function() {
-					reset();
+					node.reset();
 					slap(function() {
 						miniReactionCallback();
 						parent.moveBack();
@@ -178,7 +167,7 @@ var mammal = function(svgElement, mappingObj, scope) {
 	};
 	
 	this.animateReaction = function(animationType) {
-		reset();
+		node.reset();
 		
 		switch(animationType) {
 			case 'jump':

@@ -19,9 +19,47 @@ var base = function(svgElement, scope) {
 		}
 	};
 	
+	this.getMainComponent = function() {
+		return main_component;
+	};
+	
+	this.getWidth = function() {
+		return w;
+	};
+	
+	this.getHeight = function() {
+		return h;
+	};
+	
 	
 	// MOVING ANIMATIONS 
-
+	
+	this.moveToOther = function(selectedStickerObjectTag, moveCallback) {
+		var myPosition = $(svgElement).position();
+		var positionX = myPosition.left;
+		var positionY = myPosition.top;
+		var myW = $(svgElement).width();
+		var myH = $(svgElement).height();
+		var targetPosition = $(selectedStickerObjectTag).position();
+		var targetX = targetPosition.left;
+		var targetY = targetPosition.top;
+		
+		$(svgElement).css({
+			top: targetY-positionY,
+			left: myW
+		}).animate({
+			left: targetX-positionX+myW*1.3
+		}, 1000, moveCallback);
+	};
+	
+	this.moveBack = function() {
+		$(svgElement).animate({
+			opacity:0
+		},500,function() {
+			$(svgElement).remove();
+		});
+	};
+	
 	// ACTION ANIMATIONS  
 	
 	var piss = function(selectedStickerObjectTag, miniReactionCallback) {
@@ -69,7 +107,7 @@ var base = function(svgElement, scope) {
 		}, 1);
 		
 		setTimeout(function() {
-			reset();
+			node.reset();
 		}, 3000);
 		
 		var position = $(svgElement).position();
@@ -88,7 +126,7 @@ var base = function(svgElement, scope) {
 		}, 1);
 		
 		setTimeout(function() {
-			reset();
+			node.reset();
 		}, 2000);
 	};	
 	
@@ -100,7 +138,7 @@ var base = function(svgElement, scope) {
 		}, 1);
 		
 		setTimeout(function() {
-			reset();
+			node.reset();
 		}, 1850);
 	};
 	
@@ -114,56 +152,7 @@ var base = function(svgElement, scope) {
 	};
 	
 	
-	
-	this.getMainComponent = function() {
-		return main_component;
-	};
-	
-	this.getWidth = function() {
-		return w;
-	};
-	
-	this.getHeight = function() {
-		return h;
-	};
-	
-	this.reset = function() {
-		reset();
-	};
-	
-	this.fromYou = function() {
-		return $(svgElement).parent().parent().hasClass("from-you");
-	};
-	
-	this.moveToOther = function(selectedStickerObjectTag, moveCallback) {
-		var myPosition = $(svgElement).position();
-		var positionX = myPosition.left;
-		var positionY = myPosition.top;
-		var myW = $(svgElement).width();
-		var myH = $(svgElement).height();
-		var targetPosition = $(selectedStickerObjectTag).position();
-		var targetX = targetPosition.left;
-		var targetY = targetPosition.top;
-		
-		$(svgElement).css({
-			top: targetY-positionY,
-			left: myW
-		}).animate({
-			left: targetX-positionX+myW*1.3
-		}, 1000, moveCallback);
-	};
-	
-	this.moveBack = function() {
-		$(svgElement).animate({
-			opacity:0
-		},500,function() {
-			$(svgElement).remove();
-		});
-	};
-	
-
-	
-	
+	//ANIMATION HANDLERS
 	
 	this.animateMove = function(animationType) {
 		switch(animationType) {
