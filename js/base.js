@@ -9,12 +9,11 @@ var base = function(svgElement, scope) {
 	var componentList = getComponents(main_group).map(function(i, x) {
 		return new component(x, w, h, w/2, h/2);
 	});
-	
-	var reset = function() {
+
+	this.reset = function() {
 		clearInterval(interval);
 		main_component.reset();
-		var i, l=componentList.length;
-		for(i=0; i<l; i+=1) {
+		for(var i=0; i<componentList.length; i+=1) {
 			componentList[i].reset();
 		}
 	};
