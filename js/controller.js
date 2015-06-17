@@ -104,10 +104,18 @@ var stickerManager = new function() {
 		stickerList.push(stickerObj);
 	};
 
-	var generateStickerHTML = function(fromYou, srcLink) {
+	var generateStickerHTML = function(fromYou, srcLink, isReaction) {
+		var style = "";
+		if (isReaction) {
+			var targetPosition = $(selectedStickerObjectTag).position();
+			var targetX = targetPosition.left;
+			var targetY = targetPosition.top;
+			var style = "left:" + $(selectedStickerObjectTag).width() + "px;";
+		}
+		
 		var outdiv = $(sprintf("<div class='message %s'/>", fromYou ? "from-you" : "from-them"));
 		var indiv = $("<div class='sticker_wrapper svg'/>");
-		var object = $(sprintf("<object data='%s' type='image/svg+xml' class='sticker'></object>", srcLink));
+		var object = $(sprintf("<object data='%s' type='image/svg+xml' class='sticker' style='%s'></object>", srcLink, style));
 		outdiv.append(indiv);
 		indiv.append(object);
 		return [object, outdiv];
@@ -120,7 +128,7 @@ var stickerManager = new function() {
 		var srcLink = mappingObj.stillSvg;
 		var sklClass = mappingObj.sklcls;
 		
-		var data = generateStickerHTML(fromYou, srcLink),
+		var data = generateStickerHTML(fromYou, srcLink, false),
 			object = data[0],
 			outdiv = data[1];
 		$("#container").append(outdiv);
@@ -143,7 +151,7 @@ var stickerManager = new function() {
 		var animationType = src.attr("data-action-animation");
 		var otherAnimationType = src.attr("data-selection-animation");
 		
-		var data = generateStickerHTML(fromYou, srcLink),
+		var data = generateStickerHTML(fromYou, srcLink, true),
 			object = data[0],
 			outdiv = data[1];
 		$("#container").append(outdiv);

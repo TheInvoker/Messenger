@@ -136,9 +136,9 @@ var base = function(svgElement, scope) {
 	};
 	
 	this.moveToOther = function(selectedStickerObjectTag, moveCallback) {
-		var position = $(svgElement).position();
-		var positionX = position.left;
-		var positionY = position.top;
+		var myPosition = $(svgElement).position();
+		var positionX = myPosition.left;
+		var positionY = myPosition.top;
 		var myW = $(svgElement).width();
 		var myH = $(svgElement).height();
 		var targetPosition = $(selectedStickerObjectTag).position();
@@ -149,7 +149,7 @@ var base = function(svgElement, scope) {
 			top: targetY-positionY,
 			left: myW
 		}).animate({
-			left: targetX-positionX+myW*0.3
+			left: targetX-positionX+myW*1.3
 		}, 1000, moveCallback);
 	};
 	
