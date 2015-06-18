@@ -123,20 +123,26 @@ var stickerManager = new function() {
 	};
 
 	var generateStickerHTML = function(fromYou, srcLink, isReaction) {
-		var style = "";
+		var style = "", style2 = "";
 		if (isReaction) {
 			var targetPosition = $(selectedStickerObjectTag).position();
 			var targetX = targetPosition.left;
 			var targetY = targetPosition.top;
-			var style = "left:" + $(selectedStickerObjectTag).width() + "px;";
+			var style = "float:right;";
+			var style2 = "left:" + $(selectedStickerObjectTag).width() + "px;";
 		}
 		
 		var outdiv = $(sprintf("<div class='message %s'/>", fromYou ? "from-you" : "from-them"));
-		var indiv = $("<div class='sticker_wrapper svg'/>");
-		var object = $(sprintf("<object data='%s' type='image/svg+xml' class='sticker' style='%s'></object>", srcLink, style));
-		outdiv.append(indiv);
+		var indiv = $(sprintf("<div class='sticker_wrapper svg' style='%s'/>", style));
+		var object = $(sprintf("<object data='%s' type='image/svg+xml' class='sticker' style='%s'></object>", srcLink, style2));
 		indiv.append(object);
-		return [object, outdiv];
+		
+		if (isReaction) {
+			return [object, indiv];
+		} else {
+			outdiv.append(indiv);
+			return [object, outdiv];
+		}
 	};
 
 	this.addSticker = function(fromYou, imgTag) {
@@ -172,7 +178,7 @@ var stickerManager = new function() {
 		var data = generateStickerHTML(fromYou, srcLink, true),
 			object = data[0],
 			outdiv = data[1];
-		$("#container").append(outdiv);
+		$(selectedStickerObjectTag).closest("div.message").append(outdiv);
 		
 		object[0].addEventListener('load', function() {
 			setTimeout(function() {

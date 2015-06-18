@@ -43,10 +43,7 @@ var base = function(svgElement, scope) {
 		var targetX = targetPosition.left;
 		var targetY = targetPosition.top;
 		
-		$(svgElement).css({
-			top: targetY-positionY,
-			left: myW
-		}).animate({
+		$(svgElement).animate({
 			left: targetX-positionX+myW*1.3
 		}, 1000, moveCallback);
 	};
@@ -55,7 +52,7 @@ var base = function(svgElement, scope) {
 		$(svgElement).animate({
 			opacity:0
 		},500,function() {
-			$(svgElement).remove();
+			$(svgElement).closest("div.sticker_wrapper").remove();
 		});
 	};
 	
