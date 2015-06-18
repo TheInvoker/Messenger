@@ -5,22 +5,26 @@ var mammal = function(svgElement, mappingObj, scope) {
 	var innerSvg = svgElement.contentDocument; 
 	var parent = new base(svgElement, scope);
 	var w = parent.getWidth(), h = parent.getHeight();
-
+	var joints = mappingObj.joints;
+	
 	// get the main group
 	var main = parent.getMainComponent();
 	// get all the main groups
-	var head = new component(innerSvg.getElementById("head_group"), w, h, mappingObj.head_group[0], mappingObj.head_group[1]);
-	var torso = new component(innerSvg.getElementById("torso_group"), w, h, mappingObj.torso_group[0], mappingObj.torso_group[1]);
-	var rightArm = new component(innerSvg.getElementById("right_arm_group"), w, h, mappingObj.right_arm_group[0], mappingObj.right_arm_group[1]);
-	var leftArm = new component(innerSvg.getElementById("left_arm_group"), w, h, mappingObj.left_arm_group[0], mappingObj.left_arm_group[1]);
-	var rightLeg = new component(innerSvg.getElementById("right_leg_group"), w, h, mappingObj.right_leg_group[0], mappingObj.right_leg_group[1]);
-	var leftLeg = new component(innerSvg.getElementById("left_leg_group"), w, h, mappingObj.left_leg_group[0], mappingObj.left_leg_group[1]);
+	var head = new component(innerSvg.getElementById("head_group"), w, h, joints.head_group[0], joints.head_group[1]);
+	var torso = new component(innerSvg.getElementById("torso_group"), w, h, joints.torso_group[0], joints.torso_group[1]);
+	var rightArm = new component(innerSvg.getElementById("right_arm_group"), w, h, joints.right_arm_group[0], joints.right_arm_group[1]);
+	var leftArm = new component(innerSvg.getElementById("left_arm_group"), w, h, joints.left_arm_group[0], joints.left_arm_group[1]);
+	var rightLeg = new component(innerSvg.getElementById("right_leg_group"), w, h, joints.right_leg_group[0], joints.right_leg_group[1]);
+	var leftLeg = new component(innerSvg.getElementById("left_leg_group"), w, h, joints.left_leg_group[0], joints.left_leg_group[1]);
 	
 	this.reset = function() {
 		parent.reset();
 		clearInterval(interval);
 	};
 	
+	this.getMappingObj = function() {
+		return mappingObj;
+	};
 	
 	
 	

@@ -15,3 +15,12 @@ function length_dir(len, degree) {
 function getComponents(cm) {
 	return $(cm).find("g,path,polygon,polyline");
 }
+
+function getMappingIndexByName(name) {
+	for(var i=0; i<masterStickerList.length; i+=1) {
+		if (masterStickerList[i].name == name) {
+			return i;
+		}
+	}
+	return -1;
+}
