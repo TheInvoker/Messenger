@@ -44,7 +44,7 @@ var base = function(svgElement, scope) {
 		var targetY = targetPosition.top;
 		
 		$(svgElement).animate({
-			left: targetX-positionX+myW*1.3
+			right: $("#container").width() - myW*0.4 
 		}, 1000, moveCallback);
 	};
 	
