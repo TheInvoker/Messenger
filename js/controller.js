@@ -124,14 +124,15 @@ var stickerManager = new function() {
 
 	var generateStickerHTML = function(fromYou, srcLink, isReaction) {
 		var indiv = $("<div class='sticker_wrapper svg'/>");
-		var object = $(sprintf("<object data='%s' type='image/svg+xml' class='sticker'></object>", srcLink));
+		var object = $(sprintf("<object data='%s' type='image/svg+xml' class='sticker'%s></object>", srcLink, isReaction ? " width='0px' height='0px'" : ""));
 		indiv.append(object);
 		
 		if (isReaction) {
 			indiv.css({
-				position : "absolute",
-				right : "-" + ($(selectedStickerObjectTag).width()) + "px",
-				top : $(selectedStickerObjectTag).position().top + "px"
+				'float':'right'
+			});
+			object.css({
+				left : ($(selectedStickerObjectTag).width()) + "px"
 			});
 			return [object, indiv];
 		}
@@ -177,7 +178,10 @@ var stickerManager = new function() {
 		$(selectedStickerObjectTag).closest("div.message").append(indiv);
 
 		object[0].addEventListener('load', function() {
+			var me = this;
 			setTimeout(function() {
+				$(me).removeAttr("width").removeAttr("height");
+				
 				// get animation object of new sticker
 				var newStickerObj = getStickerObj(object[0], sklClass, mappingObj);
 				// get animation object of selected sticker
