@@ -85,10 +85,6 @@ div.img-container img {
 	cursor: initial;
 }
 
-
-.particle_wrapper {
-	/*position:relative;*/
-}
 .particle {
 	width:2px;
 	height:2px;
