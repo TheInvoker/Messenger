@@ -46,6 +46,7 @@ body {
 
 .message {
 	width:100%;
+	position:relative;
 }
 .from-you {
 	text-align:right;
@@ -85,11 +86,15 @@ div.img-container img {
 }
 
 
+.particle_wrapper {
+	/*position:relative;*/
+}
 .particle {
 	width:2px;
 	height:2px;
 	border-radius:1px;
 	border:1px solid black;
+	position:absolute;
 }
 
 .overlay {

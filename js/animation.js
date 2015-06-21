@@ -1,8 +1,8 @@
 var animation = new function() {
 	
-	var pressTimer;                     // record the long touch event
-	var stickerList = [];               // records the animation objects
-	var selectedStickerObjectTag;       // records pressed on sticker from other person
+	var pressTimer;                                   // record the long touch event
+	var stickerList = [];                             // records the animation objects
+	var selectedStickerObjectTagIndexList = [];       // records pressed on sticker from other person
 
 	/**
 	 * Returns a random number between min (inclusive) and max (exclusive)
@@ -34,9 +34,10 @@ var animation = new function() {
 	};
 
 	var controller = new function() {
+		
 		var getStickerObj = function(objectTag, sklClass, mappingObj) {
 			if (sklClass == "mammal") {
-				return new mammal(objectTag, mappingObj, "body");
+				return new mammal(objectTag, mappingObj);
 			}
 		};
 
@@ -47,7 +48,7 @@ var animation = new function() {
 			stickerList.push(stickerObj);
 		};
 
-		var generateStickerHTML = function(fromYou, srcLink, isReaction) {
+		var generateStickerHTML = function(fromYou, srcLink, isReaction, selectedStickerObjectTag) {
 			var indiv = $("<div class='sticker_wrapper svg'/>");
 			var object = $(sprintf("<object data='%s' type='image/svg+xml' class='sticker'%s></object>", srcLink, isReaction ? " width='0px' height='0px'" : ""));
 			indiv.append(object);
@@ -57,7 +58,7 @@ var animation = new function() {
 					'float':'right'
 				});
 				object.css({
-					left : ($(selectedStickerObjectTag).width()) + "px"
+					left : $(selectedStickerObjectTag).width() + "px"
 				});
 				return [object, indiv];
 			}
@@ -74,7 +75,7 @@ var animation = new function() {
 			var srcLink = mappingObj.SVGList[mappingObj.stickerSVG];
 			var sklClass = mappingObj.sklcls;
 			
-			var data = generateStickerHTML(fromYou, srcLink, false),
+			var data = generateStickerHTML(fromYou, srcLink, false, null),
 				object = data[0],
 				outdiv = data[1];
 			$("#container").append(outdiv);
@@ -90,14 +91,16 @@ var animation = new function() {
 		this.addReactionSticker = function(fromYou, imgTag) {
 			var src = $(imgTag);
 			var mappingID = parseInt(src.attr("data-id"), 10);
+			var selectedStickerObjectTagIndex = parseInt(src.attr("data-obj-id"), 10);
 			var mappingObj = masterStickerList[mappingID];
 			var srcLink = mappingObj.SVGList[mappingObj.T_SVG];
 			var sklClass = mappingObj.sklcls;
 			var moveAnimationType = src.attr("data-move-animation");
 			var actionAnimationType = src.attr("data-action-animation");
 			var reactionAnimationType = src.attr("data-reaction-animation");
+			var selectedStickerObjectTag = selectedStickerObjectTagIndexList[selectedStickerObjectTagIndex];
 			
-			var data = generateStickerHTML(fromYou, srcLink, true),
+			var data = generateStickerHTML(fromYou, srcLink, true, selectedStickerObjectTag),
 				object = data[0],
 				indiv = data[1];
 			$(selectedStickerObjectTag).closest("div.message").append(indiv);
@@ -114,7 +117,7 @@ var animation = new function() {
 					// start an animation
 					newStickerObj.animateAction(actionAnimationType, moveAnimationType, selectedStickerObjectTag, function() {
 						// start the mini-reaction animation
-						selectedStickerObj.animateReaction(reactionAnimationType);
+						selectedStickerObj.animateReaction(reactionAnimationType, selectedStickerObjectTag);
 					});
 				}, 1);
 			});
@@ -182,8 +185,10 @@ var animation = new function() {
 			var imgTag = this;
 			pressTimer = window.setTimeout(function() {
 
-				// save a reference to the sticker that was clicked on
-				selectedStickerObjectTag = $(imgTag).find("object");
+				// get a reference to the sticker that was clicked on
+				var selectedStickerObjectTag = $(imgTag).find("object");
+				var selectedStickerObjectTagIndex = selectedStickerObjectTagIndexList.length;
+				selectedStickerObjectTagIndexList.push(selectedStickerObjectTag);
 				
 				// if its not under an animation currently
 				if ($(selectedStickerObjectTag).closest("div.message").find("object").length==1 && !stickerList[$(selectedStickerObjectTag).attr("data-id")].isAnimating()) {
@@ -199,7 +204,7 @@ var animation = new function() {
 						var reactionMappingObjIndex = util.getMappingIndexByName(reaction.name);
 						var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
 						var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
-						reactionlst.push(sprintf("<div class='img-container'><img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation));
+						reactionlst.push(sprintf("<div class='img-container'><img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, selectedStickerObjectTagIndex));
 					}
 					$("#reaction-picker").html(reactionlst.join(""));
 
@@ -233,7 +238,7 @@ var animation = new function() {
 	});
 
 
-	var base = function(svgElement, child, scope) {
+	var base = function(svgElement, child) {
 		
 		var node = this;
 		var interval = -1;
@@ -311,12 +316,12 @@ var animation = new function() {
 			var targetX = targetPosition.left + ($(selectedStickerObjectTag).width() * 0.5);
 			var targetY = targetPosition.top + ($(selectedStickerObjectTag).height() * 0.5);
 			
-			new particleGenerator(scope, positionX, positionY, targetX, targetY, 10, 5, "yellow", 100, 1000, miniReactionCallback);
+			new particleGenerator(selectedStickerObjectTag, positionX, positionY, targetX, targetY, 10, 5, "yellow", 100, 1000, miniReactionCallback);
 		};
 		
 		// REACTION ANIMATIONS  
 		
-		var explode = function() {	
+		var explode = function(selectedStickerObjectTag) {	
 			var i, l = componentList.length, step = 0, rot = 0;
 			for(i=0; i<l; i+=1) {
 				componentList[i].initMove();
@@ -353,9 +358,9 @@ var animation = new function() {
 			var position = $(svgElement).position();
 			var positionX = position.left + ($(svgElement).width() * 0.5);
 			var positionY = position.top + ($(svgElement).height() * 0.5);
-			particleGenerator(scope, positionX, positionY, positionX, positionY - $(svgElement).height()/2, 0, 180, "orange", 0, 200, function() {});
-			particleGenerator(scope, positionX, positionY, positionX, positionY - $(svgElement).height()/2, 0, 180, "yellow", 0, 200, function() {});
-			particleGenerator(scope, positionX, positionY, positionX, positionY - $(svgElement).height()/2, 0, 180, "red", 0, 200, function() {});
+			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(svgElement).height()/2, 0, 180, "orange", 0, 200, function() {});
+			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(svgElement).height()/2, 0, 180, "yellow", 0, 200, function() {});
+			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(svgElement).height()/2, 0, 180, "red", 0, 200, function() {});
 		};
 		
 		var wobble = function() {
@@ -382,13 +387,13 @@ var animation = new function() {
 			}, 1850);
 		};
 		
-		var headBloodBurst = function() {
+		var headBloodBurst = function(selectedStickerObjectTag) {
 			var w = $(svgElement).width();
 			var h = $(svgElement).height();
 			var position = $(svgElement).position();
 			var positionX = position.left + ($(svgElement).width() * 0.5);
 			var positionY = position.top + ($(svgElement).height() * 0.5);
-			particleGenerator(scope, positionX, positionY, positionX, positionY - h/2, 90, 45, "red", 100, 2000, function() {});
+			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - h/2, 90, 45, "red", 100, 2000, function() {});
 		};
 		
 		
@@ -406,7 +411,6 @@ var animation = new function() {
 				case 'piss':
 					node.moveToSelf(selectedStickerObjectTag, function() {
 						child.reset();
-						return;
 						piss(selectedStickerObjectTag, function() {
 							miniReactionCallback();
 							node.moveBack();
@@ -417,10 +421,10 @@ var animation = new function() {
 			return false;
 		};
 		
-		this.animateReaction = function(animationType) {
+		this.animateReaction = function(animationType, selectedStickerObjectTag) {
 			switch(animationType) {
 				case 'explode':
-					explode();
+					explode(selectedStickerObjectTag);
 					return true;
 				case 'wobble':
 					wobble();
@@ -429,7 +433,7 @@ var animation = new function() {
 					twirl();
 					return true;
 				case 'headBurst':
-					headBloodBurst();
+					headBloodBurst(selectedStickerObjectTag);
 					return true;
 			} 
 			return false;
@@ -437,12 +441,12 @@ var animation = new function() {
 	};
 	
 	
-	var mammal = function(svgElement, mappingObj, scope) {
+	var mammal = function(svgElement, mappingObj) {
 		
 		var node = this;
 		var interval = -1;
 		var innerSvg = svgElement.contentDocument; 
-		var parent = new base(svgElement, this, scope);
+		var parent = new base(svgElement, this);
 		var w = parent.getWidth(), h = parent.getHeight();
 		var joints = mappingObj.joints;
 		
@@ -613,7 +617,7 @@ var animation = new function() {
 			} 
 		};
 		
-		this.animateReaction = function(animationType) {
+		this.animateReaction = function(animationType, selectedStickerObjectTag) {
 			node.reset();
 			
 			switch(animationType) {
@@ -621,7 +625,7 @@ var animation = new function() {
 					jump();
 					break;
 				default:
-					if (!parent.animateReaction(animationType)) {
+					if (!parent.animateReaction(animationType, selectedStickerObjectTag)) {
 						alert(sprintf("Error: Reaction animation '%s' does not exist.", animationType));
 					}
 			} 
@@ -662,8 +666,8 @@ var animation = new function() {
 		};
 		
 		this.initMove = function() {
-			metaData["speed-x"] = getRandomArbitrary(-2,2);
-			metaData["speed-y"] = getRandomArbitrary(2,4);
+			metaData["speed-x"] = util.getRandomArbitrary(-2,2);
+			metaData["speed-y"] = util.getRandomArbitrary(2,4);
 			metaData["data-px"] = 0;
 			metaData["data-py"] = 0;
 		};
@@ -690,7 +694,7 @@ var animation = new function() {
 	};
 	
 	
-	var particleGenerator = function(scope, positionX, positionY, targetX, targetY, dist_variance, angle_variance, color, curve, duration, miniReactionCallback) {
+	var particleGenerator = function(selectedStickerObjectTag, positionX, positionY, targetX, targetY, dist_variance, angle_variance, color, curve, duration, miniReactionCallback) {
 		
 		var particleList = [];
 		
@@ -701,18 +705,20 @@ var animation = new function() {
 			degree += angle_variance * ((Math.random()*2)-1);
 			
 			var tag = sprintf("<div class='particle' style='background-color:%s;' />",color);
-			var particle = $(tag).css({
-				position: 'absolute',
-				left: positionX + 'px',
-				top: positionY + 'px',
-			});
+			var particle = $(tag);
 			particleList.push({
 				obj : particle,
 				step : 0,
 				dist : dist,
 				angle : degree
 			});
-			$(scope).append(particle);
+			$(selectedStickerObjectTag).closest("div.message").append(particle);
+			
+			var particlePosition = $(particle).position();
+			particle.css({
+				left: positionX + 'px',
+				top: positionY + 'px',
+			});
 		}, 10);
 		
 		setTimeout(function() {
@@ -729,7 +735,7 @@ var animation = new function() {
 					dist = obj.dist,
 					angle = obj.angle;			
 				
-				var data = length_dir(step, angle);
+				var data = util.length_dir(step, angle);
 				var x_rel = data[0];
 				var y_rel = data[1];
 				y_rel -= Math.sin((step/dist) * Math.PI)*curve;
@@ -790,7 +796,7 @@ var animation = new function() {
 					reactionSVG : 0,
 					move_animation:'walk',
 					action_animation:'kick',
-					reaction_animation:'wobble',
+					reaction_animation:'explode',
 					override_frameSVG:-1
 				}
 			]
