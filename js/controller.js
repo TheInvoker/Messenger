@@ -66,23 +66,27 @@ var stickerManager = new function() {
 				// save a reference to the sticker that was clicked on
 				selectedStickerObjectTag = $(imgTag).find("object");
 				
-				// finds all the reactions and adds them
-				var selectedStickerObjIndex = parseInt($(selectedStickerObjectTag).attr("data-id"), 10);
-				var selectedStickerObj = stickerList[selectedStickerObjIndex];
-				var mappingObj = selectedStickerObj.getMappingObj();
-				var reactionsList = mappingObj.reactions;
-				var reactionlst = [];
-				for(var i=0; i<reactionsList.length; i+=1) {
-					var reaction = reactionsList[i];
-					var reactionMappingObjIndex = getMappingIndexByName(reaction.name);
-					var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
-					var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
-					reactionlst.push(sprintf("<div class='img-container'><img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation));
-				}
-				$("#reaction-picker").html(reactionlst.join(""));
+				// if its not under an animation currently
+				if ($(selectedStickerObjectTag).closest("div.message").find("object").length==1 && !stickerList[$(selectedStickerObjectTag).attr("data-id")].isAnimating()) {
+					
+					// finds all the reactions and adds them
+					var selectedStickerObjIndex = parseInt($(selectedStickerObjectTag).attr("data-id"), 10);
+					var selectedStickerObj = stickerList[selectedStickerObjIndex];
+					var mappingObj = selectedStickerObj.getMappingObj();
+					var reactionsList = mappingObj.reactions;
+					var reactionlst = [];
+					for(var i=0; i<reactionsList.length; i+=1) {
+						var reaction = reactionsList[i];
+						var reactionMappingObjIndex = getMappingIndexByName(reaction.name);
+						var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
+						var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
+						reactionlst.push(sprintf("<div class='img-container'><img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation));
+					}
+					$("#reaction-picker").html(reactionlst.join(""));
 
-				$("#picker").hide();
-				$("#reaction-picker").show();
+					$("#picker").hide();
+					$("#reaction-picker").show();
+				}
 			},600);
 			return false; 
 		}).on('mouseup touchend', '.from-them .sticker_wrapper', function() { 
@@ -178,10 +182,9 @@ var stickerManager = new function() {
 		$(selectedStickerObjectTag).closest("div.message").append(indiv);
 
 		object[0].addEventListener('load', function() {
-			var me = this;
+			$(this).removeAttr("width").removeAttr("height");
+			
 			setTimeout(function() {
-				$(me).removeAttr("width").removeAttr("height");
-				
 				// get animation object of new sticker
 				var newStickerObj = getStickerObj(object[0], sklClass, mappingObj);
 				// get animation object of selected sticker

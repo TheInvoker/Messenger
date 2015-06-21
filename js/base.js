@@ -12,6 +12,7 @@ var base = function(svgElement, scope) {
 
 	this.reset = function() {
 		clearInterval(interval);
+		interval = -1;
 		main_component.reset();
 		for(var i=0; i<componentList.length; i+=1) {
 			componentList[i].reset();
@@ -28,6 +29,10 @@ var base = function(svgElement, scope) {
 	
 	this.getHeight = function() {
 		return h;
+	};
+	
+	this.isAnimating = function() {
+		return interval != -1;
 	};
 	
 	

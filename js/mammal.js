@@ -26,7 +26,9 @@ var mammal = function(svgElement, mappingObj, scope) {
 		return mappingObj;
 	};
 	
-	
+	this.isAnimating = function() {
+		return parent.isAnimating();
+	};
 	
 	
 	
