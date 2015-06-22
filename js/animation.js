@@ -1,6 +1,5 @@
-var animation = function(containerObjID, animationPickerObjID, animationReactionPickerObjID, animationOverlayObjID, animationPreviewObjID) {
+var animation = function(containerInsertCallback, containerScrollCallback, stickerInsertCallback) {
 	
-	var pressTimer;                                   // record the long touch event
 	var stickerList = [];                             // records the animation objects
 	var selectedStickerObjectTagIndexList = [];       // records pressed on sticker from other person
 	var masterStickerList = [
@@ -66,9 +65,39 @@ var animation = function(containerObjID, animationPickerObjID, animationReaction
 	// API CODE
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	this.openStickerDrawer = function() {
-		$(animationPickerObjID).toggle();
-		$(animationReactionPickerObjID).hide();
+	this.addSticker = function(fromYou, imgTag) {
+		controller.addSticker(fromYou, imgTag);
+	};
+	
+	this.addReactionSticker = function(fromYou, imgTag) {
+		controller.addReactionSticker(fromYou, imgTag);
+	};
+	
+	this.reactionStickerHolder = function(imgTag, callback) {
+		// get a reference to the sticker that was clicked on
+		var selectedStickerObjectTag = $(imgTag).find("object");
+		var selectedStickerObjectTagIndex = selectedStickerObjectTagIndexList.length;
+		selectedStickerObjectTagIndexList.push(selectedStickerObjectTag);
+		
+		// if its not under an animation currently
+		if ($(selectedStickerObjectTag).closest("div.ani-message").find("object").length==1 && !stickerList[$(selectedStickerObjectTag).attr("data-id")].isAnimating()) {
+			
+			// finds all the reactions and adds them
+			var selectedStickerObjIndex = parseInt($(selectedStickerObjectTag).attr("data-id"), 10);
+			var selectedStickerObj = stickerList[selectedStickerObjIndex];
+			var mappingObj = selectedStickerObj.getMappingObj();
+			var reactionsList = mappingObj.reactions;
+			var reactionlst = [];
+			for(var i=0; i<reactionsList.length; i+=1) {
+				var reaction = reactionsList[i];
+				var reactionMappingObjIndex = util.getMappingIndexByName(reaction.name);
+				var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
+				var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
+				reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-reaction_select ani-svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, selectedStickerObjectTagIndex));
+			}
+			
+			callback(reactionlst.join(""));
+		}
 	};
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,12 +179,12 @@ var animation = function(containerObjID, animationPickerObjID, animationReaction
 			var data = generateStickerHTML(fromYou, srcLink, false, null),
 				object = data[0],
 				outdiv = data[1];
-			$(containerObjID).append(outdiv);
+			containerInsertCallback(outdiv);
 			
 			object[0].addEventListener('load', function() {
 				setTimeout(function() {
 					registerSticker(object[0], sklClass, mappingObj);
-					$(containerObjID).animate({ scrollTop: $(containerObjID)[0].scrollHeight}, 'fast');
+					containerScrollCallback();
 				}, 1);
 			});
 		};
@@ -203,84 +232,6 @@ var animation = function(containerObjID, animationPickerObjID, animationReaction
 	
 	new function() {
 		
-		// when click on a regular sticker from the drawer
-		$(animationPickerObjID).on('click', 'img.ani-sticker_select', function() {
-			controller.addSticker(true, this);
-			$(animationPickerObjID).hide();
-		});
-		
-		// when click on a reaction sticker from the drawer
-		$(animationReactionPickerObjID).on('click', 'img.ani-reaction_select', function() {
-			controller.addReactionSticker(true, this);
-			$(animationReactionPickerObjID).hide();
-		});
-		
-		// animation box event
-		// COMMENTED THIS OUT BECAUSE IT STOPS THE CLICK EVENT FROM WORKING ON MOBILE
-		/*
-		$(animationReactionPickerObjID).on('mousedown touchstart', 'img', function() { 
-			var imgTag = this;
-			pressTimer = window.setTimeout(function() { 
-				$(animationOverlayObjID + ", " + animationPreviewObjID).fadeIn();
-			},600);
-			return false; 
-		}).on('mouseup touchend', 'img', function() { 
-			clearTimeout(pressTimer);
-			return false;
-		});
-		$(animationOverlayObjID).click(function() {
-			$(animationOverlayObjID + ", " + animationPreviewObjID).fadeOut();
-		});
-		*/
-		
-		// handle closing of popup via swipe
-		$(animationPickerObjID + ", " + animationReactionPickerObjID).swipe({
-			swipe:function(event, direction, distance, duration, fingerCount, fingerData) {
-				if (direction=="left" || direction=="right") {
-					$(this).toggle();
-				}
-			},
-			threshold:75
-		});
-		
-		// handle the hold event on the sticker from the other person
-		$(containerObjID).on('mousedown touchstart', 'div.ani-from-them div.ani-sticker_wrapper', function() { 
-			var imgTag = this;
-			pressTimer = window.setTimeout(function() {
-
-				// get a reference to the sticker that was clicked on
-				var selectedStickerObjectTag = $(imgTag).find("object");
-				var selectedStickerObjectTagIndex = selectedStickerObjectTagIndexList.length;
-				selectedStickerObjectTagIndexList.push(selectedStickerObjectTag);
-				
-				// if its not under an animation currently
-				if ($(selectedStickerObjectTag).closest("div.ani-message").find("object").length==1 && !stickerList[$(selectedStickerObjectTag).attr("data-id")].isAnimating()) {
-					
-					// finds all the reactions and adds them
-					var selectedStickerObjIndex = parseInt($(selectedStickerObjectTag).attr("data-id"), 10);
-					var selectedStickerObj = stickerList[selectedStickerObjIndex];
-					var mappingObj = selectedStickerObj.getMappingObj();
-					var reactionsList = mappingObj.reactions;
-					var reactionlst = [];
-					for(var i=0; i<reactionsList.length; i+=1) {
-						var reaction = reactionsList[i];
-						var reactionMappingObjIndex = util.getMappingIndexByName(reaction.name);
-						var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
-						var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
-						reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-reaction_select ani-svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, selectedStickerObjectTagIndex));
-					}
-					$(animationReactionPickerObjID).html(reactionlst.join(""));
-
-					$(animationPickerObjID).hide();
-					$(animationReactionPickerObjID).show();
-				}
-			},600);
-			return false; 
-		}).on('mouseup touchend', 'div.ani-from-them div.ani-sticker_wrapper', function() { 
-			clearTimeout(pressTimer);
-			return false;
-		});
-		
 		// dynamically load all the stickers from the mapping list to the sticker picker
 		var stickerlst = [];
 		for(var i=0; i<masterStickerList.length; i+=1) {
@@ -292,7 +243,7 @@ var animation = function(containerObjID, animationPickerObjID, animationReaction
 				stickerlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-sticker_select ani-svg' data-id='%d'/></div>", svgList[stickerSVGIndex], i));
 			}
 		}
-		$(animationPickerObjID).html(stickerlst.join(""));
+		stickerInsertCallback(stickerlst.join(""));
 
 		// DEBUG
 		// forcefully put a sticker from them     
@@ -840,9 +791,73 @@ var animation = function(containerObjID, animationPickerObjID, animationReaction
 
 $(document).ready(function() {
 	
-	var animationObj = new animation("#ani-container", "#ani-picker", "#ani-reaction-picker", "#ani-overlay", "#ani-animation-preview");
-
-	$("#sticker-button").click(function() {
-		animationObj.openStickerDrawer();
+	var pressTimer;
+	var animationObj = new animation(function(div) {
+		$("#ani-container").append(div);
+	}, function() {
+		$("#ani-container").animate({ scrollTop: $("#ani-container")[0].scrollHeight}, 'fast');
+	}, function(str) {
+		$("#ani-picker").html(str);
 	});
+
+	// open sticker drawer
+	$("#sticker-button").click(function() {
+		$("#ani-picker").toggle();
+		$("#ani-reaction-picker").hide();
+	});
+	
+	// when click on a regular sticker from the drawer
+	$("#ani-picker").on('click', 'img.ani-sticker_select', function() {
+		animationObj.addSticker(true, this);
+		$("#ani-picker").hide();
+	});
+	
+	// when click on a reaction sticker from the drawer
+	$("#ani-reaction-picker").on('click', 'img.ani-reaction_select', function() {
+		animationObj.addReactionSticker(true, this);
+		$("#ani-reaction-picker").hide();
+	});
+	
+	// handle closing of popup via swipe
+	$("#ani-picker, #ani-reaction-picker").swipe({
+		swipe:function(event, direction, distance, duration, fingerCount, fingerData) {
+			if (direction=="left" || direction=="right") {
+				$(this).toggle();
+			}
+		},
+		threshold:75
+	});
+	
+	// handle the hold event on the sticker from the other person
+	$("#ani-container").on('mousedown touchstart', 'div.ani-from-them div.ani-sticker_wrapper', function() { 
+		var imgTag = this;
+		pressTimer = window.setTimeout(function() { 
+			animationObj.reactionStickerHolder(imgTag, function(str) {
+				$("#ani-picker").hide();
+				$("#ani-reaction-picker").html(str).show();
+			});
+		},600);
+		return false; 
+	}).on('mouseup touchend', 'div.ani-from-them div.ani-sticker_wrapper', function() { 
+		clearTimeout(pressTimer);
+		return false;
+	});
+	
+	// animation box event
+	// COMMENTED THIS OUT BECAUSE IT STOPS THE CLICK EVENT FROM WORKING ON MOBILE
+	/*
+	$("#ani-reaction-picker").on('mousedown touchstart', 'img', function() { 
+		var imgTag = this;
+		pressTimer = window.setTimeout(function() { 
+			$("#ani-overlay, #ani-animation-preview").fadeIn();
+		},600);
+		return false; 
+	}).on('mouseup touchend', 'img', function() { 
+		clearTimeout(pressTimer);
+		return false;
+	});
+	$("#ani-overlay").click(function() {
+		$("#ani-overlay, #ani-animation-preview").fadeOut();
+	});
+	*/
 });
