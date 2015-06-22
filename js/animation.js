@@ -23,11 +23,13 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 			reactions : [
 				{
 					name:'yeti',
-					reactionSVG : 0,
+					reactionSVG:0,
 					move_animation:'walk',
-					action_animation:'kick',
-					reaction_animation:'twirl',
-					override_frameSVG:-1
+					action_animation:'slap',
+					reaction_animation:'wobble',
+					custom_move_animationSVG : -1,
+					custom_action_animationSVG: -1,
+					custom_reaction_animationSVG: -1
 				}
 			]
 		},
@@ -51,10 +53,13 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 			reactions : [
 				{
 					name:'steve',
+					reactionSVG:0,
 					move_animation:'walk',
 					action_animation:'kick',
 					reaction_animation:'wobble',
-					override_frameSVG:-1
+					custom_move_animationSVG : -1,
+					custom_action_animationSVG: -1,
+					custom_reaction_animationSVG: -1
 				}
 			]
 		}
@@ -387,23 +392,21 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 			interval = setInterval(function() { 
 				main_component.transform(0, 1+Math.sin(step)*sinscale, 1-Math.sin(step)*sinscale, w/2, h/2, 0, 0);
 				step += 0.05;
+				if (step > 9 && Math.abs(step % Math.PI) < 0.01) {
+					child.reset();
+				}
 			}, 1);
-			
-			setTimeout(function() {
-				child.reset();
-			}, 2000);
 		};	
 		
 		var twirl = function() {
 			var step = 0;
 			interval = setInterval(function() { 
 				main_component.transform(step, 1, 1, w/2, h/2, 0, 0);
-				step += 1;
+				step += 3;
+				if (step > 360) {
+					child.reset();
+				}
 			}, 1);
-			
-			setTimeout(function() {
-				child.reset();
-			}, 1850);
 		};
 		
 		var headBloodBurst = function(selectedStickerObjectTag) {
@@ -510,9 +513,6 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 				leftLeg.transform((Math.sin(step)) * rotation_angle, 1, 1, 0, 0, 0, 0);
 				step += 0.1;
 			}, 0.5);                             
-			setTimeout(function() {
-				node.reset();
-			}, 5000);
 		};
 		
 		// ACTION ANIMATIONS  
@@ -534,14 +534,14 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 		var slap = function(callback) {
 			var step = 0, rotation_angle = 40;
 			interval = setInterval(function() {
-				leftArm.transform((Math.sin(step)) * 150, 1, 1, 0, 0, 0, 0);
+				leftArm.transform(-Math.sin(step) * 150, 1, 1, 0, 0, 0, 0);
+				
 				step += 0.1;
+				if (step > 3.5) {
+					node.reset();
+					callback();
+				}
 			}, 10);
-			
-			setTimeout(function() {
-				node.reset();
-				callback();
-			}, 400);
 		};
 		
 		var dance = function(callback) {
@@ -553,13 +553,13 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 				leftArm.transform((Math.sin(step))/2 * -rotation_angle+90, 1, 1, 0, 0, 0, 0);
 				rightLeg.transform((Math.cos(step))/2 * -rotation_angle, 1, 1, 0, 0, 0, 0);
 				leftLeg.transform((Math.sin(step))/2 * rotation_angle, 1, 1, 0, 0, 0, 0);
+				
 				step += 0.1;
+				if (step > 16) {
+					node.reset();
+					callback();
+				}
 			}, 10);
-			
-			setTimeout(function() {
-				node.reset();
-				callback();
-			}, 2000);
 		};
 		
 		// REACTION ANIMATIONS  

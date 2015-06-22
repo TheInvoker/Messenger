@@ -52,8 +52,8 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	// animation box event
 	// COMMENTED THIS OUT BECAUSE IT STOPS THE CLICK EVENT FROM WORKING ON MOBILE
+	// animation box event
 	/*
 	$("#ani-reaction-picker").on('mousedown touchstart', 'img', function() { 
 		var imgTag = this;
