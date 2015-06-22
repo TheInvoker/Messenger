@@ -1,13 +1,15 @@
-var animation = new function() {
+var animation = function(containerObjID, animationPickerObjID, animationReactionPickerObjID, animationOverlayObjID, animationPreviewObjID) {
 	
 	var pressTimer;                                   // record the long touch event
 	var stickerList = [];                             // records the animation objects
 	var selectedStickerObjectTagIndexList = [];       // records pressed on sticker from other person
 
-	/**
-	 * Returns a random number between min (inclusive) and max (exclusive)
-	 */
+
 	var util = new function() {
+		
+		/**
+		 * Returns a random number between min (inclusive) and max (exclusive)
+		 */
 		this.getRandomArbitrary = function(min, max) {
 			return Math.random() * (max - min) + min;
 		};
@@ -49,8 +51,8 @@ var animation = new function() {
 		};
 
 		var generateStickerHTML = function(fromYou, srcLink, isReaction, selectedStickerObjectTag) {
-			var indiv = $("<div class='sticker_wrapper svg'/>");
-			var object = $(sprintf("<object data='%s' type='image/svg+xml' class='sticker'%s></object>", srcLink, isReaction ? " width='0px' height='0px'" : ""));
+			var indiv = $("<div class='ani-sticker_wrapper ani-svg'/>");
+			var object = $(sprintf("<object data='%s' type='image/svg+xml' class='ani-sticker'%s></object>", srcLink, isReaction ? " width='0px' height='0px'" : ""));
 			indiv.append(object);
 			
 			if (isReaction) {
@@ -63,7 +65,7 @@ var animation = new function() {
 				return [object, indiv];
 			}
 			
-			var outdiv = $(sprintf("<div class='message %s'/>", fromYou ? "from-you" : "from-them"));
+			var outdiv = $(sprintf("<div class='ani-message %s'/>", fromYou ? "ani-from-you" : "ani-from-them"));
 			outdiv.append(indiv);
 			return [object, outdiv];
 		};
@@ -78,12 +80,12 @@ var animation = new function() {
 			var data = generateStickerHTML(fromYou, srcLink, false, null),
 				object = data[0],
 				outdiv = data[1];
-			$("#container").append(outdiv);
+			$(containerObjID).append(outdiv);
 			
 			object[0].addEventListener('load', function() {
 				setTimeout(function() {
 					registerSticker(object[0], sklClass, mappingObj);
-					$("#container").animate({ scrollTop: $('#container')[0].scrollHeight}, 'fast');
+					$(containerObjID).animate({ scrollTop: $(containerObjID)[0].scrollHeight}, 'fast');
 				}, 1);
 			});
 		};
@@ -103,7 +105,7 @@ var animation = new function() {
 			var data = generateStickerHTML(fromYou, srcLink, true, selectedStickerObjectTag),
 				object = data[0],
 				indiv = data[1];
-			$(selectedStickerObjectTag).closest("div.message").append(indiv);
+			$(selectedStickerObjectTag).closest("div.ani-message").append(indiv);
 
 			object[0].addEventListener('load', function() {
 				$(this).removeAttr("width").removeAttr("height");
@@ -136,42 +138,42 @@ var animation = new function() {
 		
 		// when you click the sticker button
 		$("#sticker-button").click(function() {
-			$("#picker").toggle();
-			$("#reaction-picker").hide();
+			$(animationPickerObjID).toggle();
+			$(animationReactionPickerObjID).hide();
 		});
 		
 		// when click on a regular sticker from the drawer
-		$("#picker").on('click', '.sticker_select', function() {
+		$(animationPickerObjID).on('click', '.sticker_select', function() {
 			controller.addSticker(true, this);
-			$("#picker").hide();
+			$(animationPickerObjID).hide();
 		});
 		
 		// when click on a reaction sticker from the drawer
-		$("#reaction-picker").on('click', '.reaction_select', function() {
+		$(animationReactionPickerObjID).on('click', '.reaction_select', function() {
 			controller.addReactionSticker(true, this);
-			$("#reaction-picker").hide();
+			$(animationReactionPickerObjID).hide();
 		});
 		
 		// animation box event
 		// COMMENTED THIS OUT BECAUSE IT STOPS THE CLICK EVENT FROM WORKING ON MOBILE
 		/*
-		$("#reaction-picker").on('mousedown touchstart', 'img', function() { 
+		$(animationReactionPickerObjID).on('mousedown touchstart', 'img', function() { 
 			var imgTag = this;
 			pressTimer = window.setTimeout(function() { 
-				$("div.overlay, div.animation-preview").fadeIn();
+				$(animationOverlayObjID + ", " + animationPreviewObjID).fadeIn();
 			},600);
 			return false; 
 		}).on('mouseup touchend', 'img', function() { 
 			clearTimeout(pressTimer);
 			return false;
 		});
-		$("div.overlay").click(function() {
-			$("div.overlay, div.animation-preview").fadeOut();
+		$(animationOverlayObjID).click(function() {
+			$(animationOverlayObjID + ", " + animationPreviewObjID).fadeOut();
 		});
 		*/
 		
 		// handle closing of popup via swipe
-		$(".popup-menu").swipe({
+		$(".ani-popup-menu").swipe({
 			swipe:function(event, direction, distance, duration, fingerCount, fingerData) {
 				if (direction=="left" || direction=="right") {
 					$(this).toggle();
@@ -181,7 +183,7 @@ var animation = new function() {
 		});
 		
 		// handle the hold event on the sticker from the other person
-		$('#container').on('mousedown touchstart', '.from-them .sticker_wrapper', function() { 
+		$(containerObjID).on('mousedown touchstart', 'div.ani-from-them div.ani-sticker_wrapper', function() { 
 			var imgTag = this;
 			pressTimer = window.setTimeout(function() {
 
@@ -191,7 +193,7 @@ var animation = new function() {
 				selectedStickerObjectTagIndexList.push(selectedStickerObjectTag);
 				
 				// if its not under an animation currently
-				if ($(selectedStickerObjectTag).closest("div.message").find("object").length==1 && !stickerList[$(selectedStickerObjectTag).attr("data-id")].isAnimating()) {
+				if ($(selectedStickerObjectTag).closest("div.ani-message").find("object").length==1 && !stickerList[$(selectedStickerObjectTag).attr("data-id")].isAnimating()) {
 					
 					// finds all the reactions and adds them
 					var selectedStickerObjIndex = parseInt($(selectedStickerObjectTag).attr("data-id"), 10);
@@ -204,16 +206,16 @@ var animation = new function() {
 						var reactionMappingObjIndex = util.getMappingIndexByName(reaction.name);
 						var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
 						var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
-						reactionlst.push(sprintf("<div class='img-container'><img src='%s' class='reaction_select svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, selectedStickerObjectTagIndex));
+						reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='reaction_select ani-svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, selectedStickerObjectTagIndex));
 					}
-					$("#reaction-picker").html(reactionlst.join(""));
+					$(animationReactionPickerObjID).html(reactionlst.join(""));
 
-					$("#picker").hide();
-					$("#reaction-picker").show();
+					$(animationPickerObjID).hide();
+					$(animationReactionPickerObjID).show();
 				}
 			},600);
 			return false; 
-		}).on('mouseup touchend', '.from-them .sticker_wrapper', function() { 
+		}).on('mouseup touchend', 'div.ani-from-them div.ani-sticker_wrapper', function() { 
 			clearTimeout(pressTimer);
 			return false;
 		});
@@ -226,10 +228,10 @@ var animation = new function() {
 			var stickerSVGIndex = stickerMapping.stickerSVG;
 			
 			if (stickerMapping.active) {
-				stickerlst.push(sprintf("<div class='img-container'><img src='%s' class='sticker_select svg' data-id='%d'/></div>", svgList[stickerSVGIndex], i));
+				stickerlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='sticker_select ani-svg' data-id='%d'/></div>", svgList[stickerSVGIndex], i));
 			}
 		}
-		$("#picker").html(stickerlst.join(""));
+		$(animationPickerObjID).html(stickerlst.join(""));
 
 		// DEBUG
 		// forcefully put a sticker from them     
@@ -301,7 +303,7 @@ var animation = new function() {
 			$(svgElement).animate({
 				opacity:0
 			},500,function() {
-				$(svgElement).closest("div.sticker_wrapper").remove();
+				$(svgElement).closest("div.ani-sticker_wrapper").remove();
 			});
 		};
 		
@@ -704,7 +706,7 @@ var animation = new function() {
 			dist += dist_variance * ((Math.random()*2)-1);
 			degree += angle_variance * ((Math.random()*2)-1);
 			
-			var tag = sprintf("<div class='particle' style='background-color:%s;' />",color);
+			var tag = sprintf("<div class='ani-particle' style='background-color:%s;' />",color);
 			var particle = $(tag);
 			particleList.push({
 				obj : particle,
@@ -712,7 +714,7 @@ var animation = new function() {
 				dist : dist,
 				angle : degree
 			});
-			$(selectedStickerObjectTag).closest("div.message").append(particle);
+			$(selectedStickerObjectTag).closest("div.ani-message").append(particle);
 			
 			var particlePosition = $(particle).position();
 			particle.css({
@@ -795,8 +797,8 @@ var animation = new function() {
 					name:'yeti',
 					reactionSVG : 0,
 					move_animation:'walk',
-					action_animation:'kick',
-					reaction_animation:'explode',
+					action_animation:'piss',
+					reaction_animation:'headBurst',
 					override_frameSVG:-1
 				}
 			]
@@ -830,3 +832,6 @@ var animation = new function() {
 		}
 	];
 };
+
+
+var animationObj = new animation("#ani-container", "#ani-picker", "#ani-reaction-picker", "#ani-overlay", "#ani-animation-preview");
