@@ -13,7 +13,7 @@ body {
 	overflow-x: hidden;
 	overflow-y: auto;
 }
-.ani-popup-menu {
+#ani-picker, #ani-reaction-picker {
 	position: absolute;
 	left: 0;
 	bottom: 10%;
