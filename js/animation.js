@@ -1,4 +1,4 @@
-var animation = function(containerInsertCallback, containerScrollCallback, stickerInsertCallback) {
+var animation = function(getContainerCallback, stickerInsertCallback) {
 	
 	var stickerList = [];                             // records the animation objects
 	var selectedStickerObjectTagIndexList = [];       // records pressed on sticker from other person
@@ -26,7 +26,7 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 					reactionSVG:0,
 					move_animation:'walk',
 					action_animation:'slap',
-					reaction_animation:'wobble',
+					reaction_animation:'headBurst',
 					custom_move_animationSVG : -1,
 					custom_action_animationSVG: -1,
 					custom_reaction_animationSVG: -1
@@ -184,12 +184,14 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 			var data = generateStickerHTML(fromYou, srcLink, false, null),
 				object = data[0],
 				outdiv = data[1];
-			containerInsertCallback(outdiv);
+			getContainerCallback().append(outdiv);
 			
 			object[0].addEventListener('load', function() {
 				setTimeout(function() {
 					registerSticker(object[0], sklClass, mappingObj);
-					containerScrollCallback();
+					
+					var container = getContainerCallback();
+					container.animate({ scrollTop: container[0].scrollHeight}, 'fast');
 				}, 1);
 			});
 		};

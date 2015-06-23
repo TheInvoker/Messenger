@@ -1,10 +1,8 @@
 $(document).ready(function() {
 	
 	var pressTimer;
-	var animationObj = new animation(function(div) {
-		$("#ani-container").append(div);
-	}, function() {
-		$("#ani-container").animate({ scrollTop: $("#ani-container")[0].scrollHeight}, 'fast');
+	var animationObj = new animation(function() {
+		return $("#ani-container");
 	}, function(str) {
 		$("#ani-picker").html(str);
 	});
