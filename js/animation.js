@@ -45,10 +45,10 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 			joints : {
 				head_group : [96, 72],
 				torso_group : [101, 99],
-				right_arm_group : [138, 78],
-				left_arm_group : [63, 78],
-				right_leg_group : [117, 140],
-				left_leg_group : [90, 140]
+				right_arm_group : [130, 78],
+				left_arm_group : [69, 78],
+				right_leg_group : [117, 135],
+				left_leg_group : [90, 135]
 			},
 			reactions : [
 				{
