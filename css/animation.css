@@ -12,6 +12,7 @@ body {
 	height: 90%;
 	overflow-x: hidden;
 	overflow-y: auto;
+	position:relative;
 }
 #ani-picker, #ani-reaction-picker {
 	position: absolute;

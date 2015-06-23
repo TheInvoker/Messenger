@@ -227,6 +227,8 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 						// start the mini-reaction animation
 						selectedStickerObj.animateReaction(reactionAnimationType, selectedStickerObjectTag);
 					});
+					
+					selectedStickerObj.animateChat('earthquake');
 				}, 1);
 			});
 		};
@@ -300,7 +302,8 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};
 		
 		
-		// MOVING ANIMATIONS 
+		
+		// CSS TRANSITION ANIMATIONS
 		
 		this.moveToOther = function(selectedStickerObjectTag, moveCallback) {
 			var myPosition = $(objectElement).position();
@@ -327,6 +330,35 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				$(objectElement).closest("div.ani-sticker_wrapper").remove();
 			});
 		};
+		
+		
+		
+		
+		
+		
+		// CHAT ANIMATIONS
+		
+		var earthquake = function() {
+			var container = getContainerCallback();
+			var step = 0, mag = 0.75, decayFactor = 0.99;
+			var interval = setInterval(function() { 
+				container.css({
+					top : (50*Math.sin(step)) + "px"
+				});
+				step += mag;
+				if (step > 150) {
+					mag *= decayFactor;
+				}
+			}, 1);
+			setTimeout(function() {
+				clearInterval(interval);
+				container.animate({
+					top : "0px"
+				}, 1000);
+			}, 3000);
+		};
+		
+		// MOVING ANIMATIONS 
 		
 		// ACTION ANIMATIONS  
 		
@@ -418,7 +450,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};
 		
 		
-		//ANIMATION HANDLERS
+		// ANIMATION HANDLERS
 		
 		this.animateMove = function(animationType) {
 			switch(animationType) {
@@ -459,6 +491,15 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			} 
 			return false;
 		};	
+	
+		this.animateChat = function(animationType) {
+			switch(animationType) {
+				case 'earthquake':
+					earthquake();
+					return true;
+			} 
+			return false;
+		};
 	};
 	
 	
@@ -582,7 +623,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};
 		
 
-		//ANIMATION HANDLERS
+		// ANIMATION HANDLERS
 
 		var animateMove = function(animationType) {
 			switch(animationType) {
@@ -647,6 +688,17 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 						alert(sprintf("Error: Reaction animation '%s' does not exist.", animationType));
 					}
 			} 
+		};
+	
+		this.animateChat = function(animationType) {
+			switch(animationType) {
+				case '':
+					break;
+				default:
+					if (!parent.animateChat(animationType)) {
+						alert(sprintf("Error: Chat animation '%s' does not exist.", animationType));
+					}
+			}
 		};
 	};
 	
