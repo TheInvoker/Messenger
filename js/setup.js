@@ -10,7 +10,7 @@ $(document).ready(function() {
 	});
 
 	// open sticker drawer
-	$("#sticker-button").click(function() {
+	$("#ani-sticker-button").click(function() {
 		$("#ani-picker").toggle();
 		$("#ani-reaction-picker").hide();
 	});
