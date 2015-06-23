@@ -236,7 +236,6 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	new function() {
-		
 		// dynamically load all the stickers from the mapping list to the sticker picker
 		var stickerlst = [];
 		for(var i=0; i<masterStickerList.length; i+=1) {
@@ -249,11 +248,6 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 			}
 		}
 		stickerInsertCallback(stickerlst.join(""));
-
-		// DEBUG
-		// forcefully put a sticker from them     
-		controller.addSticker(false, $("img.ani-sticker_select").eq(0));
-		controller.addSticker(false, $("img.ani-sticker_select").eq(0));
 	};
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,13 +256,16 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 	
 	
 
-	var base = function(svgElement, child) {
+	var base = function(objectElement, child) {
 		
 		var node = this;
 		var interval = -1;
-		var main_group = svgElement.contentDocument.getElementById("main");
-		var w = $(main_group).parent().attr("width").replace("px","");
-		var h = $(main_group).parent().attr("height").replace("px","");
+		var main_group = objectElement.contentDocument.getElementById("main");
+		var svgTag = $(main_group).parent();
+		var w = parseInt(svgTag.attr("width").replace("px",""), 10);
+		var h = parseInt(svgTag.attr("height").replace("px",""), 10);
+		svgTag.attr("width", "100%");
+		svgTag.attr("height", "100%");
 		var main_component = new component(main_group, w, h, 0, 0);
 		var componentList = util.getComponents(main_group).map(function(i, x) {
 			return new component(x, w, h, w/2, h/2);
@@ -304,37 +301,37 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 		// MOVING ANIMATIONS 
 		
 		this.moveToOther = function(selectedStickerObjectTag, moveCallback) {
-			var myPosition = $(svgElement).position();
+			var myPosition = $(objectElement).position();
 			var positionX = myPosition.left;
-			var myW = $(svgElement).width();
+			var myW = $(objectElement).width();
 			var targetPosition = $(selectedStickerObjectTag).position();
 			var targetX = targetPosition.left;
 			
-			$(svgElement).animate({
+			$(objectElement).animate({
 				left: ((targetX-positionX) + myW*1.4) + "px"
 			}, 1000, moveCallback);
 		};
 		
 		this.moveToSelf = function(selectedStickerObjectTag, moveCallback) {
-			$(svgElement).animate({
+			$(objectElement).animate({
 				left: "0px"
 			}, 1000, moveCallback);
 		};
 		
 		this.moveBack = function() {
-			$(svgElement).animate({
+			$(objectElement).animate({
 				opacity:0
 			},500,function() {
-				$(svgElement).closest("div.ani-sticker_wrapper").remove();
+				$(objectElement).closest("div.ani-sticker_wrapper").remove();
 			});
 		};
 		
 		// ACTION ANIMATIONS  
 		
 		var piss = function(selectedStickerObjectTag, miniReactionCallback) {
-			var position = $(svgElement).position();
-			var positionX = position.left + ($(svgElement).width() * 0.5);
-			var positionY = position.top + ($(svgElement).height() * 0.7);
+			var position = $(objectElement).position();
+			var positionX = position.left + ($(objectElement).width() * 0.5);
+			var positionY = position.top + ($(objectElement).height() * 0.7);
 			
 			var targetPosition = $(selectedStickerObjectTag).position();
 			var targetX = targetPosition.left + ($(selectedStickerObjectTag).width() * 0.5);
@@ -379,12 +376,12 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 				child.reset();
 			}, 3000);
 			
-			var position = $(svgElement).position();
-			var positionX = position.left + ($(svgElement).width() * 0.5);
-			var positionY = position.top + ($(svgElement).height() * 0.5);
-			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(svgElement).height()/2, 0, 180, "orange", 0, 200, function() {});
-			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(svgElement).height()/2, 0, 180, "yellow", 0, 200, function() {});
-			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(svgElement).height()/2, 0, 180, "red", 0, 200, function() {});
+			var position = $(objectElement).position();
+			var positionX = position.left + ($(objectElement).width() * 0.5);
+			var positionY = position.top + ($(objectElement).height() * 0.5);
+			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(objectElement).height()/2, 0, 180, "orange", 0, 200, function() {});
+			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(objectElement).height()/2, 0, 180, "yellow", 0, 200, function() {});
+			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(objectElement).height()/2, 0, 180, "red", 0, 200, function() {});
 		};
 		
 		var wobble = function() {
@@ -410,11 +407,11 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 		};
 		
 		var headBloodBurst = function(selectedStickerObjectTag) {
-			var w = $(svgElement).width();
-			var h = $(svgElement).height();
-			var position = $(svgElement).position();
-			var positionX = position.left + ($(svgElement).width() * 0.5);
-			var positionY = position.top + ($(svgElement).height() * 0.5);
+			var w = $(objectElement).width();
+			var h = $(objectElement).height();
+			var position = $(objectElement).position();
+			var positionX = position.left + ($(objectElement).width() * 0.5);
+			var positionY = position.top + ($(objectElement).height() * 0.5);
 			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - h/2, 90, 45, "red", 100, 2000, function() {});
 		};
 		
@@ -463,12 +460,12 @@ var animation = function(containerInsertCallback, containerScrollCallback, stick
 	};
 	
 	
-	var mammal = function(svgElement, mappingObj) {
+	var mammal = function(objectElement, mappingObj) {
 		
 		var node = this;
 		var interval = -1;
-		var innerSvg = svgElement.contentDocument; 
-		var parent = new base(svgElement, this);
+		var innerSvg = objectElement.contentDocument; 
+		var parent = new base(objectElement, this);
 		var w = parent.getWidth(), h = parent.getHeight();
 		var joints = mappingObj.joints;
 		

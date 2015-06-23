@@ -56,10 +56,12 @@ div.ani-from-them {
 }
 div.ani-sticker_wrapper {
 	width:30%;
+	height:auto;
 	display:inline-block;
 }
 object.ani-sticker {
 	width:100%;
+	height:100%;
 	position:relative;
 	z-index: -1;
 }

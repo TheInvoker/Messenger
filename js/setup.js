@@ -69,4 +69,9 @@ $(document).ready(function() {
 		$("#ani-overlay, #ani-animation-preview").fadeOut();
 	});
 	*/
+	
+	// DEBUG
+	// forcefully put a sticker from them     
+	animationObj.addSticker(false, $("img.ani-sticker_select").eq(0));
+	animationObj.addSticker(false, $("img.ani-sticker_select").eq(1));
 });
