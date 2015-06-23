@@ -9,7 +9,7 @@ body {
 }
 #ani-container {
 	width: 100%;
-	height: 90%;
+	height: 100%;
 	overflow-x: hidden;
 	overflow-y: auto;
 	position:relative;
@@ -38,7 +38,7 @@ body {
 }
 #ani-entry {
 	width: 100%;
-	height:10%;
+	height: 100%;
 	min-height:1.7em;
 	background-color:white;
 	display:flex;
