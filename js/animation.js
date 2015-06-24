@@ -27,6 +27,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					move_animation:'walk',
 					action_animation:'slap',
 					reaction_animation:'headBurst',
+					chat_animation:'',
 					custom_move_animationSVG : -1,
 					custom_action_animationSVG: -1,
 					custom_reaction_animationSVG: -1
@@ -57,6 +58,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					move_animation:'walk',
 					action_animation:'kick',
 					reaction_animation:'wobble',
+					chat_animation:'earthquake',
 					custom_move_animationSVG : -1,
 					custom_action_animationSVG: -1,
 					custom_reaction_animationSVG: -1
@@ -98,7 +100,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				var reactionMappingObjIndex = util.getMappingIndexByName(reaction.name);
 				var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
 				var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
-				reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-reaction_select ani-svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, selectedStickerObjectTagIndex));
+				reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-reaction_select ani-svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-chat-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, reaction.chat_animation, selectedStickerObjectTagIndex));
 			}
 			
 			callback(reactionlst.join(""));
@@ -206,6 +208,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var moveAnimationType = src.attr("data-move-animation");
 			var actionAnimationType = src.attr("data-action-animation");
 			var reactionAnimationType = src.attr("data-reaction-animation");
+			var chatAnimationType = src.attr("data-chat-animation");
 			var selectedStickerObjectTag = selectedStickerObjectTagIndexList[selectedStickerObjectTagIndex];
 			
 			var data = generateStickerHTML(fromYou, srcLink, true, selectedStickerObjectTag),
@@ -223,7 +226,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					var selectedStickerObj = stickerList[selectedStickerObjectTag.attr("data-id")];
 					
 					// start an animation
-					newStickerObj.animateAction(actionAnimationType, moveAnimationType, selectedStickerObjectTag, function() {
+					newStickerObj.animateAction(actionAnimationType, moveAnimationType, chatAnimationType, selectedStickerObjectTag, function() {
 						// start the mini-reaction animation
 						selectedStickerObj.animateReaction(reactionAnimationType, selectedStickerObjectTag);
 					});
@@ -343,7 +346,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var step = 0, mag = 0.75, decayFactor = 0.99;
 			var interval = setInterval(function() { 
 				container.css({
-					top : (50*Math.sin(step)) + "px"
+					top : (7*Math.sin(step)) + "px"
 				});
 				step += mag;
 				if (step > 150) {
@@ -354,7 +357,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				clearInterval(interval);
 				container.animate({
 					top : "0px"
-				}, 1000);
+				}, 100);
 			}, 3000);
 		};
 		
@@ -452,6 +455,15 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		// ANIMATION HANDLERS
 		
+		this.animateChat = function(animationType) {
+			switch(animationType) {
+				case 'earthquake':
+					earthquake();
+					return true;
+			} 
+			return false;
+		};
+		
 		this.animateMove = function(animationType) {
 			switch(animationType) {
 
@@ -491,15 +503,6 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			} 
 			return false;
 		};	
-	
-		this.animateChat = function(animationType) {
-			switch(animationType) {
-				case 'earthquake':
-					earthquake();
-					return true;
-			} 
-			return false;
-		};
 	};
 	
 	
@@ -534,7 +537,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};
 		
 		this.isAnimating = function() {
-			return parent.isAnimating();
+			return interval != -1 && parent.isAnimating();
 		};
 		
 		
@@ -625,6 +628,17 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 
 		// ANIMATION HANDLERS
 
+		var animateChat = function(animationType) {
+			switch(animationType) {
+				case '':
+					break;
+				default:
+					if (!parent.animateChat(animationType)) {
+						alert(sprintf("Error: Chat animation '%s' does not exist.", animationType));
+					}
+			}
+		};
+		
 		var animateMove = function(animationType) {
 			switch(animationType) {
 				case 'walk':
@@ -637,10 +651,11 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			}
 		};
 		
-		this.animateAction = function(animationType, moveType, selectedStickerObjectTag, miniReactionCallback) {
+		this.animateAction = function(animationType, moveType, chatType, selectedStickerObjectTag, miniReactionCallback) {
 			node.reset();
+			animateChat(chatType);
 			animateMove(moveType);
-			
+	
 			switch(animationType) {
 				case 'kick':
 					parent.moveToOther(selectedStickerObjectTag, function() {
@@ -688,17 +703,6 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 						alert(sprintf("Error: Reaction animation '%s' does not exist.", animationType));
 					}
 			} 
-		};
-	
-		this.animateChat = function(animationType) {
-			switch(animationType) {
-				case '':
-					break;
-				default:
-					if (!parent.animateChat(animationType)) {
-						alert(sprintf("Error: Chat animation '%s' does not exist.", animationType));
-					}
-			}
 		};
 	};
 	
