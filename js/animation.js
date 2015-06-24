@@ -155,8 +155,8 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};
 
 		var generateStickerHTML = function(fromYou, srcLink, isReaction, selectedStickerObjectTag) {
-			var indiv = $("<div class='ani-sticker_wrapper ani-svg'/>");
-			var object = $(sprintf("<object data='%s' type='image/svg+xml' class='ani-sticker'%s></object>", srcLink, isReaction ? " width='0px' height='0px'" : ""));
+			var indiv = $(sprintf("<div class='ani-sticker-wrapper ani-svg%s'/>", isReaction ? " ani-sticker-load" : ""));
+			var object = $(sprintf("<object data='%s' type='image/svg+xml' class='ani-sticker'></object>", srcLink));
 			indiv.append(object);
 			
 			if (isReaction) {
@@ -214,7 +214,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			$(selectedStickerObjectTag).closest("div.ani-message").append(indiv);
 
 			object[0].addEventListener('load', function() {
-				$(this).removeAttr("width").removeAttr("height");
+				$(this).closest("div.ani-sticker-wrapper").removeClass("ani-sticker-load");
 				
 				setTimeout(function() {
 					// get animation object of new sticker
@@ -228,7 +228,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 						selectedStickerObj.animateReaction(reactionAnimationType, selectedStickerObjectTag);
 					});
 					
-					selectedStickerObj.animateChat('earthquake');
+					//selectedStickerObj.animateChat('earthquake');
 				}, 1);
 			});
 		};
@@ -327,7 +327,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			$(objectElement).animate({
 				opacity:0
 			},500,function() {
-				$(objectElement).closest("div.ani-sticker_wrapper").remove();
+				$(objectElement).closest("div.ani-sticker-wrapper").remove();
 			});
 		};
 		

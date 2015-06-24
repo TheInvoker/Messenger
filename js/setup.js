@@ -36,7 +36,7 @@ $(document).ready(function() {
 	});
 	
 	// handle the hold event on the sticker from the other person
-	$("#ani-container").on('mousedown touchstart', 'div.ani-from-them div.ani-sticker_wrapper', function() { 
+	$("#ani-container").on('mousedown touchstart', 'div.ani-from-them div.ani-sticker-wrapper', function() { 
 		var imgTag = this;
 		pressTimer = window.setTimeout(function() { 
 			animationObj.reactionStickerHolder(imgTag, function(str) {
@@ -45,7 +45,7 @@ $(document).ready(function() {
 			});
 		},600);
 		return false; 
-	}).on('mouseup touchend', 'div.ani-from-them div.ani-sticker_wrapper', function() { 
+	}).on('mouseup touchend', 'div.ani-from-them div.ani-sticker-wrapper', function() { 
 		clearTimeout(pressTimer);
 		return false;
 	});

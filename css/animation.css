@@ -55,10 +55,14 @@ div.ani-from-you {
 div.ani-from-them {
 	text-align:left;
 }
-div.ani-sticker_wrapper {
+div.ani-sticker-wrapper {
 	width:30%;
 	height:auto;
 	display:inline-block;
+}
+div.ani-sticker-load {
+	width:0px;
+	height:0px;
 }
 object.ani-sticker {
 	width:100%;
@@ -66,6 +70,7 @@ object.ani-sticker {
 	position:relative;
 	z-index: -1;
 }
+
 
 
 
