@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Title of the document</title>
+		<!--<script src="js/plugin/jquery-2.1.4.min.js"></script>-->
+		
+		<style>
+
+			@keyframes example {
+				0% {
+					transform: rotate(0deg);
+				}
+				25% {
+					transform:rotate(45deg);
+				}
+				50% {
+					transform:rotate(0deg);
+				}
+				75% {
+					transform:rotate(-45deg);
+				}
+				100% {
+					transform:rotate(0deg);
+				}
+			}
+			#left_leg_group {
+				animation: example 1s linear infinite;
+				animation-timing-function: ease-in-out;
+				transform: translate3d(0,0,0);
+				transform-origin: 50% -10%;
+			}
+			#right_leg_group {
+				animation: example 1s linear infinite;
+				animation-timing-function: ease-in-out;
+				animation-delay:0.1s;
+				transform: translate3d(0,0,0);
+				transform-origin: 50% -10%;
+			} 
+		</style>
+
+		<script>
+			/*
+			$(document).ready(function() {
+				$.get("images/yeti/yeti-01.svg", function(data) {
+					var svg = $(data).find('svg');
+					$("body").append(svg);
+				});
+			});
+			*/
+		</script>
+
+	</head>
+
+	<body>
+	
+	
+
+		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="200px"
+			 height="200px" viewBox="0 0 200 200" enable-background="new 0 0 200 200" xml:space="preserve">
+		<g id="main">
+		<g id="left_leg_group">
+			<rect id="left_1" x="81" y="129" fill="#653508" width="17" height="40"/>
+			<rect x="81" y="141" fill="#3B2111" width="17" height="5"/>
+			<path id="foot" fill="#A07044" d="M98,180H75c0,0-4.875-0.021-4.875-5.625S75,169,75,169h23V180z"/>
+		</g>
+		<g id="torso_group">
+			<path fill="#653508" d="M138,141H63V65.021c0,0-1.751-29.521,37.167-29.521S138,65.021,138,65.021V141z"/>
+		</g>
+		<g id="right_leg_group">
+				<rect id="Left_3_" x="109" y="129" fill="#653508" width="17" height="40"/>
+				<rect x="109" y="141" fill="#3B2111" width="17" height="5"/>
+				<path id="foot_1_" fill="#AE7A49" d="M126,180h-23c0,0-4.875-0.021-4.875-5.625S103,169,103,169h23V180z"/>
+		</g>
+		<g id="right_arm_group">
+				<path fill="#653508" d="M138,73.21c0,0-13,0.123-13,4.957s13,5.824,13,5.824c1,0.01,0.725,0.01,1.005,0.01
+					c17.58,0,31.747-14.25,31.747-31.83c0-17.19-13.752-31.2-30.752-31.81v11.43c10,1.98,19.67,10.43,19.67,20.55
+					C159.67,63.15,149,72.05,138,73.21z"/>
+				<path fill="#AE7A49" d="M133.33,25.75c0,5.25,4.835,5.72,4.835,5.72c0.67,0.07,1.835,0.18,1.835,0.32V20.36
+					c0-0.01-0.605-0.02-0.995-0.02c-0.28,0-0.478,0-0.757,0.01C138.248,20.35,133.33,20.5,133.33,25.75z"/>
+		</g>
+		<g id="left_arm_group">
+				<path fill="#653508" d="M41.206,52.34C41.206,42.22,51,33.77,61,31.79V20.36c-17,0.61-30.876,14.62-30.876,31.81
+					C30.124,69.75,44.229,84,61.809,84c0.281,0-0.025,0,0.975-0.01c0,0,12.984-0.99,12.984-5.824c0-4.833-12.946-4.956-12.946-4.956
+					C51.821,72.05,41.206,63.15,41.206,52.34z"/>
+				<path fill="#AE7A49" d="M67.422,25.75c0,5.25-4.711,5.72-4.711,5.72C62.041,31.54,61,31.65,61,31.79V20.36
+					c0-0.01,0.481-0.02,0.871-0.02c0.28,0,0.416,0,0.695,0.01C62.566,20.35,67.422,20.5,67.422,25.75z"/>
+		</g>
+		<g id="head_group">
+			<circle id="face" fill="#AE7A49" cx="95.207" cy="70.543" r="28.042"/>
+			<path id="Right_Eye" fill="#200200" d="M82.25,65h-2.37c0-1.31-1.07-2.38-2.38-2.38s-2.38,1.07-2.38,2.38h-2.37
+				c0-2.62,2.13-4.75,4.75-4.75S82.25,62.38,82.25,65z"/>
+			<path id="left_eye_1" fill="#200200" d="M106.25,65h-2.37c0-1.31-1.069-2.38-2.38-2.38c-1.31,0-2.38,1.07-2.38,2.38h-2.37
+				c0-2.62,2.13-4.75,4.75-4.75S106.25,62.38,106.25,65z"/>
+			<circle id="mouth" fill="#200200" cx="89.104" cy="70.938" r="5.271"/>
+			<polygon id="forehead" fill="#915B36" points="104,51 81,51 81.688,49 103.312,49 	"/>
+			<polygon id="forehead_1" fill="#915B36" points="110,56 76,56 76.75,54 109.125,54 	"/>
+		</g>
+		</g>
+		</svg>
+
+	
+	
+	</body>
+
+</html> 

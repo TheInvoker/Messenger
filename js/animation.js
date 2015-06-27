@@ -537,7 +537,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};
 		
 		this.isAnimating = function() {
-			return interval != -1 && parent.isAnimating();
+			return interval != -1 || parent.isAnimating();
 		};
 		
 		
@@ -837,7 +837,17 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	
 	
 	
-	var effect_explosion = function() {
+	var effect_explosion = function(selectedStickerObjectTag, type, positionX, positionY, color) {
+		
+			var tag = sprintf("<div class='ani-effect' style='background-color:%s;'/>", color);
+			var particle = $(tag);
+			particleList.push({
+				obj : particle,
+				step : 0,
+				dist : dist,
+				angle : degree
+			});
+			$(selectedStickerObjectTag).closest("div.ani-message").append(particle);
 		
 	};
 };
