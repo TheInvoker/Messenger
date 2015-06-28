@@ -13,12 +13,12 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				'images/steve/steve.svg'
 			],
 			joints : {
-				head_group : [200, 193],
-				torso_group : [200, 237],
+				head_group : ['50%', 193],
+				torso_group : ['50%', 237],
 				right_arm_group : [227, 208],
 				left_arm_group : [170, 208],
-				right_leg_group : [220, 280],
-				left_leg_group : [180, 280]
+				right_leg_group : ['50%', '-10px'],
+				left_leg_group : ['50%', '-10px']
 			},
 			reactions : [
 				{
@@ -139,8 +139,9 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				svgTag.attr("class", "ani-sticker");
 				
 				if (isReaction) {
+					$(svgTag).css("float","right");
 					TweenLite.to(svgTag, 0, {
-						x : $(window).width() - $(selectedStickerSvgTag).width()
+						x : $(selectedStickerSvgTag).width()
 					});
 					callback(svgTag, svgTag);
 				} else {
@@ -284,8 +285,14 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		// CSS TRANSITION ANIMATIONS
 		
 		this.moveToOther = function(selectedStickerSvgTag, moveCallback) {
+			var myPosition = $(svgTag).position();
+			var positionX = myPosition.left;
+			var myW = $(svgTag).width();
+			var targetPosition = $(selectedStickerSvgTag).position();
+			var targetX = targetPosition.left;
+			
 			TweenLite.to(svgTag, 1, {
-				x : -$(svgTag).width() * 0.6,
+				x : ((targetX-positionX) + myW*1.4),
 				onComplete : moveCallback
 			});
 		};
@@ -337,7 +344,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		// ACTION ANIMATIONS  
 		
-		var piss = function(selectedStickerSvgTag, miniReactionCallback) {
+		var piss = function(selectedStickerSvgTag, miniReactionCallback, moveBackCallback) {
 			var position = $(svgTag).position();
 			var positionX = position.left + ($(svgTag).width() * 0.5);
 			var positionY = position.top + ($(svgTag).height() * 0.7);
@@ -346,7 +353,10 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var targetX = targetPosition.left + ($(selectedStickerSvgTag).width() * 0.5);
 			var targetY = targetPosition.top + ($(selectedStickerSvgTag).height() * 0.5);
 			
-			new particleGenerator(selectedStickerSvgTag, positionX, positionY, targetX, targetY, 10, 5, "yellow", 100, 1000, miniReactionCallback);
+			new particleGenerator(selectedStickerSvgTag, positionX, positionY, targetX, targetY, 10, 5, "yellow", 100, 1000, function() {
+				miniReactionCallback();
+				moveBackCallback();
+			});
 		};
 		
 		// REACTION ANIMATIONS  
@@ -394,16 +404,20 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};
 		
 		var wobble = function() {
-			/*
-			var step = 0, sinscale = 0.1;
-			interval = setInterval(function() { 
-				main_component.transform(0, 1+Math.sin(step)*sinscale, 1-Math.sin(step)*sinscale, w/2, h/2, 0, 0);
-				step += 0.05;
-				if (step > 9 && Math.abs(step % Math.PI) < 0.01) {
-					child.reset();
-				}
-			}, 1);
-			*/
+			var duration = 0.1;
+			var to = sprintf("%s %s", main_group.jx, main_group.jy);
+			
+			var tl = new TimelineMax({
+				repeat : 5
+			}).to(main_group, duration, {
+				scaleX : 1.05,
+				scaleY : 0.95,
+				transformOrigin : to
+			}).to(main_group, duration, {
+				scaleX : 1,
+				scaleY : 1,
+				transformOrigin:to
+			});
 		};	
 		
 		var twirl = function() {
@@ -450,10 +464,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				case 'piss':
 					node.moveToSelf(selectedStickerSvgTag, function() {
 						child.reset();
-						piss(selectedStickerSvgTag, function() {
-							miniReactionCallback();
-							node.moveBack();
-						});
+						piss(selectedStickerSvgTag, miniReactionCallback, node.moveBack);
 					});
 					return true;
 			} 
@@ -535,24 +546,31 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		// ACTION ANIMATIONS  
 		
-		var kick = function(callback) {
-			/*
-			var step = 0, rotation_angle = -80;
-			interval = setInterval(function() {
-				leftLeg.transform((Math.sin(step)+1)/2 * -rotation_angle, 1, 1, 0, 0, 0, 0);
-				main.transform(-(Math.sin(step * 0.8)) * rotation_angle*0.5, 1, 1, w/2, h/2, 0, 0);
-				
-				step += 0.1;
-				if (step > 4.2) {
-					node.reset();
-					callback();
-				}
-			}, 1);
-			*/
-			callback();
+		var kick = function(miniReactionCallback, moveBackCallback) {
+			var duration = 0.2;
+			
+			var to = sprintf("%s %s", main.jx, main.jy);
+			var tl = new TimelineMax().to(main, duration, {
+				rotation : 10,
+				transformOrigin : to
+			}).to(main, duration, {
+				rotation : 0,
+				transformOrigin:to
+			});
+			
+			var to = sprintf("%s %s", leftLeg.jx, leftLeg.jy);
+			var tl = new TimelineMax().to(leftLeg, duration, {
+				rotation : 60,
+				transformOrigin : to,
+				onComplete : miniReactionCallback
+			}).to(leftLeg, duration, {
+				rotation:0,
+				transformOrigin:to,
+				onComplete : moveBackCallback
+			});
 		};
 		
-		var slap = function(callback) {
+		var slap = function(miniReactionCallback, moveBackCallback) {
 			var step = 0, rotation_angle = 40;
 			interval = setInterval(function() {
 				leftArm.transform(-Math.sin(step) * 150, 1, 1, 0, 0, 0, 0);
@@ -565,7 +583,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			}, 10);
 		};
 		
-		var dance = function(callback) {
+		var dance = function(miniReactionCallback, moveBackCallback) {
 			var step = 0, rotation_angle = 40;
 			interval = setInterval(function() {
 				head.transform((Math.cos(step))/2 * -rotation_angle, 1, 1, 0, 0, 0, 0);
@@ -638,28 +656,19 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				case 'kick':
 					parent.moveToOther(selectedStickerSvgTag, function() {
 						node.reset();
-						kick(function() {
-							miniReactionCallback();
-							parent.moveBack();
-						});
+						kick(miniReactionCallback, parent.moveBack);
 					});
 					break;
 				case 'dance':
 					parent.moveToOther(selectedStickerSvgTag, function() {
 						node.reset();
-						dance(function() {
-							miniReactionCallback();
-							parent.moveBack();
-						});
+						dance(miniReactionCallback, parent.moveBack);
 					});
 					break;
 				case 'slap':
 					parent.moveToOther(selectedStickerSvgTag, function() {
 						node.reset();
-						slap(function() {
-							miniReactionCallback();
-							parent.moveBack();
-						});
+						slap(miniReactionCallback, parent.moveBack);
 					});
 					break;
 				default:
