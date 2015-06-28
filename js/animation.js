@@ -1,7 +1,7 @@
 var animation = function(getContainerCallback, stickerInsertCallback) {
 	
 	var stickerList = [];                             // records the animation objects
-	var selectedStickerObjectTagIndexList = [];       // records pressed on sticker from other person
+	var selectedStickerSvgTagIndexList = [];       // records pressed on sticker from other person
 	var masterStickerList = [
 		{
 			name : 'steve',
@@ -80,17 +80,17 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		controller.addReactionSticker(fromYou, imgTag);
 	};
 	
-	this.reactionStickerHolder = function(imgTag, callback) {
+	this.reactionStickerHolder = function(svgTag, callback) {
 		// get a reference to the sticker that was clicked on
-		var selectedStickerObjectTag = $(imgTag).find("object");
-		var selectedStickerObjectTagIndex = selectedStickerObjectTagIndexList.length;
-		selectedStickerObjectTagIndexList.push(selectedStickerObjectTag);
+		var selectedStickerSvgTag = svgTag;
+		var selectedStickerSvgTagIndex = selectedStickerSvgTagIndexList.length;
+		selectedStickerSvgTagIndexList.push(selectedStickerSvgTag);
 		
 		// if its not under an animation currently
-		if ($(selectedStickerObjectTag).closest("div.ani-message").find("object").length==1 && !stickerList[$(selectedStickerObjectTag).attr("data-id")].isAnimating()) {
+		if ($(selectedStickerSvgTag).parent().find("svg").length==1 && !stickerList[$(selectedStickerSvgTag).attr("data-id")].isAnimating()) {
 			
 			// finds all the reactions and adds them
-			var selectedStickerObjIndex = parseInt($(selectedStickerObjectTag).attr("data-id"), 10);
+			var selectedStickerObjIndex = parseInt($(selectedStickerSvgTag).attr("data-id"), 10);
 			var selectedStickerObj = stickerList[selectedStickerObjIndex];
 			var mappingObj = selectedStickerObj.getMappingObj();
 			var reactionsList = mappingObj.reactions;
@@ -100,7 +100,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				var reactionMappingObjIndex = util.getMappingIndexByName(reaction.name);
 				var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
 				var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
-				reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-reaction_select ani-svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-chat-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, reaction.chat_animation, selectedStickerObjectTagIndex));
+				reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-reaction_select ani-svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-chat-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, reaction.chat_animation, selectedStickerSvgTagIndex));
 			}
 			
 			callback(reactionlst.join(""));
@@ -143,37 +143,36 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 
 	var controller = new function() {
 		
-		var getStickerObj = function(objectTag, sklClass, mappingObj) {
+		var getStickerObj = function(svgTag, sklClass, mappingObj) {
 			if (sklClass == "mammal") {
-				return new mammal(objectTag, mappingObj);
+				return new mammal(svgTag, mappingObj);
 			}
 		};
 
-		var registerSticker = function(objectTag, sklClass, mappingObj) {
+		var registerSticker = function(svgTag, sklClass, mappingObj) {
 			var index = stickerList.length;
-			objectTag.setAttribute("data-id", index);
-			var stickerObj = getStickerObj(objectTag, sklClass, mappingObj);
+			svgTag.setAttribute("data-id", index);
+			var stickerObj = getStickerObj(svgTag, sklClass, mappingObj);
 			stickerList.push(stickerObj);
 		};
 
-		var generateStickerHTML = function(fromYou, srcLink, isReaction, selectedStickerObjectTag) {
-			var indiv = $(sprintf("<div class='ani-sticker-wrapper ani-svg%s'/>", isReaction ? " ani-sticker-load" : ""));
-			var object = $(sprintf("<object data='%s' type='image/svg+xml' class='ani-sticker'></object>", srcLink));
-			indiv.append(object);
-			
-			if (isReaction) {
-				indiv.css({
-					'float':'right'
-				});
-				object.css({
-					left : $(selectedStickerObjectTag).width() + "px"
-				});
-				return [object, indiv];
-			}
-			
-			var outdiv = $(sprintf("<div class='ani-message %s'/>", fromYou ? "ani-from-you" : "ani-from-them"));
-			outdiv.append(indiv);
-			return [object, outdiv];
+		var generateStickerHTML = function(fromYou, srcLink, isReaction, selectedStickerSvgTag, callback) {
+			$.get(srcLink, function(data) {
+				var svgTag = $(data).find('svg');
+				svgTag.attr("class", "ani-sticker");
+				
+				if (isReaction) {
+					svgTag.css({
+						'float' : 'right',
+						'left' : $(selectedStickerSvgTag).width() + "px"
+					});
+					callback(svgTag, svgTag);
+				} else {
+					var wrapperElement = $(sprintf("<div class='ani-message %s'/>", fromYou ? "ani-from-you" : "ani-from-them"));
+					wrapperElement.append(svgTag);
+					callback(svgTag, wrapperElement);
+				}
+			});
 		};
 
 		this.addSticker = function(fromYou, imgTag) {
@@ -183,25 +182,20 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var srcLink = mappingObj.SVGList[mappingObj.stickerSVG];
 			var sklClass = mappingObj.sklcls;
 			
-			var data = generateStickerHTML(fromYou, srcLink, false, null),
-				object = data[0],
-				outdiv = data[1];
-			getContainerCallback().append(outdiv);
-			
-			object[0].addEventListener('load', function() {
-				setTimeout(function() {
-					registerSticker(object[0], sklClass, mappingObj);
-					
-					var container = getContainerCallback();
-					container.animate({ scrollTop: container[0].scrollHeight}, 'fast');
-				}, 1);
+			var data = generateStickerHTML(fromYou, srcLink, false, null, function(svgTag, wrapperElement) {
+				getContainerCallback().append(wrapperElement);
+				
+				registerSticker(svgTag[0], sklClass, mappingObj);
+				
+				var container = getContainerCallback();
+				container.animate({ scrollTop: container[0].scrollHeight}, 'fast');
 			});
 		};
 
 		this.addReactionSticker = function(fromYou, imgTag) {
 			var src = $(imgTag);
 			var mappingID = parseInt(src.attr("data-id"), 10);
-			var selectedStickerObjectTagIndex = parseInt(src.attr("data-obj-id"), 10);
+			var selectedStickerSvgTagIndex = parseInt(src.attr("data-obj-id"), 10);
 			var mappingObj = masterStickerList[mappingID];
 			var srcLink = mappingObj.SVGList[mappingObj.T_SVG];
 			var sklClass = mappingObj.sklcls;
@@ -209,26 +203,24 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var actionAnimationType = src.attr("data-action-animation");
 			var reactionAnimationType = src.attr("data-reaction-animation");
 			var chatAnimationType = src.attr("data-chat-animation");
-			var selectedStickerObjectTag = selectedStickerObjectTagIndexList[selectedStickerObjectTagIndex];
+			var selectedStickerSvgTag = selectedStickerSvgTagIndexList[selectedStickerSvgTagIndex];
 			
-			var data = generateStickerHTML(fromYou, srcLink, true, selectedStickerObjectTag),
+			var data = generateStickerHTML(fromYou, srcLink, true, selectedStickerSvgTag),
 				object = data[0],
 				indiv = data[1];
-			$(selectedStickerObjectTag).closest("div.ani-message").append(indiv);
+			$(selectedStickerSvgTag).closest("div.ani-message").append(indiv);
 
 			object[0].addEventListener('load', function() {
-				$(this).closest("div.ani-sticker-wrapper").removeClass("ani-sticker-load");
-				
 				setTimeout(function() {
 					// get animation object of new sticker
 					var newStickerObj = getStickerObj(object[0], sklClass, mappingObj);
 					// get animation object of selected sticker
-					var selectedStickerObj = stickerList[selectedStickerObjectTag.attr("data-id")];
+					var selectedStickerObj = stickerList[selectedStickerSvgTag.attr("data-id")];
 					
 					// start an animation
-					newStickerObj.animateAction(actionAnimationType, moveAnimationType, chatAnimationType, selectedStickerObjectTag, function() {
+					newStickerObj.animateAction(actionAnimationType, moveAnimationType, chatAnimationType, selectedStickerSvgTag, function() {
 						// start the mini-reaction animation
-						selectedStickerObj.animateReaction(reactionAnimationType, selectedStickerObjectTag);
+						selectedStickerObj.animateReaction(reactionAnimationType, selectedStickerSvgTag);
 					});
 					
 					//selectedStickerObj.animateChat('earthquake');
@@ -263,16 +255,14 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	
 	
 
-	var base = function(objectElement, child) {
+	var base = function(svgTag, child) {
 		
 		var node = this;
 		var interval = -1;
-		var main_group = objectElement.contentDocument.getElementById("main");
+		var main_group = svgTag.getElementById("main");
 		var svgTag = $(main_group).parent();
 		var w = parseInt(svgTag.attr("width").replace("px",""), 10);
 		var h = parseInt(svgTag.attr("height").replace("px",""), 10);
-		svgTag.attr("width", "100%");
-		svgTag.attr("height", "100%");
 		var main_component = new component(main_group, w, h, 0, 0);
 		var componentList = util.getComponents(main_group).map(function(i, x) {
 			return new component(x, w, h, w/2, h/2);
@@ -308,29 +298,29 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		// CSS TRANSITION ANIMATIONS
 		
-		this.moveToOther = function(selectedStickerObjectTag, moveCallback) {
-			var myPosition = $(objectElement).position();
+		this.moveToOther = function(selectedStickerSvgTag, moveCallback) {
+			var myPosition = $(svgTag).position();
 			var positionX = myPosition.left;
-			var myW = $(objectElement).width();
-			var targetPosition = $(selectedStickerObjectTag).position();
+			var myW = $(svgTag).width();
+			var targetPosition = $(selectedStickerSvgTag).position();
 			var targetX = targetPosition.left;
 			
-			$(objectElement).animate({
+			$(svgTag).animate({
 				left: ((targetX-positionX) + myW*1.4) + "px"
 			}, 1000, moveCallback);
 		};
 		
-		this.moveToSelf = function(selectedStickerObjectTag, moveCallback) {
-			$(objectElement).animate({
+		this.moveToSelf = function(selectedStickerSvgTag, moveCallback) {
+			$(svgTag).animate({
 				left: "0px"
 			}, 1000, moveCallback);
 		};
 		
 		this.moveBack = function() {
-			$(objectElement).animate({
+			$(svgTag).animate({
 				opacity:0
 			},500,function() {
-				$(objectElement).closest("div.ani-sticker-wrapper").remove();
+				$(svgTag).closest("div.ani-sticker-wrapper").remove();
 			});
 		};
 		
@@ -365,21 +355,21 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		// ACTION ANIMATIONS  
 		
-		var piss = function(selectedStickerObjectTag, miniReactionCallback) {
-			var position = $(objectElement).position();
-			var positionX = position.left + ($(objectElement).width() * 0.5);
-			var positionY = position.top + ($(objectElement).height() * 0.7);
+		var piss = function(selectedStickerSvgTag, miniReactionCallback) {
+			var position = $(svgTag).position();
+			var positionX = position.left + ($(svgTag).width() * 0.5);
+			var positionY = position.top + ($(svgTag).height() * 0.7);
 			
-			var targetPosition = $(selectedStickerObjectTag).position();
-			var targetX = targetPosition.left + ($(selectedStickerObjectTag).width() * 0.5);
-			var targetY = targetPosition.top + ($(selectedStickerObjectTag).height() * 0.5);
+			var targetPosition = $(selectedStickerSvgTag).position();
+			var targetX = targetPosition.left + ($(selectedStickerSvgTag).width() * 0.5);
+			var targetY = targetPosition.top + ($(selectedStickerSvgTag).height() * 0.5);
 			
-			new particleGenerator(selectedStickerObjectTag, positionX, positionY, targetX, targetY, 10, 5, "yellow", 100, 1000, miniReactionCallback);
+			new particleGenerator(selectedStickerSvgTag, positionX, positionY, targetX, targetY, 10, 5, "yellow", 100, 1000, miniReactionCallback);
 		};
 		
 		// REACTION ANIMATIONS  
 		
-		var explode = function(selectedStickerObjectTag) {	
+		var explode = function(selectedStickerSvgTag) {	
 			var i, l = componentList.length, step = 0, rot = 0;
 			for(i=0; i<l; i+=1) {
 				componentList[i].initMove();
@@ -413,12 +403,12 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				child.reset();
 			}, 3000);
 			
-			var position = $(objectElement).position();
-			var positionX = position.left + ($(objectElement).width() * 0.5);
-			var positionY = position.top + ($(objectElement).height() * 0.5);
-			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(objectElement).height()/2, 0, 180, "orange", 0, 200, function() {});
-			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(objectElement).height()/2, 0, 180, "yellow", 0, 200, function() {});
-			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - $(objectElement).height()/2, 0, 180, "red", 0, 200, function() {});
+			var position = $(svgTag).position();
+			var positionX = position.left + ($(svgTag).width() * 0.5);
+			var positionY = position.top + ($(svgTag).height() * 0.5);
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, 180, "orange", 0, 200, function() {});
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, 180, "yellow", 0, 200, function() {});
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, 180, "red", 0, 200, function() {});
 		};
 		
 		var wobble = function() {
@@ -443,13 +433,13 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			}, 1);
 		};
 		
-		var headBloodBurst = function(selectedStickerObjectTag) {
-			var w = $(objectElement).width();
-			var h = $(objectElement).height();
-			var position = $(objectElement).position();
-			var positionX = position.left + ($(objectElement).width() * 0.5);
-			var positionY = position.top + ($(objectElement).height() * 0.5);
-			particleGenerator(selectedStickerObjectTag, positionX, positionY, positionX, positionY - h/2, 90, 45, "red", 100, 2000, function() {});
+		var headBloodBurst = function(selectedStickerSvgTag) {
+			var w = $(svgTag).width();
+			var h = $(svgTag).height();
+			var position = $(svgTag).position();
+			var positionX = position.left + ($(svgTag).width() * 0.5);
+			var positionY = position.top + ($(svgTag).height() * 0.5);
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - h/2, 90, 45, "red", 100, 2000, function() {});
 		};
 		
 		
@@ -471,12 +461,12 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			return false;
 		};
 		
-		this.animateAction = function(animationType, moveType, selectedStickerObjectTag, miniReactionCallback) {
+		this.animateAction = function(animationType, moveType, selectedStickerSvgTag, miniReactionCallback) {
 			switch(animationType) {
 				case 'piss':
-					node.moveToSelf(selectedStickerObjectTag, function() {
+					node.moveToSelf(selectedStickerSvgTag, function() {
 						child.reset();
-						piss(selectedStickerObjectTag, function() {
+						piss(selectedStickerSvgTag, function() {
 							miniReactionCallback();
 							node.moveBack();
 						});
@@ -486,10 +476,10 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			return false;
 		};
 		
-		this.animateReaction = function(animationType, selectedStickerObjectTag) {
+		this.animateReaction = function(animationType, selectedStickerSvgTag) {
 			switch(animationType) {
 				case 'explode':
-					explode(selectedStickerObjectTag);
+					explode(selectedStickerSvgTag);
 					return true;
 				case 'wobble':
 					wobble();
@@ -498,7 +488,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					twirl();
 					return true;
 				case 'headBurst':
-					headBloodBurst(selectedStickerObjectTag);
+					headBloodBurst(selectedStickerSvgTag);
 					return true;
 			} 
 			return false;
@@ -506,24 +496,23 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	};
 	
 	
-	var mammal = function(objectElement, mappingObj) {
+	var mammal = function(svgTag, mappingObj) {
 		
 		var node = this;
 		var interval = -1;
-		var innerSvg = objectElement.contentDocument; 
-		var parent = new base(objectElement, this);
+		var parent = new base(svgTag, this);
 		var w = parent.getWidth(), h = parent.getHeight();
 		var joints = mappingObj.joints;
 		
 		// get the main group
 		var main = parent.getMainComponent();
 		// get all the main groups
-		var head = new component(innerSvg.getElementById("head_group"), w, h, joints.head_group[0], joints.head_group[1]);
-		var torso = new component(innerSvg.getElementById("torso_group"), w, h, joints.torso_group[0], joints.torso_group[1]);
-		var rightArm = new component(innerSvg.getElementById("right_arm_group"), w, h, joints.right_arm_group[0], joints.right_arm_group[1]);
-		var leftArm = new component(innerSvg.getElementById("left_arm_group"), w, h, joints.left_arm_group[0], joints.left_arm_group[1]);
-		var rightLeg = new component(innerSvg.getElementById("right_leg_group"), w, h, joints.right_leg_group[0], joints.right_leg_group[1]);
-		var leftLeg = new component(innerSvg.getElementById("left_leg_group"), w, h, joints.left_leg_group[0], joints.left_leg_group[1]);
+		var head = new component(svgTag.getElementById("head_group"), w, h, joints.head_group[0], joints.head_group[1]);
+		var torso = new component(svgTag.getElementById("torso_group"), w, h, joints.torso_group[0], joints.torso_group[1]);
+		var rightArm = new component(svgTag.getElementById("right_arm_group"), w, h, joints.right_arm_group[0], joints.right_arm_group[1]);
+		var leftArm = new component(svgTag.getElementById("left_arm_group"), w, h, joints.left_arm_group[0], joints.left_arm_group[1]);
+		var rightLeg = new component(svgTag.getElementById("right_leg_group"), w, h, joints.right_leg_group[0], joints.right_leg_group[1]);
+		var leftLeg = new component(svgTag.getElementById("left_leg_group"), w, h, joints.left_leg_group[0], joints.left_leg_group[1]);
 		
 		this.reset = function() {
 			clearInterval(interval);
@@ -651,14 +640,14 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			}
 		};
 		
-		this.animateAction = function(animationType, moveType, chatType, selectedStickerObjectTag, miniReactionCallback) {
+		this.animateAction = function(animationType, moveType, chatType, selectedStickerSvgTag, miniReactionCallback) {
 			node.reset();
 			animateChat(chatType);
 			animateMove(moveType);
 	
 			switch(animationType) {
 				case 'kick':
-					parent.moveToOther(selectedStickerObjectTag, function() {
+					parent.moveToOther(selectedStickerSvgTag, function() {
 						node.reset();
 						kick(function() {
 							miniReactionCallback();
@@ -667,7 +656,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					});
 					break;
 				case 'dance':
-					parent.moveToOther(selectedStickerObjectTag, function() {
+					parent.moveToOther(selectedStickerSvgTag, function() {
 						node.reset();
 						dance(function() {
 							miniReactionCallback();
@@ -676,7 +665,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					});
 					break;
 				case 'slap':
-					parent.moveToOther(selectedStickerObjectTag, function() {
+					parent.moveToOther(selectedStickerSvgTag, function() {
 						node.reset();
 						slap(function() {
 							miniReactionCallback();
@@ -685,13 +674,13 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					});
 					break;
 				default:
-					if (!parent.animateAction(animationType, moveType, selectedStickerObjectTag, miniReactionCallback)) {
+					if (!parent.animateAction(animationType, moveType, selectedStickerSvgTag, miniReactionCallback)) {
 						alert(sprintf("Error: Action animation '%s' does not exist.", animationType));
 					}
 			} 
 		};
 		
-		this.animateReaction = function(animationType, selectedStickerObjectTag) {
+		this.animateReaction = function(animationType, selectedStickerSvgTag) {
 			node.reset();
 			
 			switch(animationType) {
@@ -699,7 +688,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					jump();
 					break;
 				default:
-					if (!parent.animateReaction(animationType, selectedStickerObjectTag)) {
+					if (!parent.animateReaction(animationType, selectedStickerSvgTag)) {
 						alert(sprintf("Error: Reaction animation '%s' does not exist.", animationType));
 					}
 			} 
@@ -768,7 +757,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	};
 	
 	
-	var particleGenerator = function(selectedStickerObjectTag, positionX, positionY, targetX, targetY, dist_variance, angle_variance, color, curve, duration, miniReactionCallback) {
+	var particleGenerator = function(selectedStickerSvgTag, positionX, positionY, targetX, targetY, dist_variance, angle_variance, color, curve, duration, miniReactionCallback) {
 		
 		var particleList = [];
 		
@@ -786,7 +775,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				dist : dist,
 				angle : degree
 			});
-			$(selectedStickerObjectTag).closest("div.ani-message").append(particle);
+			$(selectedStickerSvgTag).closest("div.ani-message").append(particle);
 			
 			var particlePosition = $(particle).position();
 			particle.css({
@@ -837,7 +826,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	
 	
 	
-	var effect_explosion = function(selectedStickerObjectTag, type, positionX, positionY, color) {
+	var effect_explosion = function(selectedStickerSvgTag, type, positionX, positionY, color) {
 		
 			var tag = sprintf("<div class='ani-effect' style='background-color:%s;'/>", color);
 			var particle = $(tag);
@@ -847,7 +836,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				dist : dist,
 				angle : degree
 			});
-			$(selectedStickerObjectTag).closest("div.ani-message").append(particle);
+			$(selectedStickerSvgTag).closest("div.ani-message").append(particle);
 		
 	};
 };

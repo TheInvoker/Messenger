@@ -8,20 +8,9 @@ div.ani-from-you {
 div.ani-from-them {
 	text-align:left;
 }
-div.ani-sticker-wrapper {
+svg.ani-sticker {
 	width:30%;
-	height:auto;
-	display:inline-block;
-}
-div.ani-sticker-load {
-	width:0px;
-	height:0px;
-}
-object.ani-sticker {
-	width:100%;
-	height:100%;
-	position:relative;
-	z-index: -1;
+	height:30%;
 }
 div.ani-img-container {
 	display:inline-block;
@@ -30,9 +19,7 @@ div.ani-img-container {
 div.ani-img-container img {
 	height: 100%;
 }
-div.ani-svg, img.ani-svg {
-	cursor: pointer; 
-	cursor: hand;
+svg.ani-sticker, img.ani-svg {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -40,8 +27,9 @@ div.ani-svg, img.ani-svg {
 	-ms-user-select: none;
 	user-select: none;
 }
-div.ani-from-you div.ani-svg {
-	cursor: initial;
+div.ani-from-them svg.ani-sticker, img.ani-svg {
+	cursor: pointer; 
+	cursor: hand;
 }
 div.ani-particle {
 	width:2px;

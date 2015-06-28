@@ -6,67 +6,6 @@
 		<!--<script src="js/plugin/jquery-2.1.4.min.js"></script>-->
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.17.0/TweenMax.min.js"></script>
 		
-		<style>
-
-			@keyframes example {
-				0% {
-					-webkit-transform: rotate(0deg); transform: rotate(0deg);
-				}
-				25% {
-					-webkit-transform:rotate(45deg); transform:rotate(45deg);
-				}
-				50% {
-					-webkit-transform:rotate(0deg); transform:rotate(0deg);
-				}
-				75% {
-					-webkit-transform:rotate(-45deg); transform:rotate(-45deg);
-				}
-				100% {
-					-webkit-transform:rotate(0deg); transform:rotate(0deg);
-				}
-			}
-			@-webkit-keyframes example {
-				0% {
-					-webkit-transform: rotate(0deg); transform: rotate(0deg);
-				}
-				25% {
-					-webkit-transform:rotate(45deg); transform:rotate(45deg);
-				}
-				50% {
-					-webkit-transform:rotate(0deg); transform:rotate(0deg);
-				}
-				75% {
-					-webkit-transform:rotate(-45deg); transform:rotate(-45deg);
-				}
-				100% {
-					-webkit-transform:rotate(0deg); transform:rotate(0deg);
-				}
-			}
-			#left_leg_group {
-				-webkit-animation: example 1s linear infinite; animation: example 1s linear infinite;
-				-webkit-animation-timing-function: ease-in-out; animation-timing-function: ease-in-out;
-				-webkit-transform: translate3d(0,0,0); transform: translate3d(0,0,0);
-				-webkit-transform-origin: 50% -10%; transform-origin: 50% -10%;
-			}
-			#right_leg_group {
-				-webkit-animation: example 1s linear infinite; animation: example 1s linear infinite;
-				-webkit-animation-timing-function: ease-in-out; animation-timing-function: ease-in-out;
-				-webkit-animation-delay:0.1s; animation-delay:0.1s;
-				-webkit-transform: translate3d(0,0,0); transform: translate3d(0,0,0);
-				-webkit-transform-origin: 50% -10%; transform-origin: 50% -10%;
-			} 
-		</style>
-
-		<script>
-			/*
-			$(document).ready(function() {
-				$.get("images/yeti/yeti-01.svg", function(data) {
-					var svg = $(data).find('svg');
-					$("body").append(svg);
-				});
-			});
-			*/
-		</script>
 
 	</head>
 
@@ -74,7 +13,7 @@
 	
 	
 
-		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="200px"
+		<svg id="svgA" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="200px"
 			 height="200px" viewBox="0 0 200 200" enable-background="new 0 0 200 200" xml:space="preserve">
 		<g id="main">
 		<g id="left_leg_group">
@@ -117,7 +56,79 @@
 		</g>
 		</svg>
 
-	
+		<script>
+			/*
+			$(document).ready(function() {
+				$.get("images/yeti/yeti-01.svg", function(data) {
+					var svg = $(data).find('svg');
+					$("body").append(svg);
+				});
+			});
+			*/
+			
+
+			var a = document.getElementById("left_leg_group");
+			var b = document.getElementById("right_leg_group");
+			var c = document.getElementById("svgA");
+			var t = 0.5;
+			
+			var tl = new TimelineMax().from(c, t*20, {
+				x:window.innerWidth,
+				ease:Power2.easeOut
+			});
+			
+			/*
+			var tl = new TimelineMax({
+				repeat:-1
+			}).to(c, t, {
+				rotationY:30,
+				transformOrigin:"50% 50%",
+				ease:Power2.easeOut
+			}).to(c, t, {
+				rotationY:-30,
+				transformOrigin:"50% 50%",
+				ease:Power2.easeOut
+			}).to(c, t, {
+				rotationY:0,
+				transformOrigin:"50% 50%",
+				ease:Power2.easeOut
+			});
+			*/
+			
+			var tl = new TimelineMax({
+				repeat:-1
+			}).to(a, t, {
+				rotation:45,
+				transformOrigin:"50% -10%",
+				ease:Power2.easeOut
+			}).to(a, 2*t, {
+				rotation:-45,
+				transformOrigin:"50% -10%",
+				ease:Power2.easeInOut
+			}).to(a, t, {
+				rotation:0,
+				transformOrigin:"50% -10%",
+				ease:Power2.easeIn
+			});
+			
+			var tl = new TimelineMax({
+				repeat:-1,
+				delay:0.2
+			}).to(b, t, {
+				rotation:45,
+				transformOrigin:"50% -10%",
+				ease:Power2.easeOut,
+			}).to(b, 2*t, {
+				rotation:-45,
+				transformOrigin:"50% -10%",
+				ease:Power2.easeInOut
+			}).to(b, t, {
+				rotation:0,
+				transformOrigin:"50% -10%",
+				ease:Power2.easeIn
+			});
+
+		</script>
 	
 	</body>
 
