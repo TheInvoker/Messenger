@@ -81,30 +81,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	};
 	
 	this.reactionStickerHolder = function(svgTag, callback) {
-		// get a reference to the sticker that was clicked on
-		var selectedStickerSvgTag = svgTag;
-		var selectedStickerSvgTagIndex = selectedStickerSvgTagIndexList.length;
-		selectedStickerSvgTagIndexList.push(selectedStickerSvgTag);
-		
-		// if its not under an animation currently
-		if ($(selectedStickerSvgTag).parent().find("svg").length==1 && !stickerList[$(selectedStickerSvgTag).attr("data-id")].isAnimating()) {
-			
-			// finds all the reactions and adds them
-			var selectedStickerObjIndex = parseInt($(selectedStickerSvgTag).attr("data-id"), 10);
-			var selectedStickerObj = stickerList[selectedStickerObjIndex];
-			var mappingObj = selectedStickerObj.getMappingObj();
-			var reactionsList = mappingObj.reactions;
-			var reactionlst = [];
-			for(var i=0; i<reactionsList.length; i+=1) {
-				var reaction = reactionsList[i];
-				var reactionMappingObjIndex = util.getMappingIndexByName(reaction.name);
-				var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
-				var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
-				reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-reaction_select ani-svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-chat-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, reaction.chat_animation, selectedStickerSvgTagIndex));
-			}
-			
-			callback(reactionlst.join(""));
-		}
+		controller.reactionStickerHolder(svgTag, callback);
 	};
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,7 +128,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 
 		var registerSticker = function(svgTag, sklClass, mappingObj) {
 			var index = stickerList.length;
-			svgTag.setAttribute("data-id", index);
+			svgTag.attr("data-id", index);
 			var stickerObj = getStickerObj(svgTag, sklClass, mappingObj);
 			stickerList.push(stickerObj);
 		};
@@ -185,7 +162,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var data = generateStickerHTML(fromYou, srcLink, false, null, function(svgTag, wrapperElement) {
 				getContainerCallback().append(wrapperElement);
 				
-				registerSticker(svgTag[0], sklClass, mappingObj);
+				registerSticker(svgTag, sklClass, mappingObj);
 				
 				var container = getContainerCallback();
 				container.animate({ scrollTop: container[0].scrollHeight}, 'fast');
@@ -205,28 +182,48 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var chatAnimationType = src.attr("data-chat-animation");
 			var selectedStickerSvgTag = selectedStickerSvgTagIndexList[selectedStickerSvgTagIndex];
 			
-			var data = generateStickerHTML(fromYou, srcLink, true, selectedStickerSvgTag),
-				object = data[0],
-				indiv = data[1];
-			$(selectedStickerSvgTag).closest("div.ani-message").append(indiv);
+			var data = generateStickerHTML(fromYou, srcLink, true, selectedStickerSvgTag, function(svgTag, wrapperElement) {
+				selectedStickerSvgTag.closest("div.ani-message").append(wrapperElement);
 
-			object[0].addEventListener('load', function() {
-				setTimeout(function() {
-					// get animation object of new sticker
-					var newStickerObj = getStickerObj(object[0], sklClass, mappingObj);
-					// get animation object of selected sticker
-					var selectedStickerObj = stickerList[selectedStickerSvgTag.attr("data-id")];
-					
-					// start an animation
-					newStickerObj.animateAction(actionAnimationType, moveAnimationType, chatAnimationType, selectedStickerSvgTag, function() {
-						// start the mini-reaction animation
-						selectedStickerObj.animateReaction(reactionAnimationType, selectedStickerSvgTag);
-					});
-					
-					//selectedStickerObj.animateChat('earthquake');
-				}, 1);
+				// get animation object of new sticker
+				var newStickerObj = getStickerObj(svgTag, sklClass, mappingObj);
+				// get animation object of selected sticker
+				var selectedStickerObj = stickerList[selectedStickerSvgTag.attr("data-id")];
+				
+				// start an animation
+				newStickerObj.animateAction(actionAnimationType, moveAnimationType, chatAnimationType, selectedStickerSvgTag, function() {
+					// start the mini-reaction animation
+					selectedStickerObj.animateReaction(reactionAnimationType, selectedStickerSvgTag);
+				});
 			});
 		};
+	
+		this.reactionStickerHolder = function(svgTag, callback) {
+			// get a reference to the sticker that was clicked on
+			var selectedStickerSvgTag = $(svgTag);
+			var selectedStickerSvgTagIndex = selectedStickerSvgTagIndexList.length;
+			selectedStickerSvgTagIndexList.push(selectedStickerSvgTag);
+			
+			// if its not under an animation currently
+			if (selectedStickerSvgTag.parent().find("svg").length==1 && !stickerList[selectedStickerSvgTag.attr("data-id")].isAnimating()) {
+				
+				// finds all the reactions and adds them
+				var selectedStickerObjIndex = parseInt(selectedStickerSvgTag.attr("data-id"), 10);
+				var selectedStickerObj = stickerList[selectedStickerObjIndex];
+				var mappingObj = selectedStickerObj.getMappingObj();
+				var reactionsList = mappingObj.reactions;
+				var reactionlst = [];
+				for(var i=0; i<reactionsList.length; i+=1) {
+					var reaction = reactionsList[i];
+					var reactionMappingObjIndex = util.getMappingIndexByName(reaction.name);
+					var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
+					var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
+					reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-reaction-select ani-svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-chat-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, reaction.chat_animation, selectedStickerSvgTagIndex));
+				}
+				
+				callback(reactionlst.join(""));
+			}
+		}
 	};
 
 	
@@ -243,7 +240,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var stickerSVGIndex = stickerMapping.stickerSVG;
 			
 			if (stickerMapping.active) {
-				stickerlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-sticker_select ani-svg' data-id='%d'/></div>", svgList[stickerSVGIndex], i));
+				stickerlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-sticker-select ani-svg' data-id='%d'/></div>", svgList[stickerSVGIndex], i));
 			}
 		}
 		stickerInsertCallback(stickerlst.join(""));
@@ -259,8 +256,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		var node = this;
 		var interval = -1;
-		var main_group = svgTag.getElementById("main");
-		var svgTag = $(main_group).parent();
+		var main_group = svgTag.find("#main");
 		var w = parseInt(svgTag.attr("width").replace("px",""), 10);
 		var h = parseInt(svgTag.attr("height").replace("px",""), 10);
 		var main_component = new component(main_group, w, h, 0, 0);
@@ -507,12 +503,12 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		// get the main group
 		var main = parent.getMainComponent();
 		// get all the main groups
-		var head = new component(svgTag.getElementById("head_group"), w, h, joints.head_group[0], joints.head_group[1]);
-		var torso = new component(svgTag.getElementById("torso_group"), w, h, joints.torso_group[0], joints.torso_group[1]);
-		var rightArm = new component(svgTag.getElementById("right_arm_group"), w, h, joints.right_arm_group[0], joints.right_arm_group[1]);
-		var leftArm = new component(svgTag.getElementById("left_arm_group"), w, h, joints.left_arm_group[0], joints.left_arm_group[1]);
-		var rightLeg = new component(svgTag.getElementById("right_leg_group"), w, h, joints.right_leg_group[0], joints.right_leg_group[1]);
-		var leftLeg = new component(svgTag.getElementById("left_leg_group"), w, h, joints.left_leg_group[0], joints.left_leg_group[1]);
+		var head = new component(svgTag.find("#head_group"), w, h, joints.head_group[0], joints.head_group[1]);
+		var torso = new component(svgTag.find("#torso_group"), w, h, joints.torso_group[0], joints.torso_group[1]);
+		var rightArm = new component(svgTag.find("#right_arm_group"), w, h, joints.right_arm_group[0], joints.right_arm_group[1]);
+		var leftArm = new component(svgTag.find("#left_arm_group"), w, h, joints.left_arm_group[0], joints.left_arm_group[1]);
+		var rightLeg = new component(svgTag.find("#right_leg_group"), w, h, joints.right_leg_group[0], joints.right_leg_group[1]);
+		var leftLeg = new component(svgTag.find("#left_leg_group"), w, h, joints.left_leg_group[0], joints.left_leg_group[1]);
 		
 		this.reset = function() {
 			clearInterval(interval);
@@ -713,7 +709,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var tx = (w * (1 - sx))/2 + move_x;
 			var ty = (h * (1 - sy))/2 + move_y;
 			var matrix = sprintf('matrix(%f,%f,%f,%f,%f,%f)', sx*cos, sy*sin, -sx*sin, sy*cos, (-cx*cos + cy*sin + cx)*sx + tx, (-cx*sin - cy*cos + cy)*sy + ty);
-			cm.setAttribute('transform', matrix);
+			cm.attr('transform', matrix);
 		};
 		
 		this.reset = function() {

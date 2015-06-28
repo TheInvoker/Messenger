@@ -14,15 +14,13 @@ $(document).ready(function() {
 	});
 	
 	// when click on a regular sticker from the drawer
-	$("#ani-picker").on('click', 'img.ani-sticker_select', function() {
-		alert(1);
+	$("#ani-picker").on('click', 'img.ani-sticker-select', function() {
 		animationObj.addSticker(true, this);
 		$("#ani-picker").hide();
 	});
 	
 	// when click on a reaction sticker from the drawer
-	$("#ani-reaction-picker").on('click', 'img.ani-reaction_select', function() {
-		alert(2);
+	$("#ani-reaction-picker").on('click', 'img.ani-reaction-select', function() {
 		animationObj.addReactionSticker(true, this);
 		$("#ani-reaction-picker").hide();
 	});
@@ -54,6 +52,6 @@ $(document).ready(function() {
 	
 	// DEBUG
 	// forcefully put a sticker from them     
-	animationObj.addSticker(false, $("img.ani-sticker_select").eq(0));
-	animationObj.addSticker(false, $("img.ani-sticker_select").eq(1));
+	animationObj.addSticker(false, $("img.ani-sticker-select").eq(0));
+	animationObj.addSticker(false, $("img.ani-sticker-select").eq(1));
 });
