@@ -25,7 +25,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					name:'yeti',
 					reactionSVG:0,
 					move_animation:'walk',
-					action_animation:'slap',
+					action_animation:'dance',
 					reaction_animation:'headBurst',
 					chat_animation:'',
 					custom_move_animationSVG : -1,
@@ -44,12 +44,12 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				'images/yeti/yeti-01.svg'
 			],
 			joints : {
-				head_group : [96, 72],
-				torso_group : [101, 99],
-				right_arm_group : [130, 78],
-				left_arm_group : [69, 78],
-				right_leg_group : [117, 135],
-				left_leg_group : [90, 135]
+				head_group : ['50%', '50%'],
+				torso_group : ['50%', '50%'],
+				right_arm_group : ['-5%', '95%'],
+				left_arm_group : ['105%', '95%'],
+				right_leg_group : ['50%', '-10%'],
+				left_leg_group : ['50%', '-10%']
 			},
 			reactions : [
 				{
