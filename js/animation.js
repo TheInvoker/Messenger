@@ -386,6 +386,8 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "orange", $(svgTag).height(), 200, function() {}, 3);
 			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "yellow", $(svgTag).height(), 200, function() {}, 3);
 			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "red", $(svgTag).height(), 200, function() {}, 3);
+		
+			effect_explosion(selectedStickerSvgTag, '', positionX, positionY, positionX, positionY-$(svgTag).height()/4.0, 'red', 2.5, 30, 4);
 		};
 		
 		var wobble = function() {
@@ -733,17 +735,32 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	};
 	
 	
-	var effect_explosion = function(selectedStickerSvgTag, type, positionX, positionY, color) {
+	var effect_explosion = function(selectedStickerSvgTag, type, positionX, positionY, targetX, targetY, color, expireDuration, endRotation, endScale) {
+
+		var tag = sprintf("<div class='ani-effect' style='background-color:%s;'/>", color);
+		var particle = $(tag);
+
+		$(selectedStickerSvgTag).parent().append(particle);
 		
-			var tag = sprintf("<div class='ani-effect' style='background-color:%s;'/>", color);
-			var particle = $(tag);
-			particleList.push({
-				obj : particle,
-				step : 0,
-				dist : dist,
-				angle : degree
-			});
-			$(selectedStickerSvgTag).closest("div.ani-message").append(particle);
+		var particlePosition = $(particle).position();
+		var sx = positionX-particlePosition.left, sy = positionY-particlePosition.top;
+		var ex = targetX-particlePosition.left, ey = targetY-particlePosition.top;
 		
+		var tl = new TimelineMax().to(particle, 0, {
+			x : positionX-particlePosition.left,
+			y : positionY-particlePosition.top
+		}).to(particle, expireDuration, {
+			x : ex,
+			y : ey,
+			transformOrigin : "50% 50%",
+			rotation:endRotation,
+			opacity:0,
+			scaleX:endScale,
+			scaleY:endScale,
+			ease:Sine.easeOut,
+			onComplete : function() {
+				particle.remove();
+			},
+		});
 	};
 };

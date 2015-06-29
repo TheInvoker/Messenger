@@ -39,5 +39,7 @@ div.ani-particle {
 	position:absolute;
 }
 div.ani-effect {
+	width:20px;
+	height:20px;
 	position:absolute;
 }
