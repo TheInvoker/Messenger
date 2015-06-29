@@ -432,7 +432,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var position = $(svgTag).position();
 			var positionX = position.left + ($(svgTag).width() * 0.5);
 			var positionY = position.top + ($(svgTag).height() * 0.5);
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - h/2, 90, "red", 100, 2000, function() {});
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - h/2, w/2.0, "red", 100, 2000, function() {});
 		};
 		
 		
