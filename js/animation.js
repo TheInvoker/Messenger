@@ -341,10 +341,10 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var targetX = targetPosition.left + ($(selectedStickerSvgTag).width() * 0.5);
 			var targetY = targetPosition.top + ($(selectedStickerSvgTag).height() * 0.5);
 			
-			new particleGenerator(selectedStickerSvgTag, positionX, positionY, targetX, targetY, $(selectedStickerSvgTag).width()/3.0, "yellow", 100, 4000, function() {
+			new particleGenerator(selectedStickerSvgTag, positionX, positionY, targetX, targetY, $(selectedStickerSvgTag).width()/3.0, $(selectedStickerSvgTag).width()/3.0, "yellow", 100, 4000, function() {
 				miniReactionCallback();
 				moveBackCallback();
-			});
+			}, 4);
 		};
 		
 		// REACTION ANIMATIONS  
@@ -383,9 +383,9 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var positionX = position.left + ($(svgTag).width() * 0.5);
 			var positionY = position.top + ($(svgTag).height() * 0.5);
 			
-			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "orange", 0, 200, function() {});
-			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "yellow", 0, 200, function() {});
-			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "red", 0, 200, function() {});
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "orange", $(svgTag).height(), 200, function() {}, 3);
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "yellow", $(svgTag).height(), 200, function() {}, 3);
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "red", $(svgTag).height(), 200, function() {}, 3);
 		};
 		
 		var wobble = function() {
@@ -421,7 +421,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var position = $(svgTag).position();
 			var positionX = position.left + ($(svgTag).width() * 0.5);
 			var positionY = position.top + ($(svgTag).height() * 0.5);
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - h/2, w/2.0, "red", 100, 2000, function() {});
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - h/2, w/2.0, w/2.0, "red", 100, 2000, function() {}, 2);
 		};
 		
 		
@@ -685,7 +685,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	};
 	
 	
-	var particleGenerator = function(selectedStickerSvgTag, positionX, positionY, targetX, targetY, dist_variance, color, curve, duration, miniReactionCallback) {
+	var particleGenerator = function(selectedStickerSvgTag, positionX, positionY, targetX, targetY, dist_varianceX, dist_varianceY, color, curve, duration, miniReactionCallback, expireDuration) {
 		
 		var lastIndex = -1;
 		var particleList = [];
@@ -699,8 +699,8 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 
 			$(selectedStickerSvgTag).parent().append(particle);
 			
-			var r1 = dist_variance * ((Math.random()*2)-1);
-			var r2 = dist_variance * ((Math.random()*2)-1);
+			var r1 = dist_varianceX * ((Math.random()*2)-1);
+			var r2 = dist_varianceY * ((Math.random()*2)-1);
 			
 			var particlePosition = $(particle).position();
 			var sx = positionX-particlePosition.left, sy = positionY-particlePosition.top;
@@ -709,7 +709,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var tl = new TimelineMax().to(particle, 0, {
 				x : positionX-particlePosition.left,
 				y : positionY-particlePosition.top
-			}).to(particle, 4, {
+			}).to(particle, expireDuration, {
 				bezier:{
 					type:"soft", values:[
 					{x:sx, y:sy}, 
@@ -730,8 +730,6 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		setTimeout(function() {
 			clearInterval(EE);
 		}, duration);
-
-		return;
 	};
 	
 	
