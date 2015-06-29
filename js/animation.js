@@ -736,40 +736,47 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	
 	
 	var effect_explosion = function(selectedStickerSvgTag, type, positionX, positionY, targetX, targetY, color, expireDuration, endRotation, endScale, endOpacity) {
+		
+		var effect_explosion_helper = function(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, tag) {
+			var particle = $(tag);
 
+			$(selectedStickerSvgTag).parent().append(particle);
+			
+			var particlePosition = $(particle).position();
+			var sx = positionX-particlePosition.left-$(particle).width()/2, sy = positionY-particlePosition.top-$(particle).height()/2;
+			var ex = targetX-particlePosition.left-$(particle).width()/2, ey = targetY-particlePosition.top-$(particle).height()/2;
+			
+			var tl = new TimelineMax().to(particle, 0, {
+				x : sx,
+				y : sy,
+				scaleX : 0,
+				scaleY : 0
+			}).to(particle, expireDuration, {
+				x : ex,
+				y : ey,
+				transformOrigin : "50% 50%",
+				rotation:endRotation,
+				opacity:endOpacity,
+				scaleX:endScale,
+				scaleY:endScale,
+				ease:Sine.easeOut,
+				onComplete : function() {
+					particle.remove();
+				},
+			});
+		};
+		
 		if (type == "impact") {
 			var url = 'images/effects/impact/hit_impact.svg';
-			var tag = sprintf("<img class=\"ani-effect\" src=\"%s\" />", url);
-		} else {
-			var style = sprintf("background-color:%s;", color);
-			var tag = sprintf("<div width=\"20px\" height=\"20px\" class=\"ani-effect\" style=\"%s\" />", style);
+			var tag = "<img class=\"ani-effect\" />";
+			
+			var particle = $(tag);
+			
+			$(particle).one("load", function() {
+				effect_explosion_helper(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, this);
+			}).attr("src", url);
+			var tag = sprintf("<div width=\"20px\" height=\"20px\" class=\"ani-effect\" style=\"background-color:%s;\" />", color);
+			effect_explosion_helper(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, tag);
 		}
-	
-		var particle = $(tag);
-
-		$(selectedStickerSvgTag).parent().append(particle);
-		
-		var particlePosition = $(particle).position();
-		var sx = positionX-particlePosition.left-$(particle).width()/2, sy = positionY-particlePosition.top-$(particle).height()/2;
-		var ex = targetX-particlePosition.left-$(particle).width()/2, ey = targetY-particlePosition.top-$(particle).height()/2;
-		
-		var tl = new TimelineMax().to(particle, 0, {
-			x : sx,
-			y : sy,
-			scaleX : 0,
-			scaleY : 0
-		}).to(particle, expireDuration, {
-			x : ex,
-			y : ey,
-			transformOrigin : "50% 50%",
-			rotation:endRotation,
-			opacity:endOpacity,
-			scaleX:endScale,
-			scaleY:endScale,
-			ease:Sine.easeOut,
-			onComplete : function() {
-				particle.remove();
-			},
-		});
 	};
 };
