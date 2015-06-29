@@ -1,6 +1,6 @@
 var animation = function(getContainerCallback, stickerInsertCallback) {
 	
-	var stickerList = [];                             // records the animation objects
+	var stickerList = [];                          // records the animation objects
 	var selectedStickerSvgTagIndexList = [];       // records pressed on sticker from other person
 	var masterStickerList = [
 		{
@@ -56,8 +56,8 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					name:'steve',
 					reactionSVG:0,
 					move_animation:'walk',
-					action_animation:'piss',
-					reaction_animation:'wobble',
+					action_animation:'kick',
+					reaction_animation:'jump',
 					chat_animation:'',
 					custom_move_animationSVG : -1,
 					custom_action_animationSVG: -1,
@@ -205,7 +205,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			selectedStickerSvgTagIndexList.push(selectedStickerSvgTag);
 			
 			// if its not under an animation currently
-			if (selectedStickerSvgTag.parent().find("svg").length==1 && !stickerList[selectedStickerSvgTag.attr("data-id")].isAnimating()) {
+			if (selectedStickerSvgTag.parent().find("svg").length==1) {
 				
 				// finds all the reactions and adds them
 				var selectedStickerObjIndex = parseInt(selectedStickerSvgTag.attr("data-id"), 10);
@@ -259,10 +259,6 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		var h = parseInt(svgTag.attr("height").replace("px",""), 10);
 		var main_group = svgTag.find("#main"); main_group.jx = '50%'; main_group.jy = '50%';
 		var componentList = util.getComponents(main_group);
-
-		this.reset = function() {
-			
-		};
 		
 		this.getMainComponent = function() {
 			return main_group;
@@ -274,10 +270,6 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		this.getHeight = function() {
 			return h;
-		};
-		
-		this.isAnimating = function() {
-			return false
 		};
 		
 		
@@ -458,7 +450,6 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			switch(animationType) {
 				case 'piss':
 					node.moveToSelf(selectedStickerSvgTag, function() {
-						child.reset();
 						piss(selectedStickerSvgTag, miniReactionCallback, node.moveBack);
 					});
 					return true;
@@ -489,7 +480,6 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	var mammal = function(svgTag, mappingObj) {
 		
 		var node = this;
-		var interval = -1;
 		var parent = new base(svgTag, this);
 		var w = parent.getWidth(), h = parent.getHeight();
 		var joints = mappingObj.joints;
@@ -504,20 +494,10 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		var rightLeg = svgTag.find("#right_leg_group"); rightLeg.jx = joints.right_leg_group[0]; rightLeg.jy = joints.right_leg_group[1];
 		var leftLeg = svgTag.find("#left_leg_group"); leftLeg.jx = joints.left_leg_group[0]; leftLeg.jy = joints.left_leg_group[1];
 		
-		this.reset = function() {
-			clearInterval(interval);
-			interval = -1;
-			
-			parent.reset();
-		};
-		
 		this.getMappingObj = function() {
 			return mappingObj;
 		};
 		
-		this.isAnimating = function() {
-			return interval != -1 || parent.isAnimating();
-		};
 		
 		
 		
@@ -556,8 +536,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var to = sprintf("%s %s", leftLeg.jx, leftLeg.jy);
 			var tl = new TimelineMax().to(leftLeg, duration, {
 				rotation : -30,
-				transformOrigin : to,
-				onComplete : miniReactionCallback
+				transformOrigin : to
 			}).to(leftLeg, duration, {
 				rotation : 60,
 				transformOrigin : to,
@@ -620,21 +599,15 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		// REACTION ANIMATIONS  
 		
 		var jump = function() {
-			var step = 0;
-			interval = setInterval(function() { 
-				var scale = 1;
-				head.transform(0, scale, scale, 0, 0, 0, -10*(Math.sin(step)+1));
-				torso.transform(0, scale, scale, 0, 0, 0, -10*(Math.sin(step)+1));
-				rightArm.transform(0, scale, scale, 0, 0, 0, -10*(Math.sin(step)+1));
-				leftArm.transform(0, scale, scale, 0, 0, 0, -10*(Math.sin(step)+1));
-				rightLeg.transform(0, scale, scale, 0, 0, 0, -10*(Math.sin(step)+1));
-				leftLeg.transform(0, scale, scale, 0, 0, 0, -10*(Math.sin(step)+1));
-				step += 0.1;
-			}, 1);
-			
-			setTimeout(function() {
-				node.reset();
-			}, 200);
+			var duration = 0.1;
+
+			var tl = new TimelineMax().to(main, duration, {
+				y : -$(svgTag).height()/16.0,
+				ease:Power2.easeOut,
+			}).to(main, duration, {
+				y : 0,
+				ease:Power2.easeIn
+			});
 		};
 		
 
@@ -664,26 +637,22 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};
 		
 		this.animateAction = function(animationType, moveType, chatType, selectedStickerSvgTag, miniReactionCallback) {
-			node.reset();
 			animateChat(chatType);
 			animateMove(moveType);
 	
 			switch(animationType) {
 				case 'kick':
 					parent.moveToOther(selectedStickerSvgTag, function() {
-						node.reset();
 						kick(miniReactionCallback, parent.moveBack);
 					});
 					break;
 				case 'dance':
 					parent.moveToOther(selectedStickerSvgTag, function() {
-						node.reset();
 						dance(miniReactionCallback, parent.moveBack);
 					});
 					break;
 				case 'slap':
 					parent.moveToOther(selectedStickerSvgTag, function() {
-						node.reset();
 						slap(miniReactionCallback, parent.moveBack);
 					});
 					break;
@@ -695,8 +664,6 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};
 		
 		this.animateReaction = function(animationType, selectedStickerSvgTag) {
-			node.reset();
-			
 			switch(animationType) {
 				case 'jump':
 					jump();
