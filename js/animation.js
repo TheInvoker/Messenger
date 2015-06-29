@@ -13,12 +13,12 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				'images/steve/steve.svg'
 			],
 			joints : {
-				head_group : ['50%', 193],
-				torso_group : ['50%', 237],
-				right_arm_group : [227, 208],
-				left_arm_group : [170, 208],
-				right_leg_group : ['50%', '-10px'],
-				left_leg_group : ['50%', '-10px']
+				head_group : ['50%', '95%'],
+				torso_group : ['50%', '50%'],
+				right_arm_group : ['-10%', '10%'],
+				left_arm_group : ['90%', '10%'],
+				right_leg_group : ['50%', '-10%'],
+				left_leg_group : ['50%', '-10%']
 			},
 			reactions : [
 				{
@@ -56,7 +56,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					name:'steve',
 					reactionSVG:0,
 					move_animation:'walk',
-					action_animation:'kick',
+					action_animation:'slap',
 					reaction_animation:'wobble',
 					chat_animation:'',
 					custom_move_animationSVG : -1,
@@ -321,23 +321,19 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		// CHAT ANIMATIONS
 		
 		var earthquake = function() {
-			var container = getContainerCallback();
-			var step = 0, mag = 0.75, decayFactor = 0.99;
-			var interval = setInterval(function() { 
-				container.css({
-					top : (7*Math.sin(step)) + "px"
-				});
-				step += mag;
-				if (step > 150) {
-					mag *= decayFactor;
+			var container = getContainerCallback();			
+			var duration = 0.05, magnitude = 10;
+			
+			var tl = new TimelineMax({
+				repeat : 20,
+				onComplete : function() {
+					container.css("transform", "");
 				}
-			}, 1);
-			setTimeout(function() {
-				clearInterval(interval);
-				container.animate({
-					top : "0px"
-				}, 100);
-			}, 3000);
+			}).to(container, duration, {
+				y : 1+magnitude
+			}).to(container, duration, {
+				y : 1-magnitude
+			});
 		};
 		
 		// MOVING ANIMATIONS 
@@ -421,14 +417,13 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};	
 		
 		var twirl = function() {
-			var step = 0;
-			interval = setInterval(function() { 
-				main_component.transform(step, 1, 1, w/2, h/2, 0, 0);
-				step += 3;
-				if (step > 360) {
-					child.reset();
-				}
-			}, 1);
+			var duration = 1;
+			var to = sprintf("%s %s", main_group.jx, main_group.jy);
+			
+			var tl = new TimelineMax().to(main_group, duration, {
+				rotation : 360,
+				transformOrigin : to
+			});
 		};
 		
 		var headBloodBurst = function(selectedStickerSvgTag) {
@@ -564,23 +559,25 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				transformOrigin : to,
 				onComplete : miniReactionCallback
 			}).to(leftLeg, duration, {
-				rotation:0,
-				transformOrigin:to,
+				rotation : 0,
+				transformOrigin : to,
 				onComplete : moveBackCallback
 			});
 		};
 		
 		var slap = function(miniReactionCallback, moveBackCallback) {
-			var step = 0, rotation_angle = 40;
-			interval = setInterval(function() {
-				leftArm.transform(-Math.sin(step) * 150, 1, 1, 0, 0, 0, 0);
-				
-				step += 0.1;
-				if (step > 3.5) {
-					node.reset();
-					callback();
-				}
-			}, 10);
+			var duration = 0.2;
+			var to = sprintf("%s %s", leftArm.jx, leftArm.jy);
+			
+			var tl = new TimelineMax().to(leftArm, duration, {
+				rotation : 120,
+				transformOrigin : to,
+				onComplete : miniReactionCallback
+			}).to(leftArm, duration, {
+				rotation : 0,
+				transformOrigin : to,
+				onComplete : moveBackCallback
+			});
 		};
 		
 		var dance = function(miniReactionCallback, moveBackCallback) {
