@@ -359,14 +359,14 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				
 				var sx = 0;
 				var sy = 0;
-				var ex = $(svgTag).width() * ((Math.random()*2)-1);
-				var ey = $(svgTag).height();
+				var ex = w * ((Math.random()*2)-1);
+				var ey = h;
 
 				var tl = new TimelineMax().to(obj, duration, {
 					bezier:{
 						type:"soft", values:[
 						{x:sx, y:sy}, 
-						{x:(sx+ex)/2.0, y:sy-curve}, 
+						{x:(sx+ex)/2.0, y:-curve}, 
 						{x:ex, y:ey}], 
 						autoRotate:false
 					}, 
@@ -610,7 +610,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var duration = 0.1;
 
 			var tl = new TimelineMax().to(main, duration, {
-				y : -$(svgTag).height()/16.0,
+				y : -$(svgTag).height()/8.0,
 				ease:Power2.easeOut,
 			}).to(main, duration, {
 				y : 0,
