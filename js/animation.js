@@ -25,8 +25,8 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					name:'yeti',
 					reactionSVG:0,
 					move_animation:'walk',
-					action_animation:'dance',
-					reaction_animation:'headBurst',
+					action_animation:'kick',
+					reaction_animation:'explode',
 					chat_animation:'',
 					custom_move_animationSVG : -1,
 					custom_action_animationSVG: -1,
@@ -105,7 +105,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};
 
 		this.getComponents = function(cm) {
-			return $(cm).find("g,path,polygon,polyline");
+			return $(cm).find("path,polygon,polyline");
 		};
 
 		this.getMappingIndexByName = function(name) {
@@ -350,45 +350,42 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		// REACTION ANIMATIONS  
 		
 		var explode = function(selectedStickerSvgTag) {	
-			var i, l = componentList.length, step = 0, rot = 0;
+			var curve = 100;
+			var duration = 3.5;
+			var i, l = componentList.length;
+			
 			for(i=0; i<l; i+=1) {
-				componentList[i].initMove();
-			}
-			
-			interval = setInterval(function() { 
-				for(i=0; i<l; i+=1) {	
-					var cm = componentList[i];
+				var obj = componentList[i];
 				
-					var vx = cm.getAttr("speed-x"),
-						vy = cm.getAttr("speed-y"),
-						px = cm.getAttr("data-px"),
-						py = cm.getAttr("data-py");
-					
-					px += vx;
-					py -= vy;
-					vy -= 0.1;
-					
-					cm.transform(rot, 1, 1, w/2, h/2, px, py);
-					
-					cm.setAttr("speed-y", vy);
-					cm.setAttr("speed-x", vx);
-					cm.setAttr("data-px", px);
-					cm.setAttr("data-py", py);
-				}
-				rot += 0.2;
-				step += 0.002;
-			}, 1);
-			
-			setTimeout(function() {
-				child.reset();
-			}, 3000);
+				var sx = 0;
+				var sy = 0;
+				var ex = $(svgTag).width() * ((Math.random()*2)-1);
+				var ey = $(svgTag).height();
+
+				var tl = new TimelineMax().to(obj, duration, {
+					bezier:{
+						type:"soft", values:[
+						{x:sx, y:sy}, 
+						{x:(sx+ex)/2.0, y:sy-curve}, 
+						{x:ex, y:ey}], 
+						autoRotate:false
+					}, 
+					onComplete:function(obj) {
+						TweenLite.to(obj, 0, {x:0, y:0, rotation:0});
+					},
+					onCompleteParams:[obj],
+					transformOrigin : "50% 50%",
+					rotation:360*Math.random()
+				});
+			}
 			
 			var position = $(svgTag).position();
 			var positionX = position.left + ($(svgTag).width() * 0.5);
 			var positionY = position.top + ($(svgTag).height() * 0.5);
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "orange", 0, 200, function() {});
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "yellow", 0, 200, function() {});
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "red", 0, 200, function() {});
+			
+			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "orange", 0, 200, function() {});
+			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "yellow", 0, 200, function() {});
+			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "red", 0, 200, function() {});
 		};
 		
 		var wobble = function() {
