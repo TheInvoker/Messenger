@@ -555,6 +555,10 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			
 			var to = sprintf("%s %s", leftLeg.jx, leftLeg.jy);
 			var tl = new TimelineMax().to(leftLeg, duration, {
+				rotation : -30,
+				transformOrigin : to,
+				onComplete : miniReactionCallback
+			}).to(leftLeg, duration, {
 				rotation : 60,
 				transformOrigin : to,
 				onComplete : miniReactionCallback
@@ -567,15 +571,30 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		var slap = function(miniReactionCallback, moveBackCallback) {
 			var duration = 0.2;
-			var to = sprintf("%s %s", leftArm.jx, leftArm.jy);
 			
+			var to = sprintf("%s %s", main.jx, main.jy);
+			var tl = new TimelineMax().to(main, duration, {
+				rotation : 5,
+				transformOrigin : to
+			}).to(main, duration, {
+				rotation : 0,
+				transformOrigin:to
+			});
+			
+			var to = sprintf("%s %s", leftArm.jx, leftArm.jy);
 			var tl = new TimelineMax().to(leftArm, duration, {
-				rotation : 120,
+				rotation : -30,
 				transformOrigin : to,
+				ease:Power2.easeOut
+			}).to(leftArm, duration, {
+				rotation : 150,
+				transformOrigin : to,
+				ease:Power2.easeInOut,
 				onComplete : miniReactionCallback
 			}).to(leftArm, duration, {
 				rotation : 0,
 				transformOrigin : to,
+				ease:Power2.easeIn,
 				onComplete : moveBackCallback
 			});
 		};
