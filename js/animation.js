@@ -383,11 +383,11 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var positionX = position.left + ($(svgTag).width() * 0.5);
 			var positionY = position.top + ($(svgTag).height() * 0.5);
 			
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "orange", $(svgTag).height(), 200, function() {}, 3);
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "yellow", $(svgTag).height(), 200, function() {}, 3);
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "red", $(svgTag).height(), 200, function() {}, 3);
+			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "orange", $(svgTag).height(), 200, function() {}, 3);
+			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "yellow", $(svgTag).height(), 200, function() {}, 3);
+			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "red", $(svgTag).height(), 200, function() {}, 3);
 		
-			effect_explosion(selectedStickerSvgTag, '', positionX, positionY, positionX, positionY-$(svgTag).height()/4.0, 'red', 2.5, 30, 4);
+			effect_explosion(selectedStickerSvgTag, 'impact', positionX, positionY, positionX, positionY, 'white', 1, 0, 1, 1);
 		};
 		
 		var wobble = function() {
@@ -709,8 +709,8 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var ex = targetX-particlePosition.left + r1, ey = targetY-particlePosition.top + r2;
 			
 			var tl = new TimelineMax().to(particle, 0, {
-				x : positionX-particlePosition.left,
-				y : positionY-particlePosition.top
+				x : sx,
+				y : sy
 			}).to(particle, expireDuration, {
 				bezier:{
 					type:"soft", values:[
@@ -735,26 +735,35 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	};
 	
 	
-	var effect_explosion = function(selectedStickerSvgTag, type, positionX, positionY, targetX, targetY, color, expireDuration, endRotation, endScale) {
+	var effect_explosion = function(selectedStickerSvgTag, type, positionX, positionY, targetX, targetY, color, expireDuration, endRotation, endScale, endOpacity) {
 
-		var tag = sprintf("<div class='ani-effect' style='background-color:%s;'/>", color);
+		if (type == "impact") {
+			var url = 'images/effects/impact/hit_impact.svg';
+			var tag = sprintf("<img class=\"ani-effect\" src=\"%s\" />", url);
+		} else {
+			var style = sprintf("background-color:%s;", color);
+			var tag = sprintf("<div width=\"20px\" height=\"20px\" class=\"ani-effect\" style=\"%s\" />", style);
+		}
+	
 		var particle = $(tag);
 
 		$(selectedStickerSvgTag).parent().append(particle);
 		
 		var particlePosition = $(particle).position();
-		var sx = positionX-particlePosition.left, sy = positionY-particlePosition.top;
-		var ex = targetX-particlePosition.left, ey = targetY-particlePosition.top;
+		var sx = positionX-particlePosition.left-$(particle).width()/2, sy = positionY-particlePosition.top-$(particle).height()/2;
+		var ex = targetX-particlePosition.left-$(particle).width()/2, ey = targetY-particlePosition.top-$(particle).height()/2;
 		
 		var tl = new TimelineMax().to(particle, 0, {
-			x : positionX-particlePosition.left,
-			y : positionY-particlePosition.top
+			x : sx,
+			y : sy,
+			scaleX : 0,
+			scaleY : 0
 		}).to(particle, expireDuration, {
 			x : ex,
 			y : ey,
 			transformOrigin : "50% 50%",
 			rotation:endRotation,
-			opacity:0,
+			opacity:endOpacity,
 			scaleX:endScale,
 			scaleY:endScale,
 			ease:Sine.easeOut,
