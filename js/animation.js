@@ -56,7 +56,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					name:'steve',
 					reactionSVG:0,
 					move_animation:'walk',
-					action_animation:'slap',
+					action_animation:'piss',
 					reaction_animation:'wobble',
 					chat_animation:'',
 					custom_move_animationSVG : -1,
@@ -299,7 +299,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		this.moveToSelf = function(selectedStickerSvgTag, moveCallback) {
 			TweenLite.to(svgTag, 1, {
-				x : $(window).width(),
+				x : 0,
 				onComplete : moveCallback
 			});
 		};
@@ -349,7 +349,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var targetX = targetPosition.left + ($(selectedStickerSvgTag).width() * 0.5);
 			var targetY = targetPosition.top + ($(selectedStickerSvgTag).height() * 0.5);
 			
-			new particleGenerator(selectedStickerSvgTag, positionX, positionY, targetX, targetY, 10, 5, "yellow", 100, 1000, function() {
+			new particleGenerator(selectedStickerSvgTag, positionX, positionY, targetX, targetY, $(selectedStickerSvgTag).width()/3.0, "yellow", 100, 4000, function() {
 				miniReactionCallback();
 				moveBackCallback();
 			});
@@ -394,9 +394,9 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var position = $(svgTag).position();
 			var positionX = position.left + ($(svgTag).width() * 0.5);
 			var positionY = position.top + ($(svgTag).height() * 0.5);
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, 180, "orange", 0, 200, function() {});
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, 180, "yellow", 0, 200, function() {});
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, 180, "red", 0, 200, function() {});
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "orange", 0, 200, function() {});
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "yellow", 0, 200, function() {});
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - $(svgTag).height()/2, 0, "red", 0, 200, function() {});
 		};
 		
 		var wobble = function() {
@@ -432,7 +432,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var position = $(svgTag).position();
 			var positionX = position.left + ($(svgTag).width() * 0.5);
 			var positionY = position.top + ($(svgTag).height() * 0.5);
-			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - h/2, 90, 45, "red", 100, 2000, function() {});
+			particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, positionY - h/2, 90, "red", 100, 2000, function() {});
 		};
 		
 		
@@ -541,7 +541,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		// ACTION ANIMATIONS  
 		
-		var kick = function(miniReactionCallback, moveBackCallback) {
+		var kick = function(miniReactionCallback, moveBackCallback) {			
 			var duration = 0.2;
 			
 			var to = sprintf("%s %s", main.jx, main.jy);
@@ -771,30 +771,45 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	};
 	*/
 	
-	var particleGenerator = function(selectedStickerSvgTag, positionX, positionY, targetX, targetY, dist_variance, angle_variance, color, curve, duration, miniReactionCallback) {
+	var particleGenerator = function(selectedStickerSvgTag, positionX, positionY, targetX, targetY, dist_variance, color, curve, duration, miniReactionCallback) {
 		
+		var lastIndex = -1;
 		var particleList = [];
-		
+
 		var EE = setInterval(function() {
-			var dist = Math.sqrt(Math.pow(targetX-positionX, 2) + Math.pow(targetY-positionY, 2));
-			var degree = Math.atan2(targetY - positionY, targetX - positionX) * 180 / Math.PI;
-			dist += dist_variance * ((Math.random()*2)-1);
-			degree += angle_variance * ((Math.random()*2)-1);
-			
 			var tag = sprintf("<div class='ani-particle' style='background-color:%s;' />",color);
 			var particle = $(tag);
-			particleList.push({
-				obj : particle,
-				step : 0,
-				dist : dist,
-				angle : degree
-			});
-			$(selectedStickerSvgTag).closest("div.ani-message").append(particle);
+			
+			lastIndex += 1;
+			particle.myIndex = lastIndex;
+
+			$(selectedStickerSvgTag).parent().append(particle);
+			
+			var r1 = dist_variance * ((Math.random()*2)-1);
+			var r2 = dist_variance * ((Math.random()*2)-1);
 			
 			var particlePosition = $(particle).position();
-			particle.css({
-				left: positionX + 'px',
-				top: positionY + 'px',
+			var sx = positionX-particlePosition.left, sy = positionY-particlePosition.top;
+			var ex = targetX-particlePosition.left + r1, ey = targetY-particlePosition.top + r2;
+			
+			var tl = new TimelineMax().to(particle, 0, {
+				x : positionX-particlePosition.left,
+				y : positionY-particlePosition.top
+			}).to(particle, 4, {
+				bezier:{
+					type:"soft", values:[
+					{x:sx, y:sy}, 
+					{x:(sx+ex)/2.0, y:-curve + (sy+ey)/2.0}, 
+					{x:ex, y:ey}], 
+					autoRotate:false
+				}, 
+				ease:Sine.easeOut,
+				onComplete : function() {
+					if (particle.myIndex == lastIndex) {
+						miniReactionCallback();
+					}
+					particle.remove();
+				}
 			});
 		}, 10);
 		
@@ -802,39 +817,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			clearInterval(EE);
 		}, duration);
 
-		var interval = setInterval(function() {
-			var len = particleList.length;
-			for(var i=len-1; i>=0; i-=1) {
-				var obj = particleList[i];
-				
-				var particle = obj.obj,
-					step = obj.step,
-					dist = obj.dist,
-					angle = obj.angle;			
-				
-				var data = util.length_dir(step, angle);
-				var x_rel = data[0];
-				var y_rel = data[1];
-				y_rel -= Math.sin((step/dist) * Math.PI)*curve;
-				
-				particle.css({
-					left: positionX + x_rel,
-					top: positionY + y_rel
-				});
-				
-				step += 1;
-				obj.step = step;
-				
-				if (step >= dist) {
-					particle.remove();
-					particleList.splice(i, 1);
-					if (particleList.length == 0) {
-						clearInterval(interval);
-						miniReactionCallback();
-					}
-				}
-			}
-		}, 5);
+		return;
 	};
 	
 	
