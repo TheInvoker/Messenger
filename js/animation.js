@@ -31,6 +31,28 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					custom_move_animationSVG : -1,
 					custom_action_animationSVG: -1,
 					custom_reaction_animationSVG: -1
+				},
+				{
+					name:'yeti',
+					reactionSVG:0,
+					move_animation:'walk',
+					action_animation:'slap',
+					reaction_animation:'wobble',
+					chat_animation:'',
+					custom_move_animationSVG : -1,
+					custom_action_animationSVG: -1,
+					custom_reaction_animationSVG: -1
+				},
+				{
+					name:'yeti',
+					reactionSVG:0,
+					move_animation:'walk',
+					action_animation:'dance',
+					reaction_animation:'twirl',
+					chat_animation:'',
+					custom_move_animationSVG : -1,
+					custom_action_animationSVG: -1,
+					custom_reaction_animationSVG: -1
 				}
 			]
 		},
