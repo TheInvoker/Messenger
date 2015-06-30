@@ -772,17 +772,18 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var sx = positionX-particlePosition.left, sy = positionY-particlePosition.top;
 			var ex = targetX-particlePosition.left, ey = targetY-particlePosition.top;
 
-			var resizePix = $(particle).width() * endScale;
+			var resizePixW = $(particle).width() * endScale;
+			var resizePixH = $(particle).height() * endScale;
 			var tl = new TimelineMax().to(particle, 0, {
 				x : sx,
 				y : sy,
 				width:'0px',
 				height:'0px'
 			}).to(particle, expireDuration, {
-				x : (ex-resizePix/2) + 'px',
-				y : (ey-resizePix/2) + 'px',
-				width : resizePix + 'px',
-				height : resizePix + 'px',
+				x : (ex-resizePixW/2) + 'px',
+				y : (ey-resizePixH/2) + 'px',
+				width : resizePixW + 'px',
+				height : resizePixH + 'px',
 				transformOrigin : "50% 50%",
 				rotation:endRotation,
 				opacity:endOpacity,
