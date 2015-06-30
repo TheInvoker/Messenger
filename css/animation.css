@@ -38,7 +38,7 @@ div.ani-particle {
 	border:1px solid black;
 	position:absolute;
 }
-div.ani-effect, img.ani-effect {
+div.ani-effect, svg.ani-effect {
 	z-index:-1;
 	position:absolute;
 }

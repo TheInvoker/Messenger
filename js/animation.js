@@ -274,7 +274,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	
 	
 
-	var base = function(svgTag, child) {
+	var base = function(svgTag) {
 		
 		var node = this;
 		var w = parseInt(svgTag.attr("width").replace("px",""), 10);
@@ -372,8 +372,8 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		// REACTION ANIMATIONS  
 		
 		var explode = function(selectedStickerSvgTag) {	
-			var curve = 100;
-			var duration = 3.5;
+			var curve = h * Math.random();
+			var duration = 1.7;
 			var i, l = componentList.length;
 			
 			for(i=0; i<l; i+=1) {
@@ -381,14 +381,18 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				
 				var sx = 0;
 				var sy = 0;
-				var ex = w * ((Math.random()*2)-1);
+				var ex = 1.5 * w * ((Math.random()*2)-1);
 				var ey = h;
+				var m = (sx+ex)/2.0;
+				var m1 = (sx+m)/2.0;
+				var m2 = (m+ex)/2.0;
 
 				var tl = new TimelineMax().to(obj, duration, {
 					bezier:{
 						type:"soft", values:[
 						{x:sx, y:sy}, 
-						{x:(sx+ex)/2.0, y:-curve}, 
+						{x:m1, y:-curve}, 
+						{x:m2, y:-curve}, 
 						{x:ex, y:ey}], 
 						autoRotate:false
 					}, 
@@ -409,7 +413,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "yellow", $(svgTag).height(), 200, function() {}, 3);
 			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "red", $(svgTag).height(), 200, function() {}, 3);
 		
-			effect_explosion(selectedStickerSvgTag, 'impact', positionX, positionY, positionX, positionY, 'white', 1, 0, 1, 1);
+			effect_explosion(selectedStickerSvgTag, 'impact', positionX, positionY, positionX, positionY, 'white', 0.7, 0, 1, 1);
 		};
 		
 		var wobble = function() {
@@ -501,7 +505,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	var mammal = function(svgTag, mappingObj) {
 		
 		var node = this;
-		var parent = new base(svgTag, this);
+		var parent = new base(svgTag);
 		var w = parent.getWidth(), h = parent.getHeight();
 		var joints = mappingObj.joints;
 		
@@ -762,41 +766,41 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		var effect_explosion_helper = function(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, tag) {
 			var particle = $(tag);
 
-			$(selectedStickerSvgTag).parent().append(particle);
+			$(selectedStickerSvgTag).parent().prepend(particle);
 			
 			var particlePosition = $(particle).position();
-			var sx = positionX-particlePosition.left-$(particle).width()/2, sy = positionY-particlePosition.top-$(particle).height()/2;
-			var ex = targetX-particlePosition.left-$(particle).width()/2, ey = targetY-particlePosition.top-$(particle).height()/2;
-			
+			var sx = positionX-particlePosition.left, sy = positionY-particlePosition.top;
+			var ex = targetX-particlePosition.left, ey = targetY-particlePosition.top;
+
+			var resizePix = $(particle).width() * endScale;
 			var tl = new TimelineMax().to(particle, 0, {
 				x : sx,
 				y : sy,
-				scaleX : 0,
-				scaleY : 0
+				width:'0px',
+				height:'0px'
 			}).to(particle, expireDuration, {
-				x : ex,
-				y : ey,
+				x : (ex-resizePix/2) + 'px',
+				y : (ey-resizePix/2) + 'px',
+				width : resizePix + 'px',
+				height : resizePix + 'px',
 				transformOrigin : "50% 50%",
 				rotation:endRotation,
 				opacity:endOpacity,
-				scaleX:endScale,
-				scaleY:endScale,
 				ease:Sine.easeOut,
 				onComplete : function() {
 					particle.remove();
-				},
+				}
 			});
 		};
 		
 		if (type == "impact") {
 			var url = 'images/effects/impact/hit_impact.svg';
-			var tag = "<img class=\"ani-effect\" />";
-			
-			var particle = $(tag);
-			
-			$(particle).one("load", function() {
-				effect_explosion_helper(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, this);
-			}).attr("src", url);
+			$.get(url, function(data) {
+				var svgTag = $(data).find('svg');
+				svgTag.attr("class", "ani-effect");
+				effect_explosion_helper(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, svgTag);
+			});
+		} else {
 			var tag = sprintf("<div width=\"20px\" height=\"20px\" class=\"ani-effect\" style=\"background-color:%s;\" />", color);
 			effect_explosion_helper(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, tag);
 		}
