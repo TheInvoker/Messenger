@@ -5,6 +5,8 @@ $(document).ready(function() {
 		return $("#ani-container");
 	}, function(str) {
 		$("#ani-picker").html(str);
+	}, function(str) {
+		$("#ani-reaction-picker").html(str).show();
 	});
 
 	// open sticker drawer
@@ -39,10 +41,8 @@ $(document).ready(function() {
 	$("#ani-container").on('mousedown touchstart', 'div.ani-from-them svg.ani-sticker', function() { 
 		var svgTag = this;
 		pressTimer = window.setTimeout(function() { 
-			animationObj.reactionStickerHolder(svgTag, function(str) {
-				$("#ani-picker").hide();
-				$("#ani-reaction-picker").html(str).show();
-			});
+			$("#ani-picker").hide();
+			animationObj.reactionStickerHolder(svgTag);
 		},600);
 		return false; 
 	}).on('mouseup touchend', 'div.ani-from-them svg.ani-sticker', function() { 

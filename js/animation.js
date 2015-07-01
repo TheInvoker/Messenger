@@ -1,4 +1,4 @@
-var animation = function(getContainerCallback, stickerInsertCallback) {
+var animation = function(getContainerCallback, stickerInsertCallback, reactionStickerInsertCallback) {
 	
 	var stickerList = [];                          // records the animation objects
 	var selectedStickerSvgTagIndexList = [];       // records pressed on sticker from other person
@@ -122,7 +122,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					move_animation:'walkToThem',
 					action_animation:'kick',
 					reaction_animation:'wobble',
-					chat_animation:'',
+					chat_animation:'earthquake',
 					custom_move_animationSVG : -1,
 					custom_action_animationSVG: -1,
 					custom_reaction_animationSVG: -1
@@ -144,8 +144,8 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		controller.addReactionSticker(fromYou, imgTag);
 	};
 	
-	this.reactionStickerHolder = function(svgTag, callback) {
-		controller.reactionStickerHolder(svgTag, callback);
+	this.reactionStickerHolder = function(svgTag) {
+		controller.reactionStickerHolder(svgTag);
 	};
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -267,7 +267,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			});
 		};
 	
-		this.reactionStickerHolder = function(svgTag, callback) {
+		this.reactionStickerHolder = function(svgTag) {
 			// get a reference to the sticker that was clicked on
 			var selectedStickerSvgTag = $(svgTag);
 			var selectedStickerSvgTagIndex = selectedStickerSvgTagIndexList.length;
@@ -290,7 +290,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-reaction-select ani-svg' data-id='%d' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-chat-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, reaction.move_animation, reaction.action_animation, reaction.reaction_animation, reaction.chat_animation, selectedStickerSvgTagIndex));
 				}
 				
-				callback(reactionlst.join(""));
+				reactionStickerInsertCallback(reactionlst.join(""));
 			}
 		}
 	};
