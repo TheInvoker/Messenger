@@ -426,7 +426,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var positionX = position.left + ($(svgTag).width() * 0.5);
 			var positionY = position.top + ($(svgTag).height() * 0.5);
 			
-			effect_explosion(selectedStickerSvgTag, 'impact', positionX, positionY, positionX, positionY, 'white', 0.7, 0, 1, 1);
+			effect_explosion(selectedStickerSvgTag, 'impact', positionX, positionY, positionX, positionY, 0.7, 0, 1, 1);
 		};
 		
 		var wobble = function() {
@@ -869,11 +869,9 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 	};
 	
 	
-	var effect_explosion = function(selectedStickerSvgTag, type, positionX, positionY, targetX, targetY, color, expireDuration, endRotation, endScale, endOpacity) {
+	var effect_explosion = function(selectedStickerSvgTag, type, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity) {
 		
-		var effect_explosion_helper = function(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, tag) {
-			var particle = $(tag);
-
+		var effect_explosion_helper = function(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, particle) {
 			$(selectedStickerSvgTag).parent().prepend(particle);
 			
 			var particlePosition = $(particle).position();
@@ -911,7 +909,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				effect_explosion_helper(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, svgTag);
 			});
 		} else {
-			var tag = sprintf("<div width=\"20px\" height=\"20px\" class=\"ani-effect\" style=\"background-color:%s;\" />", color);
+			var tag = $(sprintf("<div width=\"20px\" height=\"20px\" class=\"ani-effect\" style=\"background-color:%s;\" />", type));
 			effect_explosion_helper(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, tag);
 		}
 	};
