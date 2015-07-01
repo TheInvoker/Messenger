@@ -24,7 +24,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				{
 					name:'yeti',
 					reactionSVG:0,
-					move_animation:'walk',
+					move_animation:'walkToThem',
 					action_animation:'kick',
 					reaction_animation:'explode',
 					chat_animation:'',
@@ -35,7 +35,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				{
 					name:'yeti',
 					reactionSVG:0,
-					move_animation:'walk',
+					move_animation:'walkToThem',
 					action_animation:'slap',
 					reaction_animation:'wobble',
 					chat_animation:'',
@@ -46,7 +46,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				{
 					name:'yeti',
 					reactionSVG:0,
-					move_animation:'walk',
+					move_animation:'walkToThem',
 					action_animation:'dance',
 					reaction_animation:'twirl',
 					chat_animation:'',
@@ -77,7 +77,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				{
 					name:'steve',
 					reactionSVG:0,
-					move_animation:'walk',
+					move_animation:'walkToThem',
 					action_animation:'dance',
 					reaction_animation:'jump',
 					chat_animation:'',
@@ -212,10 +212,15 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				// get animation object of selected sticker
 				var selectedStickerObj = stickerList[selectedStickerSvgTag.attr("data-id")];
 
-				// start an animation
-				newStickerObj.animateAction(actionAnimationType, moveAnimationType, chatAnimationType, selectedStickerSvgTag, function() {
-					// start the mini-reaction animation
-					selectedStickerObj.animateReaction(reactionAnimationType, selectedStickerSvgTag);
+				// start an environment animation
+				newStickerObj.animateChat(chatAnimationType);
+				// start a move animation
+				newStickerObj.animateMove(moveAnimationType, selectedStickerSvgTag, function() {
+					// start an action animation
+					newStickerObj.animateAction(actionAnimationType, selectedStickerSvgTag, function() {
+						// start the mini-reaction animation
+						selectedStickerObj.animateReaction(reactionAnimationType, selectedStickerSvgTag);
+					});
 				});
 			});
 		};
@@ -298,7 +303,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		// CSS TRANSITION ANIMATIONS
 		
-		this.moveToOther = function(selectedStickerSvgTag, moveCallback) {
+		this.moveToOther = function(selectedStickerSvgTag, moveCallback, moveTLs) {
 			var myPosition = $(svgTag).position();
 			var positionX = myPosition.left;
 			var myW = $(svgTag).width();
@@ -307,14 +312,26 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			
 			TweenLite.to(svgTag, 1, {
 				x : ((targetX-positionX) + myW*1.4),
-				onComplete : moveCallback
+				onComplete : function() {
+					for(var i=0; i<moveTLs.length; i+=1) {
+						moveTLs[i].pause(0);
+						moveTLs[i].clear();
+					}
+					moveCallback();
+				}
 			});
 		};
 		
-		this.moveToSelf = function(selectedStickerSvgTag, moveCallback) {
+		this.moveToSelf = function(selectedStickerSvgTag, moveCallback, moveTLs) {
 			TweenLite.to(svgTag, 1, {
 				x : 0,
-				onComplete : moveCallback
+				onComplete : function() {
+					for(var i=0; i<moveTLs.length; i+=1) {
+						moveTLs[i].pause(0);
+						moveTLs[i].clear();
+					}
+					moveCallback();
+				}
 			});
 		};
 		
@@ -464,19 +481,17 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			return false;
 		};
 		
-		this.animateMove = function(animationType) {
+		this.animateMove = function(animationType, selectedStickerSvgTag, actionReactionCallback) {
 			switch(animationType) {
 
 			}
 			return false;
 		};
 		
-		this.animateAction = function(animationType, moveType, selectedStickerSvgTag, miniReactionCallback) {
+		this.animateAction = function(animationType, selectedStickerSvgTag, miniReactionCallback) {
 			switch(animationType) {
 				case 'piss':
-					node.moveToSelf(selectedStickerSvgTag, function() {
-						piss(selectedStickerSvgTag, miniReactionCallback, node.moveBack);
-					});
+					piss(selectedStickerSvgTag, miniReactionCallback, node.moveBack);
 					return true;
 			} 
 			return false;
@@ -528,7 +543,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		// MOVING ANIMATIONS  
 		
-		var walk = function() {
+		var walk = function(actionReactionCallback) {
 			/*
 			var step = 0, rotation_angle = 50, head_angle = 10, torso_angle = 5, arm_angle = 15;
 			interval = setInterval(function() {
@@ -541,7 +556,33 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 				leftLeg.transform((Math.sin(step)) * rotation_angle, 1, 1, 0, 0, 0, 0);
 				step += 0.1;
 			}, 0.5);    
-			*/			
+			*/		
+			var duration = 0.2;
+			
+			var to = sprintf("%s %s", leftLeg.jx, leftLeg.jy);
+			var tl1 = new TimelineMax({
+				repeat:-1
+			}).to(leftLeg, duration, {
+				rotation : 45,
+				transformOrigin : to
+			}).to(leftLeg, duration, {
+				rotation : 0,
+				transformOrigin:to
+			});
+			
+			var to = sprintf("%s %s", rightLeg.jx, rightLeg.jy);
+			var tl2 = new TimelineMax({
+				repeat:-1,
+				delay:0.2
+			}).to(rightLeg, duration, {
+				rotation : 45,
+				transformOrigin : to
+			}).to(rightLeg, duration, {
+				rotation : 0,
+				transformOrigin:to
+			});
+			
+			return [tl1, tl2];
 		};
 		
 		// ACTION ANIMATIONS  
@@ -649,7 +690,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 
 		// ANIMATION HANDLERS
 
-		var animateChat = function(animationType) {
+		this.animateChat = function(animationType) {
 			switch(animationType) {
 				case '':
 					break;
@@ -660,40 +701,36 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			}
 		};
 		
-		var animateMove = function(animationType) {
+		this.animateMove = function(animationType, selectedStickerSvgTag, actionReactionCallback) {
 			switch(animationType) {
-				case 'walk':
-					walk();
+				case 'walkToThem':
+					var moveTLs = walk();
+					parent.moveToOther(selectedStickerSvgTag, actionReactionCallback, moveTLs);
+					break;
+				case 'walkABit':
+					var moveTLs = walk();
+					parent.moveToSelf(selectedStickerSvgTag, actionReactionCallback, moveTLs);
 					break;
 				default:
-					if (!parent.animateMove(animationType)) {
+					if (!parent.animateMove(animationType, selectedStickerSvgTag, actionReactionCallback)) {
 						alert(sprintf("Error: Move animation '%s' does not exist.", animationType));
 					}
 			}
 		};
 		
-		this.animateAction = function(animationType, moveType, chatType, selectedStickerSvgTag, miniReactionCallback) {
-			animateChat(chatType);
-			animateMove(moveType);
-	
+		this.animateAction = function(animationType, selectedStickerSvgTag, miniReactionCallback) {
 			switch(animationType) {
 				case 'kick':
-					parent.moveToOther(selectedStickerSvgTag, function() {
-						kick(miniReactionCallback, parent.moveBack);
-					});
+					kick(miniReactionCallback, parent.moveBack);
 					break;
 				case 'dance':
-					parent.moveToOther(selectedStickerSvgTag, function() {
-						dance(miniReactionCallback, parent.moveBack);
-					});
+					dance(miniReactionCallback, parent.moveBack);
 					break;
 				case 'slap':
-					parent.moveToOther(selectedStickerSvgTag, function() {
-						slap(miniReactionCallback, parent.moveBack);
-					});
+					slap(miniReactionCallback, parent.moveBack);
 					break;
 				default:
-					if (!parent.animateAction(animationType, moveType, selectedStickerSvgTag, miniReactionCallback)) {
+					if (!parent.animateAction(animationType, selectedStickerSvgTag, miniReactionCallback)) {
 						alert(sprintf("Error: Action animation '%s' does not exist.", animationType));
 					}
 			} 
