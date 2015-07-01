@@ -310,7 +310,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var targetPosition = $(selectedStickerSvgTag).position();
 			var targetX = targetPosition.left;
 			
-			TweenLite.to(svgTag, 1, {
+			TweenLite.to(svgTag, 2, {
 				x : ((targetX-positionX) + myW*1.4),
 				onComplete : function() {
 					for(var i=0; i<moveTLs.length; i+=1) {
@@ -323,7 +323,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		};
 		
 		this.moveToSelf = function(selectedStickerSvgTag, moveCallback, moveTLs) {
-			TweenLite.to(svgTag, 1, {
+			TweenLite.to(svgTag, 2, {
 				x : 0,
 				onComplete : function() {
 					for(var i=0; i<moveTLs.length; i+=1) {
@@ -543,29 +543,22 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		// MOVING ANIMATIONS  
 		
-		var walk = function(actionReactionCallback) {
-			/*
-			var step = 0, rotation_angle = 50, head_angle = 10, torso_angle = 5, arm_angle = 15;
-			interval = setInterval(function() {
-				main.transform(-(Math.sin(step * 0.8)) * head_angle, 1, 1, w/2, h/2, 0, 0);
-				head.transform(-(Math.cos(step * 0.8)) * torso_angle, 1, 1, 0, 0, 0, 0);
-				torso.transform(-(Math.cos(step * 0.8)) * torso_angle, 1, 1, 0, 0, 0, 0);
-				leftArm.transform((Math.sin(step * 0.8)) * arm_angle, 1, 1, 0, 0, 0, 0);
-				rightArm.transform(-(Math.cos(step * 0.8)) * arm_angle, 1, 1, 0, 0, 0, 0);
-				rightLeg.transform(-(Math.cos(step)) * rotation_angle, 1, 1, 0, 0, 0, 0);
-				leftLeg.transform((Math.sin(step)) * rotation_angle, 1, 1, 0, 0, 0, 0);
-				step += 0.1;
-			}, 0.5);    
-			*/		
-			var duration = 0.2;
+		var walk = function(actionReactionCallback) {	
+			var duration = 0.1;
 			
 			var to = sprintf("%s %s", leftLeg.jx, leftLeg.jy);
 			var tl1 = new TimelineMax({
 				repeat:-1
-			}).to(leftLeg, duration, {
+			}).to(leftLeg, duration*2, {
+				scaleX:0.9,
 				rotation : 45,
 				transformOrigin : to
-			}).to(leftLeg, duration, {
+			}).to(leftLeg, duration*4, {
+				scaleX:1.1,
+				rotation : -30,
+				transformOrigin : to
+			}).to(leftLeg, duration*2, {
+				scaleX:1,
 				rotation : 0,
 				transformOrigin:to
 			});
@@ -574,15 +567,89 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var tl2 = new TimelineMax({
 				repeat:-1,
 				delay:0.2
-			}).to(rightLeg, duration, {
+			}).to(rightLeg, duration*2, {
+				scaleX:0.9,
 				rotation : 45,
 				transformOrigin : to
-			}).to(rightLeg, duration, {
+			}).to(rightLeg, duration*4, {
+				scaleX:1.1,
+				rotation : -30,
+				transformOrigin : to
+			}).to(rightLeg, duration*2, {
+				scaleX:1,
 				rotation : 0,
 				transformOrigin:to
 			});
 			
-			return [tl1, tl2];
+			var to = sprintf("%s %s", rightArm.jx, rightArm.jy);
+			var tl3 = new TimelineMax({
+				repeat:-1
+			}).to(rightArm, duration*2, {
+				scaleX:0.9,
+				rotation:5,
+				transformOrigin:to
+			}).to(rightArm, duration*4, {
+				scaleX:1.1,
+				rotation:-5,
+				transformOrigin:to
+			}).to(rightArm, duration*2, {
+				scaleX:1,
+				rotation:0,
+				transformOrigin:to
+			});
+			
+			var to = sprintf("%s %s", leftArm.jx, leftArm.jy);
+			var tl4 = new TimelineMax({
+				repeat:-1
+			}).to(leftArm, duration*2, {
+				scaleX:0.9,
+				rotation:5,
+				transformOrigin:to
+			}).to(leftArm, duration*4, {
+				scaleX:1.1,
+				rotation:-5,
+				transformOrigin:to
+			}).to(leftArm, duration*2, {
+				scaleX:1,
+				rotation:0,
+				transformOrigin:to
+			});
+			
+			var to = sprintf("%s %s", torso.jx, torso.jy);
+			var tl5 = new TimelineMax({
+				repeat:-1
+			}).to(torso, duration*2, {
+				scaleX:0.9,
+				rotation:5,
+				transformOrigin : to
+			}).to(torso, duration*4, {
+				scaleX:1.1,
+				rotation:-5,
+				transformOrigin : to
+			}).to(torso, duration*2, {
+				scaleX:1,
+				rotation:0,
+				transformOrigin : to
+			});
+			
+			var to = sprintf("%s %s", head.jx, head.jy);
+			var tl6 = new TimelineMax({
+				repeat:-1
+			}).to(head, duration*2, {
+				scaleX:0.9,
+				rotation:5,
+				transformOrigin : to
+			}).to(head, duration*4, {
+				scaleX:1.1,
+				rotation:-5,
+				transformOrigin : to
+			}).to(head, duration*2, {
+				scaleX:1,
+				rotation:0,
+				transformOrigin : to
+			});
+			
+			return [tl1, tl2, tl3, tl4, tl5, tl6];
 		};
 		
 		// ACTION ANIMATIONS  
