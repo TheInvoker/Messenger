@@ -880,7 +880,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var sx = positionX-particlePosition.left, sy = positionY-particlePosition.top;
 			var ex = targetX-particlePosition.left, ey = targetY-particlePosition.top;
 
-			var resizePixW = $(selectedStickerSvgTag).height() * endScale;
+			var resizePixW = $(selectedStickerSvgTag).width() * endScale;
 			var resizePixH = $(selectedStickerSvgTag).height() * endScale;
 
 			var tl = new TimelineMax().to(particle, 0, {
