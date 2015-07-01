@@ -10,7 +10,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			T_SVG : 0,
 			stickerSVG : 0,
 			SVGList : [
-				'images/steve/steve.svg'
+				'images/stickers/steve/steve.svg'
 			],
 			joints : {
 				head_group : ['50%', '95%'],
@@ -63,7 +63,7 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			T_SVG : 0,
 			stickerSVG : 0,
 			SVGList : [
-				'images/yeti/yeti-01.svg'
+				'images/stickers/yeti/yeti-01.svg'
 			],
 			joints : {
 				head_group : ['50%', '50%'],
@@ -426,10 +426,6 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var positionX = position.left + ($(svgTag).width() * 0.5);
 			var positionY = position.top + ($(svgTag).height() * 0.5);
 			
-			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "orange", $(svgTag).height(), 200, function() {}, 3);
-			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "yellow", $(svgTag).height(), 200, function() {}, 3);
-			//particleGenerator(selectedStickerSvgTag, positionX, positionY, positionX, $(svgTag).height(), $(svgTag).height(), 0, "red", $(svgTag).height(), 200, function() {}, 3);
-		
 			effect_explosion(selectedStickerSvgTag, 'impact', positionX, positionY, positionX, positionY, 'white', 0.7, 0, 1, 1);
 		};
 		
@@ -545,52 +541,60 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 		
 		var walk = function(actionReactionCallback) {	
 			var duration = 0.1;
+			var rot1 = 2;
+			var scl = 0.04;
 			
 			var to = sprintf("%s %s", leftLeg.jx, leftLeg.jy);
 			var tl1 = new TimelineMax({
 				repeat:-1
 			}).to(leftLeg, duration*2, {
-				scaleX:0.9,
+				scaleX:1-scl,
 				rotation : 45,
-				transformOrigin : to
+				transformOrigin : to,
+				ease:Power2.easeOut
 			}).to(leftLeg, duration*4, {
-				scaleX:1.1,
-				rotation : -30,
-				transformOrigin : to
+				scaleX:1+scl,
+				rotation : -45,
+				transformOrigin : to,
+				ease:Power2.easeInOut
 			}).to(leftLeg, duration*2, {
 				scaleX:1,
 				rotation : 0,
-				transformOrigin:to
+				transformOrigin:to,
+				ease:Power2.easeIn
 			});
 			
 			var to = sprintf("%s %s", rightLeg.jx, rightLeg.jy);
 			var tl2 = new TimelineMax({
 				repeat:-1,
-				delay:0.2
+				delay:0.4
 			}).to(rightLeg, duration*2, {
-				scaleX:0.9,
+				scaleX:1-scl,
 				rotation : 45,
-				transformOrigin : to
+				transformOrigin : to,
+				ease:Power2.easeOut
 			}).to(rightLeg, duration*4, {
-				scaleX:1.1,
-				rotation : -30,
-				transformOrigin : to
+				scaleX:1+scl,
+				rotation : -45,
+				transformOrigin : to,
+				ease:Power2.easeInOut
 			}).to(rightLeg, duration*2, {
 				scaleX:1,
 				rotation : 0,
-				transformOrigin:to
+				transformOrigin:to,
+				ease:Power2.easeIn
 			});
 			
 			var to = sprintf("%s %s", rightArm.jx, rightArm.jy);
 			var tl3 = new TimelineMax({
 				repeat:-1
 			}).to(rightArm, duration*2, {
-				scaleX:0.9,
-				rotation:5,
+				scaleX:1-scl,
+				rotation:rot1*5,
 				transformOrigin:to
 			}).to(rightArm, duration*4, {
-				scaleX:1.1,
-				rotation:-5,
+				scaleX:1+scl,
+				rotation:-rot1*5,
 				transformOrigin:to
 			}).to(rightArm, duration*2, {
 				scaleX:1,
@@ -602,12 +606,12 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var tl4 = new TimelineMax({
 				repeat:-1
 			}).to(leftArm, duration*2, {
-				scaleX:0.9,
-				rotation:5,
+				scaleX:1-scl,
+				rotation:rot1*5,
 				transformOrigin:to
 			}).to(leftArm, duration*4, {
-				scaleX:1.1,
-				rotation:-5,
+				scaleX:1+scl,
+				rotation:-rot1*5,
 				transformOrigin:to
 			}).to(leftArm, duration*2, {
 				scaleX:1,
@@ -619,12 +623,12 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var tl5 = new TimelineMax({
 				repeat:-1
 			}).to(torso, duration*2, {
-				scaleX:0.9,
-				rotation:5,
+				scaleX:1-scl,
+				rotation:rot1,
 				transformOrigin : to
 			}).to(torso, duration*4, {
-				scaleX:1.1,
-				rotation:-5,
+				scaleX:1+scl,
+				rotation:-rot1,
 				transformOrigin : to
 			}).to(torso, duration*2, {
 				scaleX:1,
@@ -636,12 +640,12 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var tl6 = new TimelineMax({
 				repeat:-1
 			}).to(head, duration*2, {
-				scaleX:0.9,
-				rotation:5,
+				scaleX:1-scl,
+				rotation:rot1,
 				transformOrigin : to
 			}).to(head, duration*4, {
-				scaleX:1.1,
-				rotation:-5,
+				scaleX:1+scl,
+				rotation:-rot1,
 				transformOrigin : to
 			}).to(head, duration*2, {
 				scaleX:1,
@@ -876,8 +880,9 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 			var sx = positionX-particlePosition.left, sy = positionY-particlePosition.top;
 			var ex = targetX-particlePosition.left, ey = targetY-particlePosition.top;
 
-			var resizePixW = $(particle).width() * endScale;
-			var resizePixH = $(particle).height() * endScale;
+			var resizePixW = $(selectedStickerSvgTag).height() * endScale;
+			var resizePixH = $(selectedStickerSvgTag).height() * endScale;
+
 			var tl = new TimelineMax().to(particle, 0, {
 				x : sx,
 				y : sy,
