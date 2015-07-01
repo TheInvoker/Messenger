@@ -84,6 +84,48 @@ var animation = function(getContainerCallback, stickerInsertCallback) {
 					custom_move_animationSVG : -1,
 					custom_action_animationSVG: -1,
 					custom_reaction_animationSVG: -1
+				},
+				{
+					name:'yeti_white',
+					reactionSVG:0,
+					move_animation:'walkToThem',
+					action_animation:'dance',
+					reaction_animation:'jump',
+					chat_animation:'',
+					custom_move_animationSVG : -1,
+					custom_action_animationSVG: -1,
+					custom_reaction_animationSVG: -1
+				}
+			]
+		},
+		{
+			name : 'yeti_white',
+			sklcls : 'mammal',
+			active : true,
+			T_SVG : 0,
+			stickerSVG : 0,
+			SVGList : [
+				'images/stickers/yeti_white/yeti_beige_default.svg'
+			],
+			joints : {
+				head_group : ['50%', '50%'],
+				torso_group : ['50%', '50%'],
+				right_arm_group : ['-5%', '95%'],
+				left_arm_group : ['105%', '95%'],
+				right_leg_group : ['50%', '-10%'],
+				left_leg_group : ['50%', '-10%']
+			},
+			reactions : [
+				{
+					name:'steve',
+					reactionSVG:0,
+					move_animation:'walkToThem',
+					action_animation:'kick',
+					reaction_animation:'wobble',
+					chat_animation:'',
+					custom_move_animationSVG : -1,
+					custom_action_animationSVG: -1,
+					custom_reaction_animationSVG: -1
 				}
 			]
 		}
