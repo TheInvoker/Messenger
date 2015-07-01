@@ -46,7 +46,7 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 				{
 					name:'yeti',
 					reactionSVG:0,
-					move_animation:'walkToThem',
+					move_animation:'flyToThem',
 					action_animation:'dance',
 					reaction_animation:'twirl',
 					chat_animation:'',
@@ -345,6 +345,22 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 		
 		// CSS TRANSITION ANIMATIONS
 		
+		var moveFinisher = function(moveCallback, moveTLs) {
+			for(var i=0; i<moveTLs.length; i+=1) {
+				moveTLs[i].pause(0);
+				moveTLs[i].clear();
+			}
+			moveCallback();
+		};
+		
+		var moveGeneralizer = function(tweenObj, moveCallback, moveTLs) {
+			tweenObj["onComplete"] = function() {
+				moveFinisher(moveCallback, moveTLs);
+			};
+			
+			TweenLite.to(svgTag, 2, tweenObj);
+		};
+		
 		this.moveToOther = function(selectedStickerSvgTag, moveCallback, moveTLs) {
 			var myPosition = $(svgTag).position();
 			var positionX = myPosition.left;
@@ -352,30 +368,47 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 			var targetPosition = $(selectedStickerSvgTag).position();
 			var targetX = targetPosition.left;
 			
-			TweenLite.to(svgTag, 2, {
-				x : ((targetX-positionX) + myW*1.4),
-				onComplete : function() {
-					for(var i=0; i<moveTLs.length; i+=1) {
-						moveTLs[i].pause(0);
-						moveTLs[i].clear();
-					}
-					moveCallback();
-				}
-			});
+			moveGeneralizer({
+				x : targetX - positionX + myW*1.4
+			}, moveCallback, moveTLs);
 		};
 		
 		this.moveToSelf = function(selectedStickerSvgTag, moveCallback, moveTLs) {
-			TweenLite.to(svgTag, 2, {
-				x : 0,
+			moveGeneralizer({
+				x : 0
+			}, moveCallback, moveTLs);
+		};
+		
+		this.flyToOther = function(selectedStickerSvgTag, moveCallback, moveTLs) {
+			var myPosition = $(svgTag).position();
+			var positionX = myPosition.left;
+			var myW = $(svgTag).width();
+			var targetPosition = $(selectedStickerSvgTag).position();
+			var targetX = targetPosition.left;
+			
+			var duration = 0.5;
+			var to = sprintf("%s %s", svgTag.jx, svgTag.jy);
+			var tl = new TimelineMax({
 				onComplete : function() {
-					for(var i=0; i<moveTLs.length; i+=1) {
-						moveTLs[i].pause(0);
-						moveTLs[i].clear();
-					}
-					moveCallback();
+					moveFinisher(moveCallback, moveTLs);
 				}
+			}).to(svgTag, duration*2, {
+				x : 0,
+				rotation : -90,
+				transformOrigin : to
+			}).to(svgTag, duration*4, {
+				x:targetX - positionX + myW*1.4,
+				ease:Power2.easeInOut
+			}).to(svgTag, duration*2, {
+				rotation : 0,
+				transformOrigin:to,
+				ease:Power2.easeOut
 			});
 		};
+		
+		
+		
+		
 		
 		this.moveBack = function() {
 			TweenLite.to(svgTag, 0.5, {
@@ -823,6 +856,10 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 				case 'walkABit':
 					var moveTLs = walk();
 					parent.moveToSelf(selectedStickerSvgTag, actionReactionCallback, moveTLs);
+					break;
+				case 'flyToThem':
+					var moveTLs = walk();
+					parent.flyToOther(selectedStickerSvgTag, actionReactionCallback, moveTLs);
 					break;
 				default:
 					if (!parent.animateMove(animationType, selectedStickerSvgTag, actionReactionCallback)) {
