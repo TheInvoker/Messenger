@@ -6,7 +6,7 @@ $(document).ready(function() {
 	}, function(str) {
 		$("#ani-picker").html(str);
 	}, function(str) {
-		$("#ani-reaction-picker").html(str).show();
+		$("#ani-reaction-picker").html(str);
 	});
 
 	// open sticker drawer
@@ -42,6 +42,7 @@ $(document).ready(function() {
 		var svgTag = this;
 		pressTimer = window.setTimeout(function() { 
 			$("#ani-picker").hide();
+			$("#ani-reaction-picker").show();
 			animationObj.reactionStickerHolder(svgTag);
 		},600);
 		return false; 
