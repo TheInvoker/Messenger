@@ -275,33 +275,29 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 			var selectedStickerSvgTagIndex = selectedStickerSvgTagIndexList.length;
 			selectedStickerSvgTagIndexList.push(selectedStickerSvgTag);
 			
-			// if its not under an animation currently
-			if (selectedStickerSvgTag.parent().find("svg").length==1) {
+			// finds all the reactions and adds them
+			var selectedStickerObjIndex = parseInt(selectedStickerSvgTag.attr("data-id"), 10);
+			var selectedStickerObj = stickerList[selectedStickerObjIndex];
+			var mappingObj = selectedStickerObj.getMappingObj();
+			var reactionsList = mappingObj.reactions;
+			var reactionlst = [];
+			for(var i=0; i<reactionsList.length; i+=1) {
+				var reaction = reactionsList[i];
+				var reactionMappingObjIndex = util.getMappingIndexByName(reaction.name);
+				var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
+				var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
 				
-				// finds all the reactions and adds them
-				var selectedStickerObjIndex = parseInt(selectedStickerSvgTag.attr("data-id"), 10);
-				var selectedStickerObj = stickerList[selectedStickerObjIndex];
-				var mappingObj = selectedStickerObj.getMappingObj();
-				var reactionsList = mappingObj.reactions;
-				var reactionlst = [];
-				for(var i=0; i<reactionsList.length; i+=1) {
-					var reaction = reactionsList[i];
-					var reactionMappingObjIndex = util.getMappingIndexByName(reaction.name);
-					var reactionMappingObj = masterStickerList[reactionMappingObjIndex];
-					var reactionLink = reactionMappingObj.SVGList[reaction.reactionSVG];
-					
-					var types = reaction.animation.split(" ");
-					var placeAni = types[0],
-					    moveAni = types[1],
-						actionAni = types[2],
-						reactionAni = types[3],
-						environAni = types[4];
-					
-					reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-reaction-select ani-svg' data-id='%d' data-place-animation='%s' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-chat-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, placeAni, moveAni, actionAni, reactionAni, environAni, selectedStickerSvgTagIndex));
-				}
+				var types = reaction.animation.split(" ");
+				var placeAni = types[0],
+					moveAni = types[1],
+					actionAni = types[2],
+					reactionAni = types[3],
+					environAni = types[4];
 				
-				reactionStickerInsertCallback(reactionlst.join(""));
+				reactionlst.push(sprintf("<div class='ani-img-container'><img src='%s' class='ani-reaction-select ani-svg' data-id='%d' data-place-animation='%s' data-move-animation='%s' data-action-animation='%s' data-reaction-animation='%s' data-chat-animation='%s' data-obj-id='%s'/></div>", reactionLink, reactionMappingObjIndex, placeAni, moveAni, actionAni, reactionAni, environAni, selectedStickerSvgTagIndex));
 			}
+			
+			reactionStickerInsertCallback(reactionlst.join(""));
 		}
 	};
 

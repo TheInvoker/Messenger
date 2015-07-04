@@ -42,8 +42,10 @@ $(document).ready(function() {
 		var svgTag = this;
 		pressTimer = window.setTimeout(function() { 
 			$("#ani-picker").hide();
-			$("#ani-reaction-picker").show();
-			animationObj.reactionStickerHolder(svgTag);
+			if ($(svgTag).parent().find("svg").length==1) {
+				$("#ani-reaction-picker").show();
+				animationObj.reactionStickerHolder(svgTag);
+			}
 		},600);
 		return false; 
 	}).on('mouseup touchend', 'div.ani-from-them svg.ani-sticker', function() { 
