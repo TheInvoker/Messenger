@@ -56,4 +56,5 @@ $(document).ready(function() {
 	animationObj.addSticker(false, $("img.ani-sticker-select").eq(0));
 	animationObj.addSticker(false, $("img.ani-sticker-select").eq(1));
 	animationObj.addSticker(false, $("img.ani-sticker-select").eq(2));
+	animationObj.addSticker(false, $("img.ani-sticker-select").eq(3));
 });
