@@ -53,10 +53,10 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 			joints : {
 				head_group : ['50%', '50%'],
 				torso_group : ['50%', '50%'],
-				right_arm_group : ['-5%', '95%'],
-				left_arm_group : ['105%', '95%'],
-				right_leg_group : ['50%', '-10%'],
-				left_leg_group : ['50%', '-10%']
+				right_arm_group : ['14%', '91%'],
+				left_arm_group : ['86%', '91%'],
+				right_leg_group : ['30%', '12%'],
+				left_leg_group : ['30%', '12%']
 			},
 			reactions : [
 				{
@@ -602,38 +602,17 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 			var rot1 = 2;
 			var scl = 0.04;
 			
-			var to = sprintf("%s %s", leftLeg.jx, leftLeg.jy);
+			var to = sprintf("%s %s", rightLeg.jx, rightLeg.jy);
 			var tl1 = new TimelineMax({
 				repeat:-1
-			}).to(leftLeg, duration*2, {
-				scaleX:1-scl,
-				rotation : 45,
-				transformOrigin : to,
-				ease:Power2.easeOut
-			}).to(leftLeg, duration*4, {
-				scaleX:1+scl,
-				rotation : -45,
-				transformOrigin : to,
-				ease:Power2.easeInOut
-			}).to(leftLeg, duration*2, {
-				scaleX:1,
-				rotation : 0,
-				transformOrigin:to,
-				ease:Power2.easeIn
-			});
-			
-			var to = sprintf("%s %s", rightLeg.jx, rightLeg.jy);
-			var tl2 = new TimelineMax({
-				repeat:-1,
-				delay:0.4
 			}).to(rightLeg, duration*2, {
 				scaleX:1-scl,
-				rotation : 45,
+				rotation : -45,
 				transformOrigin : to,
 				ease:Power2.easeOut
 			}).to(rightLeg, duration*4, {
 				scaleX:1+scl,
-				rotation : -45,
+				rotation : 45,
 				transformOrigin : to,
 				ease:Power2.easeInOut
 			}).to(rightLeg, duration*2, {
@@ -643,25 +622,29 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 				ease:Power2.easeIn
 			});
 			
-			var to = sprintf("%s %s", rightArm.jx, rightArm.jy);
-			var tl3 = new TimelineMax({
-				repeat:-1
-			}).to(rightArm, duration*2, {
+			var to = sprintf("%s %s", leftLeg.jx, leftLeg.jy);
+			var tl2 = new TimelineMax({
+				repeat:-1,
+				delay:0.4
+			}).to(leftLeg, duration*2, {
 				scaleX:1-scl,
-				rotation:rot1*5,
-				transformOrigin:to
-			}).to(rightArm, duration*4, {
+				rotation : -45,
+				transformOrigin : to,
+				ease:Power2.easeOut
+			}).to(leftLeg, duration*4, {
 				scaleX:1+scl,
-				rotation:-rot1*5,
-				transformOrigin:to
-			}).to(rightArm, duration*2, {
+				rotation : 45,
+				transformOrigin : to,
+				ease:Power2.easeInOut
+			}).to(leftLeg, duration*2, {
 				scaleX:1,
-				rotation:0,
-				transformOrigin:to
+				rotation : 0,
+				transformOrigin:to,
+				ease:Power2.easeIn
 			});
-			
+
 			var to = sprintf("%s %s", leftArm.jx, leftArm.jy);
-			var tl4 = new TimelineMax({
+			var tl3 = new TimelineMax({
 				repeat:-1
 			}).to(leftArm, duration*2, {
 				scaleX:1-scl,
@@ -672,6 +655,23 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 				rotation:-rot1*5,
 				transformOrigin:to
 			}).to(leftArm, duration*2, {
+				scaleX:1,
+				rotation:0,
+				transformOrigin:to
+			});
+			
+			var to = sprintf("%s %s", rightArm.jx, rightArm.jy);
+			var tl4 = new TimelineMax({
+				repeat:-1
+			}).to(rightArm, duration*2, {
+				scaleX:1-scl,
+				rotation:rot1*5,
+				transformOrigin:to
+			}).to(rightArm, duration*4, {
+				scaleX:1+scl,
+				rotation:-rot1*5,
+				transformOrigin:to
+			}).to(rightArm, duration*2, {
 				scaleX:1,
 				rotation:0,
 				transformOrigin:to
@@ -751,7 +751,9 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 			var duration = 0.2;
 			
 			var to = sprintf("%s %s", main.jx, main.jy);
-			var tl = new TimelineMax().to(main, duration, {
+			var tl = new TimelineMax({
+				repeat:2
+			}).to(main, duration, {
 				rotation : 5,
 				transformOrigin : to
 			}).to(main, duration, {
@@ -759,21 +761,23 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 				transformOrigin:to
 			});
 			
-			var to = sprintf("%s %s", leftArm.jx, leftArm.jy);
-			var tl = new TimelineMax().to(leftArm, duration, {
-				rotation : -30,
+			var to = sprintf("%s %s", rightArm.jx, rightArm.jy);
+			var tl = new TimelineMax({
+				repeat:2,
+				onComplete : moveBackCallback
+			}).to(rightArm, duration, {
+				rotation : 90,
 				transformOrigin : to,
 				ease:Power2.easeOut
-			}).to(leftArm, duration, {
-				rotation : 150,
+			}).to(rightArm, duration, {
+				rotation : -50,
 				transformOrigin : to,
 				ease:Power2.easeInOut,
 				onComplete : miniReactionCallback
-			}).to(leftArm, duration, {
+			}).to(rightArm, duration, {
 				rotation : 0,
 				transformOrigin : to,
-				ease:Power2.easeIn,
-				onComplete : moveBackCallback
+				ease:Power2.easeIn
 			});
 		};
 		
@@ -804,6 +808,10 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 					transformOrigin : to
 				});	
 			}
+		};
+		
+		var kiss = function(miniReactionCallback, moveBackCallback) {
+			
 		};
 		
 		// REACTION ANIMATIONS  
@@ -875,6 +883,9 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 					break;
 				case 'slap':
 					slap(miniReactionCallback, parent.moveBack);
+					break;
+				case 'kiss':
+					kiss(miniReactionCallback, parent.moveBack);
 					break;
 				default:
 					if (!parent.animateAction(animationType, selectedStickerSvgTag, miniReactionCallback)) {
