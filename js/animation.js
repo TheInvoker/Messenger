@@ -36,7 +36,7 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 				{
 					name:'yeti',
 					reactionSVG:0,
-					animation:'them fly dance twirl -',
+					animation:'them walk kiss twirl -',
 					custom_frames:'-1 -1 -1'
 				}
 			]
@@ -68,7 +68,7 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 				{
 					name:'yeti_white',
 					reactionSVG:0,
-					animation:'them fly dance twirl -',
+					animation:'them walk dance twirl -',
 					custom_frames:'-1 -1 -1'
 				}
 			]
@@ -94,7 +94,7 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 				{
 					name:'steve',
 					reactionSVG:0,
-					animation:'them fly dance wobble earthquake',
+					animation:'them walk dance wobble earthquake',
 					custom_frames:'-1 -1 -1'
 				}
 			]
@@ -720,7 +720,7 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 		
 		// ACTION ANIMATIONS  
 		
-		var kick = function(miniReactionCallback, moveBackCallback) {			
+		var kick = function(selectedStickerSvgTag, miniReactionCallback, moveBackCallback) {			
 			var duration = 0.2;
 			
 			var to = sprintf("%s %s", main.jx, main.jy);
@@ -747,7 +747,7 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 			});
 		};
 		
-		var slap = function(miniReactionCallback, moveBackCallback) {
+		var slap = function(selectedStickerSvgTag, miniReactionCallback, moveBackCallback) {
 			var duration = 0.2;
 			
 			var to = sprintf("%s %s", main.jx, main.jy);
@@ -781,7 +781,7 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 			});
 		};
 		
-		var dance = function(miniReactionCallback, moveBackCallback) {			
+		var dance = function(selectedStickerSvgTag, miniReactionCallback, moveBackCallback) {			
 			var duration = 0.2;
 			var lst = [head, torso, rightArm, leftArm, rightLeg, leftLeg];
 			
@@ -810,8 +810,77 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 			}
 		};
 		
-		var kiss = function(miniReactionCallback, moveBackCallback) {
+		var kiss = function(selectedStickerSvgTag, miniReactionCallback, moveBackCallback) {
+			var duration = 1;
 			
+			var q = -$(svgTag).parent().width() + $(svgTag).width()*1.1;
+			var w = -$(svgTag).parent().width() + $(svgTag).width()*1.4;
+
+			var to = "50% 50%";
+			var tl = new TimelineMax().to(svgTag, duration, {
+				rotation : -10,
+				x : q,
+				transformOrigin : to,
+				ease:Power2.easeOut,
+				onComplete : function() {
+					miniReactionCallback();
+					
+					var position = $(svgTag).position();
+					var positionX = position.left + ($(svgTag).width() * 0.5);
+					var positionY = position.top + ($(svgTag).height() * 0.5);
+					effect_explosion(selectedStickerSvgTag, "heart", positionX, positionY, positionX, positionY-100, 20, 0, 0.4, 0);
+				}
+			}).to(svgTag, duration, {
+				rotation : 0,
+				x : w,
+				transformOrigin : to,
+				ease:Power2.easeIn,
+				onComplete : moveBackCallback
+			});
+			
+			var to = sprintf("%s %s", rightLeg.jx, rightLeg.jy);
+			var tl = new TimelineMax().to(rightLeg, duration, {
+				rotation : 45,
+				transformOrigin : to,
+				ease:Power2.easeOut
+			}).to(rightLeg, duration, {
+				rotation : 0,
+				transformOrigin : to,
+				ease:Power2.easeIn
+			});
+			
+			var to = sprintf("%s %s", leftLeg.jx, leftLeg.jy);
+			var tl = new TimelineMax().to(leftLeg, duration, {
+				rotation : 45,
+				transformOrigin : to,
+				ease:Power2.easeOut
+			}).to(leftLeg, duration, {
+				rotation : 0,
+				transformOrigin : to,
+				ease:Power2.easeIn
+			});
+			
+			var to = sprintf("%s %s", rightArm.jx, rightArm.jy);
+			var tl = new TimelineMax().to(rightArm, duration, {
+				rotation : 45,
+				transformOrigin : to,
+				ease:Power2.easeOut
+			}).to(rightArm, duration, {
+				rotation : 0,
+				transformOrigin : to,
+				ease:Power2.easeIn
+			});
+			
+			var to = sprintf("%s %s", leftArm.jx, leftArm.jy);
+			var tl = new TimelineMax().to(leftArm, duration, {
+				rotation : 45,
+				transformOrigin : to,
+				ease:Power2.easeOut
+			}).to(leftArm, duration, {
+				rotation : 0,
+				transformOrigin : to,
+				ease:Power2.easeIn
+			});
 		};
 		
 		// REACTION ANIMATIONS  
@@ -876,16 +945,16 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 		this.animateAction = function(animationType, selectedStickerSvgTag, miniReactionCallback) {
 			switch(animationType) {
 				case 'kick':
-					kick(miniReactionCallback, parent.moveBack);
+					kick(selectedStickerSvgTag, miniReactionCallback, parent.moveBack);
 					break;
 				case 'dance':
-					dance(miniReactionCallback, parent.moveBack);
+					dance(selectedStickerSvgTag, miniReactionCallback, parent.moveBack);
 					break;
 				case 'slap':
-					slap(miniReactionCallback, parent.moveBack);
+					slap(selectedStickerSvgTag, miniReactionCallback, parent.moveBack);
 					break;
 				case 'kiss':
-					kiss(miniReactionCallback, parent.moveBack);
+					kiss(selectedStickerSvgTag, miniReactionCallback, parent.moveBack);
 					break;
 				default:
 					if (!parent.animateAction(animationType, selectedStickerSvgTag, miniReactionCallback)) {
@@ -990,6 +1059,13 @@ var animation = function(getContainerCallback, stickerInsertCallback, reactionSt
 		
 		if (type == "impact") {
 			var url = 'images/effects/impact/hit_impact.svg';
+			$.get(url, function(data) {
+				var svgTag = $(data).find('svg');
+				svgTag.attr("class", "ani-effect");
+				effect_explosion_helper(selectedStickerSvgTag, positionX, positionY, targetX, targetY, expireDuration, endRotation, endScale, endOpacity, svgTag);
+			});
+		} else if (type == "heart") {
+			var url = 'images/effects/heart/Heart.svg';
 			$.get(url, function(data) {
 				var svgTag = $(data).find('svg');
 				svgTag.attr("class", "ani-effect");
